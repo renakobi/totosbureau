@@ -48,9 +48,39 @@ const Footer = () => {
         </div>
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-8 sm:mb-10 md:mb-12">
-          {/* Company Info */}
-          <div className="lg:col-span-1">
+        <div className="space-y-6 sm:space-y-0">
+          {/* Company Info - Full width on mobile */}
+          <div className="sm:hidden mb-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-forest rounded-lg flex items-center justify-center shadow-medium">
+                <PawPrint className="h-4 w-4 text-white" />
+              </div>
+              <div className="text-lg font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+                Toto's Bureau
+              </div>
+            </div>
+            <p className="text-muted-foreground mb-4 leading-relaxed text-sm">
+              Your one-stop shop for premium pet supplies. We believe every pet deserves the best care, 
+              love, and happiness in their lives.
+            </p>
+            <div className="flex space-x-2">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
+                <Facebook className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
+                <Twitter className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
+                <Instagram className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
+                <Youtube className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Company Info */}
+          <div className="hidden sm:block lg:col-span-1">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-forest rounded-lg sm:rounded-xl flex items-center justify-center shadow-medium">
                 <PawPrint className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
@@ -79,10 +109,12 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Shop</h4>
-            <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+          {/* Mobile Grid - Shop, Support, Contact side by side */}
+          <div className="grid grid-cols-3 gap-4 sm:hidden">
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-bold text-xs mb-2 text-foreground">Shop</h4>
+              <ul className="space-y-1 text-muted-foreground text-xs">
               <li><Link to="/products?category=dogs" className="hover:text-primary transition-colors duration-300 group flex items-center">
                 <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 Dog Supplies
@@ -104,12 +136,12 @@ const Footer = () => {
                 All Products
               </Link></li>
             </ul>
-          </div>
+            </div>
 
-          {/* Support */}
-          <div>
-            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Support</h4>
-            <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+            {/* Support */}
+            <div>
+              <h4 className="font-bold text-xs mb-2 text-foreground">Support</h4>
+              <ul className="space-y-1 text-muted-foreground text-xs">
               <li><Link to="/profile" className="hover:text-primary transition-colors duration-300 group flex items-center">
                 <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 Account
@@ -131,12 +163,12 @@ const Footer = () => {
                 Pet Care Guide
               </Link></li>
             </ul>
-          </div>
+            </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Contact Us</h4>
-            <div className="space-y-3 sm:space-y-4 text-muted-foreground text-sm sm:text-base">
+            {/* Contact */}
+            <div>
+              <h4 className="font-bold text-xs mb-2 text-foreground">Contact</h4>
+              <div className="space-y-1 text-muted-foreground text-xs">
               <div className="flex items-center group">
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-foreground transition-colors">1-800-TOTO-BUREAU</span>
@@ -148,6 +180,83 @@ const Footer = () => {
               <div className="flex items-center group">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-foreground transition-colors">Pet Paradise Plaza, Suite 100</span>
+              </div>
+            </div>
+            </div>
+          </div>
+
+          {/* Desktop Grid - Shop, Support, Contact */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Shop</h4>
+              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                <li><Link to="/products?category=dogs" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Dog Supplies
+                </Link></li>
+                <li><Link to="/products?category=cats" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Cat Essentials
+                </Link></li>
+                <li><Link to="/products?type=subscription" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Subscription Boxes
+                </Link></li>
+                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Premium Products
+                </Link></li>
+                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  All Products
+                </Link></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Support</h4>
+              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                <li><Link to="/profile" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Account
+                </Link></li>
+                <li><Link to="/cart" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Cart
+                </Link></li>
+                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Browse Products
+                </Link></li>
+                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Shipping Info
+                </Link></li>
+                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
+                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Pet Care Guide
+                </Link></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Contact Us</h4>
+              <div className="space-y-3 sm:space-y-4 text-muted-foreground text-sm sm:text-base">
+                <div className="flex items-center group">
+                  <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
+                  <span className="group-hover:text-foreground transition-colors">1-800-TOTO-BUREAU</span>
+                </div>
+                <div className="flex items-center group">
+                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
+                  <span className="group-hover:text-foreground transition-colors">hello@totosbureau.com</span>
+                </div>
+                <div className="flex items-center group">
+                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
+                  <span className="group-hover:text-foreground transition-colors">Pet Paradise Plaza, Suite 100</span>
+                </div>
               </div>
             </div>
           </div>

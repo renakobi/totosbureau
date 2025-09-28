@@ -73,7 +73,7 @@ const CategorySection = () => {
         </div>
 
         {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {categories.map((category, index) => {
             const IconComponent = category.icon;
             return (
@@ -90,29 +90,29 @@ const CategorySection = () => {
                     </Badge>
                   )}
                   
-                  <CardContent className="p-8 text-center flex-1 flex flex-col">
-                    <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl ${category.color} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-medium`}>
-                      <IconComponent className="h-10 w-10" />
+                  <CardContent className="p-4 sm:p-6 md:p-8 text-center flex-1 flex flex-col">
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-3 sm:mb-4 md:mb-6 rounded-xl sm:rounded-2xl ${category.color} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-medium`}>
+                      <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                     </div>
                     
-                    <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                    <h3 className="text-sm sm:text-base md:text-xl font-bold mb-2 sm:mb-3 group-hover:text-primary transition-colors duration-300">
                       {category.title}
                     </h3>
                     
-                    <p className="text-muted-foreground mb-6 text-sm leading-relaxed flex-1">
+                    <p className="text-muted-foreground mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm leading-relaxed flex-1 hidden sm:block">
                       {category.description}
                     </p>
                     
                     <Badge 
                       variant="outline" 
-                      className={`mb-6 ${category.color} border-current/20`}
+                      className={`mb-3 sm:mb-4 md:mb-6 ${category.color} border-current/20 text-xs`}
                     >
                       {category.products}
                     </Badge>
                     
                     <Button 
                       variant="outline" 
-                      className="w-full border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 group-hover:scale-105"
+                      className="w-full border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 group-hover:scale-105 text-xs sm:text-sm py-2"
                     >
                       Explore Category
                     </Button>
