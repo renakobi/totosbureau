@@ -174,13 +174,13 @@ const Products = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
           {sortedProducts.map((product) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full">
               <Card className="group hover:shadow-soft transition-all duration-200 overflow-hidden cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 h-full flex flex-col">
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative bg-orange-200/30 h-32 sm:h-40 md:h-48 flex items-center justify-center">
+                <div className="relative bg-orange-200/30 h-24 sm:h-32 md:h-40 lg:h-48 flex items-center justify-center">
                   {product.image.startsWith('data:') || product.image.startsWith('blob:') || product.image.startsWith('http') ? (
                     <img 
                       src={product.image} 
@@ -188,7 +188,7 @@ const Products = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-3xl sm:text-4xl md:text-6xl">{product.image}</div>
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl">{product.image}</div>
                   )}
                   
                   {product.onSale && (
@@ -214,7 +214,7 @@ const Products = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-2 sm:p-3 md:p-4 flex-1 flex flex-col">
+                <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 flex-1 flex flex-col">
                   <div className="flex items-center gap-1 mb-2">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -223,22 +223,22 @@ const Products = () => {
                     <span className="text-sm text-muted-foreground">({product.reviews})</span>
                   </div>
                   
-                  <h3 className="font-semibold mb-1 sm:mb-2 line-clamp-2 text-sm sm:text-base">{product.name}</h3>
+                  <h3 className="font-semibold mb-1 line-clamp-2 text-xs sm:text-sm md:text-base">{product.name}</h3>
                   
-                  <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
-                    <Badge variant="outline" className="capitalize text-xs">
+                  <div className="flex items-center gap-1 mb-1 sm:mb-2">
+                    <Badge variant="outline" className="capitalize text-xs px-1 py-0.5">
                       {product.category}
                     </Badge>
-                    <Badge variant="outline" className="capitalize bg-primary/10 text-primary border-primary/30 text-xs">
+                    <Badge variant="outline" className="capitalize bg-primary/10 text-primary border-primary/30 text-xs px-1 py-0.5">
                       {product.type}
                     </Badge>
                   </div>
 
                   <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <span className="text-sm sm:text-lg font-bold text-primary">${product.price}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs sm:text-sm md:text-lg font-bold text-primary">${product.price}</span>
                       {product.originalPrice && (
-                        <span className="text-xs sm:text-sm text-muted-foreground line-through">
+                        <span className="text-xs text-muted-foreground line-through">
                           ${product.originalPrice}
                         </span>
                       )}

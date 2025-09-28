@@ -18,28 +18,28 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-amber-50/40 to-forest/5 border-t border-border/50">
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16 lg:py-20">
         {/* Newsletter Section */}
-        <div className="bg-gradient-to-r from-teal to-forest rounded-2xl p-8 md:p-12 text-center mb-16 text-white shadow-strong">
+        <div className="bg-gradient-to-r from-teal to-forest rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 text-center mb-8 sm:mb-12 md:mb-16 text-white shadow-strong">
           <div className="max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <PawPrint className="h-8 w-8" />
-              <h3 className="text-3xl md:text-4xl font-bold">Stay in the Loop!</h3>
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <PawPrint className="h-6 w-6 sm:h-8 sm:w-8" />
+              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Stay in the Loop!</h3>
             </div>
-            <p className="text-lg mb-8 opacity-90 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 md:mb-8 opacity-90 leading-relaxed">
               Get the latest deals, pet care tips, and new product alerts delivered to your inbox. 
               Join thousands of happy pet parents!
             </p>
-            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto flex gap-3">
+            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Input 
                 type="email"
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/70 focus:bg-white/20 h-12 text-base"
+                className="bg-white/10 border-white/30 text-white placeholder:text-white/70 focus:bg-white/20 h-10 sm:h-12 text-sm sm:text-base"
                 required
               />
-              <Button type="submit" className="bg-white text-forest hover:bg-white/90 h-12 px-6">
+              <Button type="submit" className="bg-white text-forest hover:bg-white/90 h-10 sm:h-12 px-4 sm:px-6 text-sm sm:text-base">
                 <Mail className="h-4 w-4 mr-2" />
                 Subscribe
               </Button>
@@ -48,41 +48,41 @@ const Footer = () => {
         </div>
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-8 sm:mb-10 md:mb-12">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-forest rounded-xl flex items-center justify-center shadow-medium">
-                <PawPrint className="h-6 w-6 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-forest rounded-lg sm:rounded-xl flex items-center justify-center shadow-medium">
+                <PawPrint className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
                 Toto's Bureau
               </div>
             </div>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
+            <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
               Your one-stop shop for premium pet supplies. We believe every pet deserves the best care, 
               love, and happiness in their lives.
             </p>
-            <div className="flex space-x-3">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300">
-                <Facebook className="h-5 w-5" />
+            <div className="flex space-x-2 sm:space-x-3">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
+                <Facebook className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300">
-                <Twitter className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
+                <Twitter className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300">
-                <Instagram className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
+                <Instagram className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300">
-                <Youtube className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
+                <Youtube className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-foreground">Shop</h4>
-            <ul className="space-y-3 text-muted-foreground">
+            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Shop</h4>
+            <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
               <li><Link to="/products?category=dogs" className="hover:text-primary transition-colors duration-300 group flex items-center">
                 <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 Dog Supplies
@@ -108,8 +108,8 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-foreground">Support</h4>
-            <ul className="space-y-3 text-muted-foreground">
+            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Support</h4>
+            <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
               <li><Link to="/profile" className="hover:text-primary transition-colors duration-300 group flex items-center">
                 <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 Account
@@ -135,18 +135,18 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-bold text-lg mb-6 text-foreground">Contact Us</h4>
-            <div className="space-y-4 text-muted-foreground">
+            <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Contact Us</h4>
+            <div className="space-y-3 sm:space-y-4 text-muted-foreground text-sm sm:text-base">
               <div className="flex items-center group">
-                <Phone className="h-5 w-5 mr-3 text-primary group-hover:text-primary transition-colors" />
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-foreground transition-colors">1-800-TOTO-BUREAU</span>
               </div>
               <div className="flex items-center group">
-                <Mail className="h-5 w-5 mr-3 text-primary group-hover:text-primary transition-colors" />
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-foreground transition-colors">hello@totosbureau.com</span>
               </div>
               <div className="flex items-center group">
-                <MapPin className="h-5 w-5 mr-3 text-primary group-hover:text-primary transition-colors" />
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-foreground transition-colors">Pet Paradise Plaza, Suite 100</span>
               </div>
             </div>

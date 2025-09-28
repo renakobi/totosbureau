@@ -128,7 +128,7 @@ const FeaturedProducts = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 mb-16 px-4 sm:px-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-16 px-4 sm:px-0">
           {featuredProducts.map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
@@ -137,7 +137,7 @@ const FeaturedProducts = () => {
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-32 sm:h-40 md:h-48 lg:h-56 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                <div className="relative h-24 sm:h-32 md:h-40 lg:h-48 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   <OptimizedImage
                     src={product.image}
                     alt={product.name}
