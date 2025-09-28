@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Test - Toto's Bureau</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fef7ed;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        .info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Email Test - Toto's Bureau</h1>
+        <p>Test the email functionality to see if emails are being sent to totosbureau@gmail.com</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <button class="button" onclick="testConfirmationEmail()" id="confirmBtn">
+                Test Customer Confirmation Email
+            </button>
+            <button class="button" onclick="testNotificationEmail()" id="notifyBtn">
+                Test Admin Notification Email
+            </button>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f9fafb; border-radius: 8px;">
+            <h3>Test Order Details:</h3>
+            <p><strong>Order #:</strong> TB-123456-789</p>
+            <p><strong>Customer:</strong> John Doe</p>
+            <p><strong>Email:</strong> john.doe@example.com</p>
+            <p><strong>Total:</strong> $82.05</p>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+            <h4>⚠️ Important:</h4>
+            <ul>
+                <li>Make sure you've created the email templates in EmailJS dashboard</li>
+                <li>Template IDs must be: "order_confirmation" and "order_notification"</li>
+                <li>Customer email will be sent to: john.doe@example.com</li>
+                <li>Admin email will be sent to: totosbureau@gmail.com</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        emailjs.init('wrnxwtK4twdnvBS9g');
+        
+        const serviceId = 'service_7jxiqbn';
+        
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function setButtonLoading(buttonId, loading) {
+            const button = document.getElementById(buttonId);
+            button.disabled = loading;
+            button.textContent = loading ? 'Sending...' : button.textContent.replace('Sending...', '');
+        }
+        
+        async function testConfirmationEmail() {
+            setButtonLoading('confirmBtn', true);
+            showStatus('Sending customer confirmation email...', 'info');
+            
+            const templateParams = {
+                email: 'john.doe@example.com',
+                to_name: 'John Doe',
+                customer_name: 'John Doe',
+                order_number: 'TB-123456-789',
+                order_date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }),
+                order_status: 'Pending',
+                items_list: '• Premium Dog Food (Qty: 2) - $59.98\n• Cat Litter (Qty: 1) - $15.99',
+                subtotal: '75.97',
+                shipping: 'FREE',
+                tax: '6.08',
+                total: '82.05',
+                shipping_address: 'John Doe\n123 Pet Street\nPet City, PC 12345\nUnited States',
+                estimated_delivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                })
+            };
+            
+            try {
+                const result = await emailjs.send(serviceId, 'order_confirmation', templateParams);
+                console.log('Confirmation email result:', result);
+                showStatus('✅ Customer confirmation email sent successfully! Check john.doe@example.com', 'success');
+            } catch (error) {
+                console.error('Confirmation email error:', error);
+                showStatus('❌ Failed to send confirmation email: ' + error.text, 'error');
+            } finally {
+                setButtonLoading('confirmBtn', false);
+            }
+        }
+        
+        async function testNotificationEmail() {
+            setButtonLoading('notifyBtn', true);
+            showStatus('Sending admin notification email...', 'info');
+            
+            const templateParams = {
+                email: 'totosbureau@gmail.com',
+                to_name: 'Toto\'s Bureau Admin',
+                customer_name: 'John Doe',
+                customer_email: 'john.doe@example.com',
+                order_number: 'TB-123456-789',
+                order_date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }),
+                order_status: 'Pending',
+                items_list: '• Premium Dog Food (Qty: 2) - $59.98\n• Cat Litter (Qty: 1) - $15.99',
+                subtotal: '75.97',
+                shipping: 'FREE',
+                tax: '6.08',
+                total: '82.05',
+                shipping_address: 'John Doe\n123 Pet Street\nPet City, PC 12345\nUnited States',
+                customer_phone: '(555) 123-4567'
+            };
+            
+            try {
+                const result = await emailjs.send(serviceId, 'order_notification', templateParams);
+                console.log('Notification email result:', result);
+                showStatus('✅ Admin notification email sent successfully! Check totosbureau@gmail.com', 'success');
+            } catch (error) {
+                console.error('Notification email error:', error);
+                showStatus('❌ Failed to send notification email: ' + error.text, 'error');
+            } finally {
+                setButtonLoading('notifyBtn', false);
+            }
+        }
+    </script>
+</body>
+</html>
