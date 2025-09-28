@@ -59,29 +59,29 @@ const Hero = () => {
           </div>
           
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto pt-8 sm:pt-16 px-4">
-            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                <Heart className="h-6 w-6 text-primary" />
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto pt-8 sm:pt-16 px-4">
+            <div className="flex flex-col items-center text-center p-2 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group-hover:bg-primary/20 transition-colors">
+                <Heart className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Loved by Pets</h3>
-              <p className="text-muted-foreground text-sm">Carefully tested and approved by our furry friends</p>
+              <h3 className="text-xs sm:text-sm md:text-lg font-semibold mb-1 sm:mb-2">Loved by Pets</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Carefully tested and approved by our furry friends</p>
             </div>
             
-            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
-              <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                <Star className="h-6 w-6 text-accent" />
+            <div className="flex flex-col items-center text-center p-2 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-accent/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group-hover:bg-accent/20 transition-colors">
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-accent" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Premium Quality</h3>
-              <p className="text-muted-foreground text-sm">Only the finest products from trusted brands</p>
+              <h3 className="text-xs sm:text-sm md:text-lg font-semibold mb-1 sm:mb-2">Premium Quality</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">Only the finest products from trusted brands</p>
             </div>
             
-            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
-              <div className="w-12 h-12 bg-forest/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-forest/20 transition-colors">
-                <Shield className="h-6 w-6 text-forest" />
+            <div className="flex flex-col items-center text-center p-2 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-forest/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group-hover:bg-forest/20 transition-colors">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-forest" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Safe & Secure</h3>
-              <p className="text-muted-foreground text-sm">100% safe materials and secure delivery</p>
+              <h3 className="text-xs sm:text-sm md:text-lg font-semibold mb-1 sm:mb-2">Safe & Secure</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">100% safe materials and secure delivery</p>
             </div>
           </div>
           
