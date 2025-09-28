@@ -6,7 +6,7 @@ import heroImage from "@/assets/tempbackground.webp";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden section-spacing">
+    <section className="relative min-h-[70vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden section-spacing">
       {/* Natural Background Image */}
       <div className="absolute inset-0">
         <div 
@@ -26,40 +26,40 @@ const Hero = () => {
           
           
           {/* Main Heading */}
-          <h1 className="text-hierarchy-1">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
             <span className="text-foreground">
               Premium Pet Products
             </span>
             <br />
-            <span className="text-hierarchy-2 text-forest">
+            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-forest">
               for Cats & Dogs
             </span>
           </h1>
           
           {/* Subheading */}
-          <p className="text-body-large text-muted-foreground max-w-4xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto px-4">
             Discover carefully curated subscription boxes filled with premium toys, 
             treats, and surprises. Each delivery brings joy and adventure to your beloved pets.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4">
             <Link to="/products">
-              <Button size="lg" className="text-lg px-10 py-6 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
+              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full sm:w-auto">
                 Explore Products
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Link to="/products?category=subscription">
-              <Button variant="outline" size="lg" className="text-lg px-10 py-6 border-2 hover:bg-primary/5 transition-all duration-300">
-                <Gift className="mr-2 h-5 w-5" />
+              <Button variant="outline" size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 border-2 hover:bg-primary/5 transition-all duration-300 w-full sm:w-auto">
+                <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Subscription Boxes
               </Button>
             </Link>
           </div>
           
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto pt-8 sm:pt-16 px-4">
             <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-medium transition-all duration-300 group">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                 <Heart className="h-6 w-6 text-primary" />

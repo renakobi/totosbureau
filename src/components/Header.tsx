@@ -28,7 +28,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b border-border/50 shadow-soft">
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Hamburger Menu Button */}
           <Button
             variant="ghost"
@@ -40,18 +40,18 @@ const Header = () => {
           </Button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-forest rounded-xl flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105">
-                <PawPrint className="h-6 w-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-forest rounded-xl flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105">
+                <PawPrint className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-accent rounded-full animate-pulse"></div>
             </div>
             <div className="flex flex-col">
-              <div className="text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+              <div className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
                 Toto's Bureau
               </div>
-              <div className="text-xs text-muted-foreground font-medium -mt-1">
+              <div className="text-xs text-muted-foreground font-medium -mt-1 hidden sm:block">
                 Premium Pet Care
               </div>
             </div>
@@ -79,7 +79,7 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-1 lg:space-x-2">
-            <Button variant="ghost" size="icon" className="md:hidden hover:bg-primary/10 transition-smooth">
+            <Button variant="ghost" size="icon" className="lg:hidden hover:bg-primary/10 transition-smooth">
               <Search className="h-4 w-4" />
             </Button>
             <Link to="/favorites">
@@ -87,7 +87,7 @@ const Header = () => {
                 <Heart className="h-4 w-4" />
                 {favorites.length > 0 && (
                   <Badge 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs bg-secondary text-secondary-foreground animate-bounce"
+                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs bg-secondary text-secondary-foreground animate-bounce"
                   >
                     {favorites.length}
                   </Badge>
@@ -99,7 +99,7 @@ const Header = () => {
                 <ShoppingCart className="h-4 w-4" />
                 {getTotalItems() > 0 && (
                   <Badge 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs bg-secondary text-secondary-foreground animate-bounce"
+                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs bg-accent text-accent-foreground animate-bounce"
                   >
                     {getTotalItems()}
                   </Badge>

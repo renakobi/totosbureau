@@ -9,9 +9,48 @@
 /* Pet Supplies Brand Design System */
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
+  
+  /* Ensure text is readable on mobile */
+  .text-hierarchy-1 {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+  
+  .text-hierarchy-2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  /* Better button spacing on mobile */
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Improve card padding on mobile */
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  /* Better image sizing on mobile */
+  .h-48 {
+    height: 12rem;
+  }
+  
+  /* Improve header spacing */
+  .h-16 {
+    height: 4rem;
+  }
+}
   
   :root {
     /* Brand Colors - New Brand Theme */
