@@ -3,16 +3,25 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/tempbackground.webp";
+import mobileHeroImage from "@/assets/mobile.webp";
 
 const Hero = () => {
   return (
     <section className="relative min-h-[70vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden section-spacing">
-      {/* Natural Background Image */}
+      {/* Background Images - Desktop and Mobile */}
       <div className="absolute inset-0">
+        {/* Desktop Background */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
             backgroundImage: `url(${heroImage})`
+          }}
+        />
+        {/* Mobile Background */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
+          style={{
+            backgroundImage: `url(${mobileHeroImage})`
           }}
         />
         {/* Warm, natural overlay */}
