@@ -104,31 +104,31 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="section-spacing bg-gradient-to-b from-amber-50/40 to-muted/20">
-      <div className="container mx-auto container-spacing">
+    <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-amber-50/40 to-muted/20">
+      <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center space-content">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-medium">
-            <Star className="h-4 w-4" />
+        <div className="text-center space-y-4 sm:space-y-6">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-medium">
+            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
             Featured Products
           </div>
-          <h2 className="text-hierarchy-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
             <span className="text-foreground">
               Top Picks
             </span>
             <br />
-            <span className="text-hierarchy-3 text-forest">
+            <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-forest">
               for Your Furry Friends
             </span>
           </h2>
-          <p className="text-body-large text-muted-foreground max-w-4xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-4xl mx-auto px-4">
             Hand-selected products that pets and their parents absolutely love. 
             Each item is carefully chosen for quality, safety, and maximum pet happiness.
           </p>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-16 px-4 sm:px-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0">
           {featuredProducts.map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
@@ -178,42 +178,42 @@ const FeaturedProducts = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                <div className="p-3 sm:p-4 md:p-6 flex-1 flex flex-col">
+                  <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
+                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-2 py-1">
                       {product.category}
                     </Badge>
-                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20">
+                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20 px-2 py-1">
                       {product.type}
                     </Badge>
                   </div>
                   
-                  <h3 className="font-bold text-lg mb-3 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-bold text-sm sm:text-base md:text-lg mb-2 sm:mb-3 group-hover:text-primary transition-colors duration-300">
                     {product.name}
                   </h3>
                   
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed hidden sm:block">
                     {product.description}
                   </p>
                   
                   {/* Rating */}
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-accent text-accent" />
-                      <span className="text-sm font-semibold ml-1">{product.rating}</span>
+                      <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-accent text-accent" />
+                      <span className="text-xs sm:text-sm font-semibold ml-1">{product.rating}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground hidden sm:block">
                       ({product.reviews} reviews)
                     </span>
                   </div>
                   
                   {/* Price */}
-                  <div className="flex items-center gap-2 mb-6 mt-auto">
-                    <span className="text-2xl font-bold text-foreground">
+                  <div className="flex items-center gap-1 sm:gap-2 mb-4 sm:mb-6 mt-auto">
+                    <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                       ${product.price}
                     </span>
                     {product.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
+                      <span className="text-xs sm:text-sm text-muted-foreground line-through">
                         ${product.originalPrice}
                       </span>
                     )}
@@ -221,7 +221,7 @@ const FeaturedProducts = () => {
                 </div>
               </CardContent>
               
-              <CardFooter className="p-6 pt-0">
+              <CardFooter className="p-3 sm:p-4 md:p-6 pt-0">
                 <Button 
                   className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102"
                   onClick={(e) => handleAddToCart(e, product)}
