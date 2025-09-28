@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/tempbackground.webp";
-import mobileHeroImage from "@/assets/mobile.webp";
+import mobileHeroImage from "@/assets/mobile.jpeg";
 
 const Hero = () => {
   return (
