@@ -8,7 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
 import ThemeToggle from "./ThemeToggle";
-import logoImage from "@/assets/logo.jpg";
+// import logoImage from "@/assets/logo.jpg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,7 +47,7 @@ const Header = () => {
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
                 <img 
-                  src={logoImage} 
+                  src={`/logo.jpg?v=${Date.now()}`} 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
                   onError={(e) => {

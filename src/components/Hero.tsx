@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/tempbackground.webp";
-import mobileHeroImage from "@/assets/mobile.jpeg";
+// import heroImage from "@/assets/tempbackground.webp";
+// import mobileHeroImage from "@/assets/mobile.jpeg";
 
 const Hero = () => {
   return (
@@ -14,14 +14,14 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
-            backgroundImage: `url(${heroImage})`
+            backgroundImage: `url('/tempbackground.webp?v=${Date.now()}')`
           }}
         />
         {/* Mobile Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
           style={{
-            backgroundImage: `url(${mobileHeroImage})`
+            backgroundImage: `url('/mobile.jpeg?v=${Date.now()}')`
           }}
         />
         {/* Warm, natural overlay */}
