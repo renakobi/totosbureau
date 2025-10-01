@@ -46,19 +46,9 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                <img 
-                  src={`/logo.jpg?v=${Date.now()}`} 
-                  alt="Toto's Bureau Logo" 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    console.log('Logo failed, using fallback...');
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
-                    }
-                  }}
-                />
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                  <span className="text-white font-bold text-lg">TB</span>
+                </div>
               </div>
             </div>
             <div className="flex flex-col">
