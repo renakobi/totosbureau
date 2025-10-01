@@ -14,14 +14,14 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
-            backgroundImage: `url('/tempbackground.webp')`
+            backgroundImage: `url('./tempbackground.webp')`
           }}
         />
         {/* Mobile Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
           style={{
-            backgroundImage: `url('/mobile.jpeg')`
+            backgroundImage: `url('./mobile.jpeg')`
           }}
         />
         {/* Warm, natural overlay */}

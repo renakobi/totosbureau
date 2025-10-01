@@ -47,7 +47,7 @@ const Header = () => {
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src="./logo.jpg" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {

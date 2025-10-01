@@ -55,7 +55,7 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src="./logo.jpg" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
@@ -97,7 +97,7 @@ const Footer = () => {
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src="./logo.jpg" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
