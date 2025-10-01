@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
 import ThemeToggle from "./ThemeToggle";
+import logoImage from "@/assets/logo.jpg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,13 +47,15 @@ const Header = () => {
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src={logoImage} 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
                     console.error('Logo failed to load:', e);
                     console.log('Current src:', e.currentTarget.src);
+                    console.log('Trying fallback...');
+                    e.currentTarget.src = '/favicon.ico';
                   }}
                 />
               </div>
