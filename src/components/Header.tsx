@@ -52,6 +52,14 @@ const Header = () => {
                   onError={(e) => {
                     console.log('PNG failed, trying JPG...');
                     e.currentTarget.src = '/logo.jpg';
+                    e.currentTarget.onerror = () => {
+                      console.log('JPG also failed, using fallback...');
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
+                      }
+                    };
                   }}
                 />
               </div>
