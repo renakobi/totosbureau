@@ -102,9 +102,6 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
 
   // Load products from localStorage on mount
   useEffect(() => {
-    // Force clear localStorage for testing - remove this in production
-    localStorage.removeItem('totos-bureau-products');
-    
     const savedProducts = localStorage.getItem('totos-bureau-products');
     
     if (savedProducts) {
@@ -114,20 +111,17 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
           setProducts(parsedProducts);
         } else {
           // If localStorage has empty array, use sample products
-          console.log('localStorage has empty products, using sample products');
           const sampleProducts = getSampleProducts();
           setProducts(sampleProducts);
         }
       } catch (error) {
         console.error('Error loading products from localStorage:', error);
         // Fall back to sample products if localStorage is corrupted
-        console.log('localStorage corrupted, will use sample products');
         const sampleProducts = getSampleProducts();
         setProducts(sampleProducts);
       }
     } else {
       // Start with sample products for testing
-      console.log('No saved products, loading sample products');
       const sampleProducts = getSampleProducts();
       setProducts(sampleProducts);
     }
