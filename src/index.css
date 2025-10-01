@@ -53,45 +53,45 @@ html {
 }
   
   :root {
-    /* Brand Colors - New Brand Theme */
-    --background: 30 25% 96%;
-    --foreground: 0 0% 12%;
+    /* Brand Colors - Heavily Muted Theme */
+    --background: 30 20% 94%;
+    --foreground: 0 0% 18%;
 
-    --card: 30 20% 98%;
-    --card-foreground: 0 0% 12%;
+    --card: 30 15% 92%;
+    --card-foreground: 0 0% 18%;
 
-    --popover: 30 20% 98%;
-    --popover-foreground: 0 0% 12%;
+    --popover: 30 15% 92%;
+    --popover-foreground: 0 0% 18%;
 
-    /* Primary - #9aedb6 (Mint Green) */
-    --primary: 155 56% 74%;
-    --primary-foreground: 0 0% 20%;
+    /* Primary - Heavily Muted Mint Green */
+    --primary: 155 35% 55%;
+    --primary-foreground: 0 0% 25%;
 
-    /* Secondary - #fd9f48 (Orange) */
-    --secondary: 30 96% 64%;
+    /* Secondary - Heavily Muted Orange */
+    --secondary: 30 70% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Accent - #ffbd59 (Yellow) */
-    --accent: 44 100% 67%;
-    --accent-foreground: 0 0% 20%;
+    /* Accent - Heavily Muted Yellow */
+    --accent: 44 70% 50%;
+    --accent-foreground: 0 0% 25%;
 
-    /* Forest Green - #50957d (Dark Green) */
-    --forest: 155 31% 41%;
+    /* Forest Green - Heavily Muted */
+    --forest: 155 20% 28%;
     --forest-foreground: 0 0% 100%;
 
-    /* Teal - #09cba2 (Teal) */
-    --teal: 172 100% 40%;
+    /* Teal - Heavily Muted */
+    --teal: 172 70% 28%;
     --teal-foreground: 0 0% 100%;
 
-    --muted: 30 15% 88%;
-    --muted-foreground: 30 10% 35%;
+    --muted: 30 10% 80%;
+    --muted-foreground: 30 8% 45%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 65% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 80%;
-    --input: 30 15% 85%;
-    --ring: 155 56% 74%;
+    --border: 30 10% 70%;
+    --input: 30 10% 75%;
+    --ring: 155 35% 55%;
 
     --radius: 0.75rem;
 
@@ -120,26 +120,30 @@ html {
   }
 
   .dark {
-    /* Dark mode with pet-friendly colors */
-    --background: 155 31% 8%;
-    --foreground: 155 20% 90%;
-    --card: 155 31% 12%;
-    --card-foreground: 155 20% 90%;
-    --popover: 155 31% 12%;
-    --popover-foreground: 155 20% 90%;
-    --primary: 155 56% 65%;
-    --primary-foreground: 155 31% 15%;
-    --secondary: 23 85% 55%;
+    /* Dark mode with heavily muted pet-friendly colors */
+    --background: 155 20% 6%;
+    --foreground: 155 10% 85%;
+    --card: 155 20% 8%;
+    --card-foreground: 155 10% 85%;
+    --popover: 155 20% 8%;
+    --popover-foreground: 155 10% 85%;
+    --primary: 155 30% 45%;
+    --primary-foreground: 155 20% 20%;
+    --secondary: 30 60% 40%;
     --secondary-foreground: 0 0% 100%;
-    --accent: 44 90% 60%;
-    --accent-foreground: 155 31% 15%;
-    --forest: 155 40% 35%;
+    --accent: 44 65% 45%;
+    --accent-foreground: 155 20% 20%;
+    --forest: 155 15% 25%;
     --forest-foreground: 0 0% 100%;
-    --muted: 155 25% 20%;
-    --muted-foreground: 155 15% 65%;
-    --border: 155 25% 20%;
-    --input: 155 25% 18%;
-    --ring: 155 56% 65%;
+    --teal: 172 60% 25%;
+    --teal-foreground: 0 0% 100%;
+    --muted: 155 15% 15%;
+    --muted-foreground: 155 8% 55%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 155 15% 15%;
+    --input: 155 15% 13%;
+    --ring: 155 30% 45%;
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -232,57 +236,3 @@ html {
   }
 }
 
-/* Dark Mode Styles */
-.dark {
-  /* Dark Mode Colors - Optimized for visibility */
-  --background: 20 14.3% 4.1%;
-  --foreground: 60 9.1% 97.8%;
-
-  --card: 20 14.3% 4.1%;
-  --card-foreground: 60 9.1% 97.8%;
-
-  --popover: 20 14.3% 4.1%;
-  --popover-foreground: 60 9.1% 97.8%;
-
-  /* Primary - Adjusted for dark mode */
-  --primary: 155 56% 74%;
-  --primary-foreground: 0 0% 20%;
-
-  /* Secondary - Warmer orange for dark mode */
-  --secondary: 30 96% 64%;
-  --secondary-foreground: 0 0% 100%;
-
-  /* Accent - Brighter yellow for dark mode */
-  --accent: 44 100% 67%;
-  --accent-foreground: 0 0% 20%;
-
-  /* Forest Green - Slightly brighter for dark mode */
-  --forest: 155 31% 41%;
-  --forest-foreground: 0 0% 100%;
-
-  /* Teal - Maintained for consistency */
-  --teal: 172 100% 40%;
-  --teal-foreground: 0 0% 100%;
-
-  --muted: 12 6.5% 15.1%;
-  --muted-foreground: 24 5.4% 63.9%;
-
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 60 9.1% 97.8%;
-
-  --border: 12 6.5% 15.1%;
-  --input: 12 6.5% 15.1%;
-
-  --ring: 24 5.7% 82.9%;
-  --radius: 0.75rem;
-
-  /* Dark mode shadows */
-  --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.2);
-  --shadow-medium: 0 8px 30px hsl(var(--forest) / 0.25);
-  --shadow-strong: 0 12px 40px hsl(var(--forest) / 0.3);
-
-  --sidebar-background: 0 0% 4%;
-  --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-}

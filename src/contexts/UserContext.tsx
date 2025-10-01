@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { hashPassword, verifyPassword, DEFAULT_ADMIN, validatePassword } from '../utils/auth';
 
 export interface User {
   id: string;
   username: string;
   email: string;
+  password: string; // Add password field
   firstName: string;
   lastName: string;
   phone: string;
@@ -37,13 +39,31 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>(() => {
-    const storedUsers = localStorage.getItem('totos-bureau-users');
-    return storedUsers ? JSON.parse(storedUsers) : [];
+    try {
+      const storedUsers = localStorage.getItem('totos-bureau-users');
+      if (storedUsers) {
+        const parsed = JSON.parse(storedUsers);
+        // Initialize with default admin if no users exist
+        if (parsed.length === 0) {
+          return [DEFAULT_ADMIN];
+        }
+        return parsed;
+      }
+      return [DEFAULT_ADMIN];
+    } catch (error) {
+      console.error('Error loading users from localStorage:', error);
+      return [DEFAULT_ADMIN];
+    }
   });
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('totos-bureau-current-user');
-    return storedUser ? JSON.parse(storedUser) : null;
+    try {
+      const storedUser = localStorage.getItem('totos-bureau-current-user');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error('Error loading current user from localStorage:', error);
+      return null;
+    }
   });
 
   useEffect(() => {
@@ -78,8 +98,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error('Username or email already exists');
     }
 
+    // Validate password
+    const passwordValidation = validatePassword(userData.password);
+    if (!passwordValidation.isValid) {
+      throw new Error(passwordValidation.errors.join(', '));
+    }
+
     const newUser: User = {
       ...userData,
+      password: hashPassword(userData.password), // Hash the password
       id: generateUserId(),
       createdAt: new Date().toISOString(),
       isActive: true
@@ -112,13 +139,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const loginUser = (username: string, password: string) => {
-    // Simple password check (in real app, this would be hashed)
     const user = users.find(u => 
       (u.username === username || u.email === username) && 
       u.isActive
     );
 
-    if (user) {
+    if (user && verifyPassword(password, user.password)) {
       setCurrentUser(user);
       return user;
     }

@@ -68,17 +68,25 @@ const Profile = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (loginData.username === "admin" && loginData.password === "admin") {
-      // Admin login - redirect to admin page
-      localStorage.setItem("totos-bureau-admin", "true");
-      navigate("/admin");
-    } else if (loginData.username && loginData.password) {
-      // Regular user login - stay on profile page
-      localStorage.setItem("totos-bureau-user", "true");
-      localStorage.setItem("totos-bureau-username", loginData.username);
-      setIsLoggedIn(true);
-      setShowLogin(false);
-      setError("");
+    if (loginData.username && loginData.password) {
+      // Try user login (includes admin)
+      const user = loginUser(loginData.username, loginData.password);
+      
+      if (user) {
+        if (user.isAdmin) {
+          // Admin login - redirect to admin page
+          navigate("/admin");
+        } else {
+          // Regular user login - stay on profile page
+          localStorage.setItem("totos-bureau-user", "true");
+          localStorage.setItem("totos-bureau-username", loginData.username);
+          setIsLoggedIn(true);
+          setShowLogin(false);
+          setError("");
+        }
+      } else {
+        setError("Invalid username or password.");
+      }
     } else {
       setError("Please enter both username and password.");
     }

@@ -25,8 +25,8 @@ const Hero = () => {
           }}
         />
         {/* Warm, natural overlay */}
-        <div className="absolute inset-0 bg-amber-50/40"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-100/20 via-transparent to-amber-50/30"></div>
+        <div className="absolute inset-0 bg-amber-50/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-amber-100/3 via-transparent to-amber-50/5"></div>
       </div>
       
       {/* Content */}
@@ -36,31 +36,31 @@ const Hero = () => {
           
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            <span className="text-foreground">
-              Premium Pet Products
+            <span className="text-secondary">
+              Pamper Your Pets with
             </span>
             <br />
             <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-forest">
-              for Cats & Dogs
+              Toto's Bureau!
             </span>
           </h1>
           
           {/* Subheading */}
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto px-4">
-            Discover carefully curated subscription boxes filled with premium toys, 
-            treats, and surprises. Each delivery brings joy and adventure to your beloved pets.
+          <p className="text-base sm:text-lg md:text-xl text-foreground max-w-4xl mx-auto px-4">
+            Cool bundles, mischievous treats, and eco-friendly fun for cats and dogs - 
+            no fuss, just tail-wags and purrs.
           </p>
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4">
             <Link to="/products">
-              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full sm:w-auto">
-                Explore Products
+              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-secondary hover:bg-secondary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full sm:w-auto">
+                Start shopping
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Link to="/products?category=subscription">
-              <Button variant="outline" size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 border-2 hover:bg-primary/5 transition-all duration-300 w-full sm:w-auto">
+              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-forest hover:bg-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full sm:w-auto">
                 <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Subscription Boxes
               </Button>

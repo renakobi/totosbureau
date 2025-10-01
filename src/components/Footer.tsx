@@ -17,10 +17,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-amber-50/40 to-forest/5 border-t border-border/50">
+    <footer className="bg-gradient-to-b from-amber-50/5 to-forest/1 border-t border-border/50">
       <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16 lg:py-20">
         {/* Newsletter Section */}
-        <div className="bg-gradient-to-r from-teal to-forest rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 text-center mb-8 sm:mb-12 md:mb-16 text-white shadow-strong">
+        <div className="bg-gradient-to-r from-teal/90 to-forest/90 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 text-center mb-8 sm:mb-12 md:mb-16 text-white shadow-strong">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
               <PawPrint className="h-6 w-6 sm:h-8 sm:w-8" />
@@ -52,10 +52,23 @@ const Footer = () => {
           {/* Company Info - Full width on mobile */}
           <div className="sm:hidden mb-6">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-forest rounded-lg flex items-center justify-center shadow-medium">
-                <PawPrint className="h-4 w-4 text-white" />
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
+                <img 
+                  src="/logo.jpg" 
+                  alt="Toto's Bureau Logo" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<svg class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                      parent.className += ' bg-gradient-to-br from-primary to-forest';
+                    }
+                  }}
+                />
               </div>
-              <div className="text-lg font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+              <div className="text-lg font-bold text-secondary">
                 Toto's Bureau
               </div>
             </div>
@@ -82,10 +95,23 @@ const Footer = () => {
           {/* Desktop Company Info */}
           <div className="hidden sm:block lg:col-span-1">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-forest rounded-lg sm:rounded-xl flex items-center justify-center shadow-medium">
-                <PawPrint className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
+                <img 
+                  src="/logo.jpg" 
+                  alt="Toto's Bureau Logo" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<svg class="h-4 w-4 sm:h-6 sm:w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                      parent.className += ' bg-gradient-to-br from-primary to-forest';
+                    }
+                  }}
+                />
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
                 Toto's Bureau
               </div>
             </div>
@@ -175,7 +201,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center group">
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                <span className="group-hover:text-foreground transition-colors">hello@totosbureau.com</span>
+                <span className="group-hover:text-foreground transition-colors">totosbureau.com</span>
               </div>
               <div className="flex items-center group">
                 <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
@@ -251,7 +277,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center group">
                   <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                  <span className="group-hover:text-foreground transition-colors">hello@totosbureau.com</span>
+                  <span className="group-hover:text-foreground transition-colors">totosbureau@gmail.com</span>
                 </div>
                 <div className="flex items-center group">
                   <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
@@ -260,6 +286,25 @@ const Footer = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Community Section */}
+        <div className="mt-12 sm:mt-16 text-center">
+          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <PawPrint className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+                Join Our Pet Community
+              </h3>
+            </div>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-4">
+              Connect with thousands of happy pet parents and share your pet's journey with us!
+            </p>
+            <div className="flex items-center justify-center gap-2 text-primary font-medium">
+              <span>Explore Community</span>
+              <ArrowRight className="h-4 w-4" />
+            </div>
+          </Link>
         </div>
 
         <Separator className="my-8 bg-border/50" />
@@ -272,7 +317,7 @@ const Footer = () => {
             <Link to="/products" className="hover:text-primary transition-colors duration-300">Cookie Policy</Link>
           </div>
           <div className="flex items-center gap-2">
-            <Heart className="h-4 w-4 text-primary" />
+            <PawPrint className="h-4 w-4 text-primary" />
             <span>© 2024 Toto's Bureau. All rights reserved.</span>
           </div>
         </div>

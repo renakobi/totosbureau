@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, Edit, CreditCard, MapPin, User, AlertCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +23,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
   onEditBilling
 }) => {
   const { cartItems, getTotalPrice, getTotalItems, removeFromCart, updateQuantity } = useCart();
+  const { currentUser } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,11 +32,8 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
 
-  // Check if user is logged in
-  const isLoggedIn = localStorage.getItem("totos-bureau-user") === "true" || localStorage.getItem("totos-bureau-admin") === "true";
-
   const handleProceedToPayment = () => {
-    if (!isLoggedIn) {
+    if (!currentUser) {
       toast({
         title: "Login Required",
         description: "Please log in to your account to proceed with payment.",

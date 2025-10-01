@@ -9,6 +9,8 @@ import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { OrderProvider } from "./contexts/OrderContext";
 import { UserProvider } from "./contexts/UserContext";
+import { ProductProvider } from "./contexts/ProductContext";
+import { CommunityProvider } from "./contexts/CommunityContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import ScrollToTopButton from "./components/ScrollToTopButton";
@@ -27,6 +29,10 @@ const EmailTest = lazy(() => import("./pages/EmailTest"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Orders = lazy(() => import("./pages/Orders"));
+const About = lazy(() => import("./pages/About"));
+const Community = lazy(() => import("./pages/Community"));
+const Faqs = lazy(() => import("./pages/Faqs"));
+const Blog = lazy(() => import("./pages/Blog"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -38,8 +44,10 @@ const App = () => (
         <ThemeProvider>
           <UserProvider>
             <OrderProvider>
-              <CartProvider>
-                <FavoritesProvider>
+              <ProductProvider>
+                <CommunityProvider>
+                  <CartProvider>
+                    <FavoritesProvider>
                   <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -59,14 +67,20 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
                     <Route path="/favorites" element={<Favorites />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route path="/faqs" element={<Faqs />} />
+                    <Route path="/blog" element={<Blog />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
               </BrowserRouter>
                   </TooltipProvider>
-                </FavoritesProvider>
-              </CartProvider>
+                    </FavoritesProvider>
+                  </CartProvider>
+                </CommunityProvider>
+              </ProductProvider>
             </OrderProvider>
           </UserProvider>
         </ThemeProvider>

@@ -29,10 +29,8 @@ const Cart = () => {
   const total = subtotal + shipping;
 
   const handleProceedToCheckout = () => {
-    // Check if user is logged in
-    const isLoggedIn = localStorage.getItem("totos-bureau-user") === "true" || localStorage.getItem("totos-bureau-admin") === "true";
-    
-    if (!isLoggedIn) {
+    // Check if user is logged in using UserContext
+    if (!currentUser) {
       toast({
         title: "Login Required",
         description: "Please log in to your account to proceed with checkout.",
@@ -223,9 +221,7 @@ const Cart = () => {
 
   if (showCheckoutReview) {
     // Double-check authentication before showing checkout review
-    const isLoggedIn = localStorage.getItem("totos-bureau-user") === "true" || localStorage.getItem("totos-bureau-admin") === "true";
-    
-    if (!isLoggedIn) {
+    if (!currentUser) {
       toast({
         title: "Login Required",
         description: "Please log in to your account to proceed with checkout.",

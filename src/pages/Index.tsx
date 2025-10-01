@@ -2,13 +2,13 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import CategorySection from "@/components/CategorySection";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import HowItWorks from "@/components/HowItWorks";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
-import DiscountPopup from "@/components/DiscountPopup";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/30 via-background to-amber-50/20">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50/3 via-background to-amber-50/2">
       <SEO 
         title="Toto's Bureau - Premium Pet Care & Supplies"
         description="Discover premium pet care products for your furry friends. Quality food, toys, accessories, and more for dogs, cats, and all pets. Shop now for the best pet supplies!"
@@ -17,11 +17,11 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
+        <HowItWorks />
         <CategorySection />
         <FeaturedProducts />
       </main>
       <Footer />
-      <DiscountPopup />
     </div>
   );
 };

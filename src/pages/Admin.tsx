@@ -10,30 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Plus, Edit, Trash2, Package, Users, DollarSign, TrendingUp, Tag, Save, ArrowLeft, Upload } from "lucide-react";
+import { LogOut, Plus, Edit, Trash2, Package, Users, DollarSign, TrendingUp, Tag, Save, ArrowLeft, Upload, Check, X, Eye, MessageCircle } from "lucide-react";
 import { validateForm, validationRules, ValidationErrors } from "@/utils/validation";
-import DataImport from "@/components/DataImport";
 import { useOrders } from "@/contexts/OrderContext";
 import { useUser } from "@/contexts/UserContext";
+import { useProducts, Product } from "@/contexts/ProductContext";
+import { useCommunity } from "@/contexts/CommunityContext";
 import { useToast } from "@/hooks/use-toast";
-import { ParsedProduct } from "@/utils/dataParser";
 
 // Types
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  category: string;
-  subcategory: string;
-  image: string;
-  badge?: string;
-  rating: number;
-  reviews: number;
-  inStock: boolean;
-  stockQuantity: number;
-}
 
 interface Category {
   id: number;
@@ -93,41 +78,10 @@ const Admin = () => {
   const { toast } = useToast();
   const { orders } = useOrders();
   const { getAllUsers } = useUser();
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { posts, pendingPosts, approvePost, rejectPost, deletePost } = useCommunity();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
-
-  // Product management states
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Premium Dog Food",
-      description: "High-quality nutrition for your furry friend",
-      price: 29.99,
-      originalPrice: 34.99,
-      category: "Dogs",
-      subcategory: "Food",
-      image: "🐕",
-      badge: "Best Seller",
-      rating: 4.8,
-      reviews: 324,
-      inStock: true,
-      stockQuantity: 50
-    },
-    {
-      id: 2,
-      name: "Cat Toy Set",
-      description: "Interactive toys to keep your cat entertained",
-      price: 15.99,
-      category: "Cats",
-      subcategory: "Toys",
-      image: "🐱",
-      badge: "New",
-      rating: 4.6,
-      reviews: 156,
-      inStock: true,
-      stockQuantity: 30
-    }
-  ]);
 
   // Category management states
   const [categories, setCategories] = useState<Category[]>([
@@ -282,7 +236,6 @@ const Admin = () => {
   const [isSubcategoryDialogOpen, setIsSubcategoryDialogOpen] = useState(false);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [isDiscountDialogOpen, setIsDiscountDialogOpen] = useState(false);
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<ValidationErrors>({});
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -299,10 +252,13 @@ const Admin = () => {
     originalPrice: "",
     category: "",
     subcategory: "",
+    type: "",
     image: "",
     badge: "",
-    stockQuantity: ""
+    stockQuantity: "",
+    flavors: [] as string[]
   });
+  const [newFlavor, setNewFlavor] = useState("");
 
   // Category form state
   const [categoryForm, setCategoryForm] = useState({
@@ -364,15 +320,23 @@ const Admin = () => {
       originalPrice: "",
       category: "",
       subcategory: "",
+      type: "",
       image: "",
       badge: "",
-      stockQuantity: ""
+      stockQuantity: "",
+      flavors: []
     });
+    setNewFlavor("");
     setFormErrors({});
   };
 
   const handleAddProduct = () => {
-    const errors = validateForm(productForm, {
+    const formData = {
+      name: productForm.name,
+      price: productForm.price,
+      stockQuantity: productForm.stockQuantity
+    };
+    const errors = validateForm(formData, {
       name: validationRules.name,
       price: validationRules.price,
       stockQuantity: validationRules.stock
@@ -383,23 +347,22 @@ const Admin = () => {
       return;
     }
 
-    const newProduct: Product = {
-      id: Math.max(...products.map(p => p.id)) + 1,
+    const newProduct = addProduct({
       name: productForm.name,
       description: productForm.description,
       price: parseFloat(productForm.price),
       originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
-      category: productForm.category,
-      subcategory: productForm.subcategory,
+      category: productForm.category.toLowerCase(),
+      subcategory: productForm.subcategory.toLowerCase(),
+      type: productForm.type.toLowerCase(),
       image: productForm.image,
       badge: productForm.badge || undefined,
       rating: 4.0,
       reviews: 0,
       inStock: parseInt(productForm.stockQuantity) > 0,
-      stockQuantity: parseInt(productForm.stockQuantity)
-    };
-
-    setProducts([...products, newProduct]);
+      stockQuantity: parseInt(productForm.stockQuantity),
+      flavors: productForm.flavors
+    });
     resetProductForm();
     setIsProductDialogOpen(false);
   };
@@ -413,9 +376,11 @@ const Admin = () => {
       originalPrice: product.originalPrice?.toString() || "",
       category: product.category,
       subcategory: product.subcategory,
+      type: product.type || "",
       image: product.image,
       badge: product.badge || "",
-      stockQuantity: product.stockQuantity.toString()
+      stockQuantity: product.stockQuantity.toString(),
+      flavors: product.flavors || []
     });
     setIsProductDialogOpen(true);
   };
@@ -423,7 +388,12 @@ const Admin = () => {
   const handleUpdateProduct = () => {
     if (!editingProduct) return;
 
-    const errors = validateForm(productForm, {
+    const formData = {
+      name: productForm.name,
+      price: productForm.price,
+      stockQuantity: productForm.stockQuantity
+    };
+    const errors = validateForm(formData, {
       name: validationRules.name,
       price: validationRules.price,
       stockQuantity: validationRules.stock
@@ -434,55 +404,61 @@ const Admin = () => {
       return;
     }
 
-    const updatedProducts = products.map(p =>
-      p.id === editingProduct.id
-        ? {
-            ...p,
-            name: productForm.name,
-            description: productForm.description,
-            price: parseFloat(productForm.price),
-            originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
-            category: productForm.category,
-            subcategory: productForm.subcategory,
-            image: productForm.image,
-            badge: productForm.badge || undefined,
-            inStock: parseInt(productForm.stockQuantity) > 0,
-            stockQuantity: parseInt(productForm.stockQuantity)
-          }
-        : p
-    );
-
-    setProducts(updatedProducts);
+    updateProduct(editingProduct.id, {
+      name: productForm.name,
+      description: productForm.description,
+      price: parseFloat(productForm.price),
+      originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
+      category: productForm.category.toLowerCase(),
+      subcategory: productForm.subcategory.toLowerCase(),
+      type: productForm.type.toLowerCase(),
+      image: productForm.image,
+      badge: productForm.badge || undefined,
+      inStock: parseInt(productForm.stockQuantity) > 0,
+      stockQuantity: parseInt(productForm.stockQuantity),
+      flavors: productForm.flavors
+    });
     resetProductForm();
     setEditingProduct(null);
     setIsProductDialogOpen(false);
   };
 
   const handleDeleteProduct = (id: number) => {
-    setProducts(products.filter(p => p.id !== id));
+    deleteProduct(id);
   };
 
-  // Data import handler
-  const handleImportProducts = (importedProducts: ParsedProduct[]) => {
-    const newProducts: Product[] = importedProducts.map((imported, index) => ({
-      id: Math.max(...products.map(p => p.id)) + index + 1,
-      name: imported.name,
-      description: imported.description,
-      price: imported.price,
-      originalPrice: imported.originalPrice,
-      category: imported.category,
-      subcategory: imported.subcategory,
-      image: imported.image,
-      badge: imported.badge,
-      rating: imported.rating,
-      reviews: imported.reviews,
-      inStock: imported.inStock,
-      stockQuantity: imported.stockQuantity
+  // Flavor management functions
+  const addFlavor = () => {
+    if (newFlavor.trim() && !productForm.flavors.includes(newFlavor.trim())) {
+      setProductForm(prev => ({
+        ...prev,
+        flavors: [...prev.flavors, newFlavor.trim()]
+      }));
+      setNewFlavor("");
+    }
+  };
+
+  const removeFlavor = (flavor: string) => {
+    setProductForm(prev => ({
+      ...prev,
+      flavors: prev.flavors.filter(f => f !== flavor)
     }));
-
-    setProducts([...products, ...newProducts]);
-    setIsImportDialogOpen(false);
   };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProductForm(prev => ({
+          ...prev,
+          image: e.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   // Helper functions for discount targets
   const getTargetOptions = () => {
@@ -577,7 +553,7 @@ const Admin = () => {
           </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-7 bg-muted/50">
             <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Dashboard
             </TabsTrigger>
@@ -592,6 +568,9 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Users
+            </TabsTrigger>
+            <TabsTrigger value="community" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Community
             </TabsTrigger>
             <TabsTrigger value="discounts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Discounts
@@ -787,28 +766,6 @@ const Admin = () => {
                 Product Management
               </h2>
               <div className="flex gap-2">
-                <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline"
-                      className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import Products
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold">
-                        Import Product Data
-                      </DialogTitle>
-                    </DialogHeader>
-                    <DataImport 
-                      onImport={handleImportProducts}
-                      existingProducts={products}
-                    />
-                  </DialogContent>
-                </Dialog>
                 <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
@@ -913,13 +870,82 @@ const Admin = () => {
                         />
                       </div>
                       <div className="col-span-2 space-y-2">
-                        <Label htmlFor="image">Product Image (Emoji)</Label>
+                        <Label htmlFor="type">Product Type</Label>
                         <Input
-                          id="image"
-                          value={productForm.image}
-                          onChange={(e) => setProductForm({...productForm, image: e.target.value})}
-                          placeholder="Enter emoji (e.g., 🐾)"
+                          id="type"
+                          value={productForm.type}
+                          onChange={(e) => setProductForm({...productForm, type: e.target.value})}
+                          placeholder="e.g., treats, toys, clothes, subscription"
                         />
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label htmlFor="image">Product Image</Label>
+                        <div className="space-y-2">
+                          <Input
+                            id="image"
+                            value={productForm.image}
+                            onChange={(e) => setProductForm({...productForm, image: e.target.value})}
+                            placeholder="Enter image URL or upload file"
+                          />
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              id="image-upload"
+                            />
+                            <Label htmlFor="image-upload" className="cursor-pointer">
+                              <Button type="button" variant="outline" size="sm" asChild>
+                                <span>
+                                  <Upload className="h-4 w-4 mr-2" />
+                                  Upload Photo
+                                </span>
+                              </Button>
+                            </Label>
+                            {productForm.image && (
+                              <div className="w-16 h-16 border rounded-lg overflow-hidden">
+                                <img 
+                                  src={productForm.image} 
+                                  alt="Preview" 
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label>Product Flavors</Label>
+                        <div className="space-y-2">
+                          <div className="flex space-x-2">
+                            <Input
+                              value={newFlavor}
+                              onChange={(e) => setNewFlavor(e.target.value)}
+                              placeholder="Add flavor (e.g., Chicken, Beef)"
+                              onKeyPress={(e) => e.key === 'Enter' && addFlavor()}
+                            />
+                            <Button type="button" onClick={addFlavor} size="sm">
+                              Add
+                            </Button>
+                          </div>
+                          {productForm.flavors.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {productForm.flavors.map((flavor, index) => (
+                                <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                                  {flavor}
+                                  <button
+                                    type="button"
+                                    onClick={() => removeFlavor(flavor)}
+                                    className="ml-1 hover:text-destructive"
+                                  >
+                                    ×
+                                  </button>
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="col-span-2 space-y-2">
                         <Label htmlFor="badge">Badge (e.g., New, Sale, Best Seller)</Label>
@@ -1647,6 +1673,146 @@ const Admin = () => {
                 </Table>
             </CardContent>
           </Card>
+          </TabsContent>
+
+          {/* Community Management Tab */}
+          <TabsContent value="community" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                Community Management
+              </h2>
+            </div>
+
+            {/* Pending Posts */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5" />
+                  Pending Posts ({pendingPosts.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {pendingPosts.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No pending posts to review
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingPosts.map((post) => (
+                      <Card key={post.id} className="border-l-4 border-l-yellow-500">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-4">
+                            <div className="text-2xl">{post.avatar}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="font-semibold">{post.user}</span>
+                                <Badge variant="secondary">Pending</Badge>
+                                <span className="text-sm text-muted-foreground">{post.time}</span>
+                              </div>
+                              <p className="text-foreground mb-3">{post.content}</p>
+                              {post.image && (
+                                <div className="mb-3">
+                                  <img 
+                                    src={post.image} 
+                                    alt="Post image" 
+                                    className="w-full max-w-md h-48 object-cover rounded-lg"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => approvePost(post.id)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => rejectPost(post.id)}
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Reject
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => deletePost(post.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Approved Posts */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Approved Posts ({posts.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {posts.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No approved posts yet
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {posts.map((post) => (
+                      <Card key={post.id} className="border-l-4 border-l-green-500">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-4">
+                            <div className="text-2xl">{post.avatar}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="font-semibold">{post.user}</span>
+                                <Badge variant="default" className="bg-green-600">Approved</Badge>
+                                <span className="text-sm text-muted-foreground">{post.time}</span>
+                              </div>
+                              <p className="text-foreground mb-3">{post.content}</p>
+                              {post.image && (
+                                <div className="mb-3">
+                                  <img 
+                                    src={post.image} 
+                                    alt="Post image" 
+                                    className="w-full max-w-md h-48 object-cover rounded-lg"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">
+                                  {post.likes} likes • {post.comments} comments
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => deletePost(post.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>

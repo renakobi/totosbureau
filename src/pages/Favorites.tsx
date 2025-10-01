@@ -8,90 +8,15 @@ import { Heart, ShoppingCart, Star, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
-
-// Mock products data - in a real app, this would come from an API
-const mockProducts = [
-  {
-    id: 1,
-    name: "Secret Mission Box - Cats",
-    price: 29.99,
-    originalPrice: 34.99,
-    category: "cats",
-    type: "subscription",
-    rating: 4.8,
-    reviews: 324,
-    image: "📦",
-    badge: "Best Seller",
-    description: "Monthly surprise box with premium cat toys and treats"
-  },
-  {
-    id: 2,
-    name: "Interactive Dog Puzzle",
-    price: 24.99,
-    category: "dogs",
-    type: "toys",
-    rating: 4.6,
-    reviews: 156,
-    image: "🧩",
-    badge: "New",
-    description: "Mental stimulation toy for smart dogs"
-  },
-  {
-    id: 3,
-    name: "Organic Cat Treats",
-    price: 12.99,
-    category: "cats",
-    type: "treats",
-    rating: 4.7,
-    reviews: 89,
-    image: "🍪",
-    badge: "20% Off",
-    description: "All-natural treats your cat will love"
-  },
-  {
-    id: 4,
-    name: "Dog Training Clicker",
-    price: 8.99,
-    category: "dogs",
-    type: "toys",
-    rating: 4.5,
-    reviews: 203,
-    image: "🖱️",
-    description: "Professional training tool for positive reinforcement"
-  },
-  {
-    id: 5,
-    name: "Cat Scratching Post",
-    price: 45.99,
-    category: "cats",
-    type: "toys",
-    rating: 4.4,
-    reviews: 127,
-    image: "🏠",
-    badge: "Premium",
-    description: "Tall scratching post with multiple levels"
-  },
-  {
-    id: 6,
-    name: "Dog Dental Chews",
-    price: 18.99,
-    originalPrice: 22.99,
-    category: "dogs",
-    type: "treats",
-    rating: 4.9,
-    reviews: 512,
-    image: "🦷",
-    badge: "Vet Approved",
-    description: "Promotes healthy teeth and gums"
-  }
-];
+import { useProducts } from "@/contexts/ProductContext";
 
 const Favorites = () => {
   const { addToCart } = useCart();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { products } = useProducts();
 
   // Filter products to only show favorited ones
-  const favoriteProducts = mockProducts.filter(product => favorites.includes(product.id));
+  const favoriteProducts = products.filter(product => favorites.includes(product.id));
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -142,7 +67,7 @@ const Favorites = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {favoriteProducts.map((product) => (
               <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
-                <Card className="group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer bg-card/90 backdrop-blur-sm border-border/50 h-full flex flex-col">
+                <Card className="group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer bg-accent/5 border-accent/20 backdrop-blur-sm h-full flex flex-col">
                   <CardContent className="p-0 flex-1 flex flex-col">
                     {/* Product Image */}
                     <div className="relative h-56 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">

@@ -3,61 +3,69 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dog, Cat, Package, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const categories = [
-  {
-    id: 1,
-    title: "Dog Supplies",
-    description: "Premium food, toys, and accessories for your furry friend",
-    icon: Dog,
-    color: "bg-secondary/10 text-secondary",
-    products: "120+ Products",
-    featured: true,
-    link: "/products?category=dogs"
-  },
-  {
-    id: 2,
-    title: "Cat Essentials",
-    description: "Everything your feline companion needs to stay happy",
-    icon: Cat,
-    color: "bg-primary/10 text-primary",
-    products: "80+ Products",
-    featured: false,
-    link: "/products?category=cats"
-  },
-  {
-    id: 3,
-    title: "Surprise Boxes",
-    description: "Monthly curated boxes filled with premium pet products",
-    icon: Package,
-    color: "bg-accent/10 text-accent",
-    products: "5 Box Types",
-    featured: true,
-    link: "/products?type=subscription"
-  },
-  {
-    id: 4,
-    title: "Premium Products",
-    description: "High-quality, veterinarian-approved items for health & wellness",
-    icon: Sparkles,
-    color: "bg-forest/10 text-forest",
-    products: "60+ Products",
-    featured: false,
-    link: "/products"
-  }
-];
+import { useProducts } from "@/contexts/ProductContext";
 
 const CategorySection = () => {
+  const { products } = useProducts();
+
+  // Calculate dynamic product counts
+  const dogProducts = products.filter(p => p.category === 'dogs').length;
+  const catProducts = products.filter(p => p.category === 'cats').length;
+  const subscriptionProducts = products.filter(p => p.type === 'subscription').length;
+  const totalProducts = products.length;
+
+  const categories = [
+    {
+      id: 1,
+      title: "Dog Supplies",
+      description: "Premium food, toys, and accessories for your furry friend",
+      icon: Dog,
+      color: "bg-secondary/10 text-secondary",
+      products: `${dogProducts} Product${dogProducts !== 1 ? 's' : ''}`,
+      featured: true,
+      link: "/products?category=dogs"
+    },
+    {
+      id: 2,
+      title: "Cat Essentials",
+      description: "Everything your feline companion needs to stay happy",
+      icon: Cat,
+      color: "bg-primary/10 text-primary",
+      products: `${catProducts} Product${catProducts !== 1 ? 's' : ''}`,
+      featured: false,
+      link: "/products?category=cats"
+    },
+    {
+      id: 3,
+      title: "Surprise Boxes",
+      description: "Monthly curated boxes filled with premium pet products",
+      icon: Package,
+      color: "bg-accent/10 text-accent",
+      products: `${subscriptionProducts} Box${subscriptionProducts !== 1 ? 'es' : ''}`,
+      featured: true,
+      link: "/products?type=subscription"
+    },
+    {
+      id: 4,
+      title: "Premium Products",
+      description: "High-quality, veterinarian-approved items for health & wellness",
+      icon: Sparkles,
+      color: "bg-forest/10 text-forest",
+      products: `${totalProducts} Product${totalProducts !== 1 ? 's' : ''}`,
+      featured: false,
+      link: "/products"
+    }
+  ];
   return (
-    <section className="py-24 bg-gradient-to-b from-amber-50/30 to-accent/5">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-amber-50/5 to-accent/2">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 bg-forest/10 text-forest px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Package className="h-4 w-4" />
             Categories
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <span className="text-foreground">
               Find Everything
             </span>
@@ -79,7 +87,12 @@ const CategorySection = () => {
             return (
               <Link key={category.id} to={category.link} className="block h-full group">
                 <Card 
-                  className="group hover:shadow-strong transition-all duration-500 hover:-translate-y-4 cursor-pointer relative overflow-hidden bg-card/90 backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4"
+                  className={`group hover:shadow-strong transition-all duration-500 hover:-translate-y-4 cursor-pointer relative overflow-hidden backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
+                    index === 0 ? 'bg-secondary/5 border-secondary/20' :
+                    index === 1 ? 'bg-primary/5 border-primary/20' :
+                    index === 2 ? 'bg-accent/5 border-accent/20' :
+                    'bg-forest/5 border-forest/20'
+                  }`}
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   {category.featured && (

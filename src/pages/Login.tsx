@@ -29,19 +29,7 @@ const Login = () => {
     setError("");
 
     try {
-      // Check for admin login first
-      if (formData.username === "admin" && formData.password === "admin") {
-        localStorage.setItem("totos-bureau-admin", "true");
-        localStorage.setItem("totos-bureau-user", "true");
-        toast({
-          title: "Admin Login Successful",
-          description: "Welcome back, Administrator!",
-        });
-        navigate("/admin");
-        return;
-      }
-
-      // Try regular user login
+      // Try user login (includes admin)
       const user = loginUser(formData.username, formData.password);
       
       if (user) {
@@ -166,7 +154,7 @@ const Login = () => {
                 <p className="text-sm text-muted-foreground">
                   Don't have an account?{' '}
                   <Link to="/signup" className="text-primary hover:underline font-medium">
-                    Create one here
+                    Create one now
                   </Link>
                 </p>
                 

@@ -38,7 +38,7 @@ const DiscountPopup = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-orange-500 to-orange-600 text-white border-none shadow-strong">
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-orange-400/90 to-orange-500/90 text-white border-none shadow-strong">
         <DialogHeader>
           <div className="flex items-center justify-center">
             <Badge variant="secondary" className="bg-white/20 text-white border-none">

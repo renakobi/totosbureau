@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,64 +6,30 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, ShoppingCart, ArrowLeft, Plus, Minus } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useProducts } from "@/contexts/ProductContext";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// Mock product data - in a real app this would come from an API
-const products = {
-  "1": {
-    id: 1,
-    name: "Secret Mission Box - Cats",
-    price: 39.99,
-    originalPrice: 49.99,
-    rating: 4.8,
-    reviews: 124,
-    category: "Cat",
-    type: "Subscription Box",
-    image: "📦",
-    badge: "Best Seller",
-    description: "Monthly surprise box filled with premium toys, treats, and accessories for your feline agent.",
-    variants: [
-      { id: "small", name: "Small", description: "Perfect for kittens", price: 29.99 },
-      { id: "medium", name: "Medium", description: "Most popular choice", price: 39.99 },
-      { id: "large", name: "Large", description: "For multiple cats", price: 49.99 },
-      { id: "premium", name: "Premium", description: "Luxury items included", price: 59.99 }
-    ],
-    images: ["📦", "🎾", "🪀", "🧸", "🎁"]
-  },
-  "2": {
-    id: 2,
-    name: "Interactive Cat Toy Set",
-    price: 19.99,
-    originalPrice: null,
-    rating: 4.9,
-    reviews: 89,
-    category: "Cat",
-    type: "Toy",
-    image: "🐱",
-    badge: "New",
-    description: "Keep your cat entertained for hours with this interactive toy collection.",
-    variants: [
-      { id: "basic", name: "Basic Set", description: "3 essential toys", price: 19.99 },
-      { id: "deluxe", name: "Deluxe Set", description: "5 premium toys", price: 29.99 },
-      { id: "ultimate", name: "Ultimate Set", description: "8 toys + treats", price: 39.99 }
-    ],
-    images: ["🐱", "🎯", "🪁", "🎪", "🎨"]
-  }
-};
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { getProductById } = useProducts();
   const { toast } = useToast();
-  const [selectedVariant, setSelectedVariant] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedFlavor, setSelectedFlavor] = useState<string | null>(null);
 
-  const product = products[id as keyof typeof products];
+  const product = getProductById(parseInt(id || "0"));
+
+  // Set default flavor when product loads
+  useEffect(() => {
+    if (product?.flavors && product.flavors.length > 0) {
+      setSelectedFlavor(product.flavors[0]);
+    }
+  }, [product]);
 
   if (!product) {
     return (
@@ -76,28 +42,45 @@ const ProductDetail = () => {
     );
   }
 
-  const currentVariant = product.variants[selectedVariant];
-
   const handleAddToCart = () => {
+    // Check if product has flavors but none is selected
+    if (product.flavors && product.flavors.length > 0 && !selectedFlavor) {
+      toast({
+        title: product.type === "subscription" ? "Please select a size" : "Please select a flavor",
+        description: product.type === "subscription" ? "Choose a size before adding to cart." : "Choose a flavor before adding to cart.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const productName = selectedFlavor ? `${product.name} - ${selectedFlavor}` : product.name;
+    
+    // Calculate price based on selected size for subscription boxes
+    const finalPrice = product.type === "subscription" && selectedFlavor ? 
+      (selectedFlavor === "Monthly" ? product.price : 
+       selectedFlavor === "Quarterly" ? product.price * 0.9 : 
+       selectedFlavor === "Annual" ? product.price * 0.8 : product.price) : 
+      product.price;
+    
     for (let i = 0; i < quantity; i++) {
       addToCart({
         id: product.id,
-        name: `${product.name} - ${currentVariant.name}`,
-        price: currentVariant.price,
+        name: productName,
+        price: finalPrice,
         image: product.image
       });
     }
     toast({
       title: "Added to Cart",
-      description: `${quantity}x ${product.name} - ${currentVariant.name} added to your cart.`,
+      description: `${quantity}x ${productName} added to your cart.`,
     });
   };
 
   const handleToggleFavorite = () => {
-    toggleFavorite(product.id);
+    toggleFavorite(product.id.toString());
     toast({
-      title: isFavorite(product.id) ? "Removed from Favorites" : "Added to Favorites",
-      description: isFavorite(product.id) 
+      title: isFavorite(product.id.toString()) ? "Removed from Favorites" : "Added to Favorites",
+      description: isFavorite(product.id.toString()) 
         ? `${product.name} removed from your favorites.`
         : `${product.name} added to your favorites.`,
     });
@@ -123,26 +106,19 @@ const ProductDetail = () => {
             {/* Main Image */}
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <div className="aspect-square bg-muted/30 flex items-center justify-center text-8xl">
-                  {product.images[selectedImage]}
+                <div className="aspect-square bg-muted/30 flex items-center justify-center">
+                  {product.image.startsWith('data:') || product.image.startsWith('blob:') || product.image.startsWith('http') ? (
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-8xl">{product.image}</div>
+                  )}
                 </div>
               </CardContent>
             </Card>
-
-            {/* Image Thumbnails */}
-            <div className="flex gap-2 overflow-x-auto">
-              {product.images.map((image, index) => (
-                <Button
-                  key={index}
-                  variant={selectedImage === index ? "default" : "outline"}
-                  size="icon"
-                  className="flex-shrink-0 w-16 h-16 text-2xl"
-                  onClick={() => setSelectedImage(index)}
-                >
-                  {image}
-                </Button>
-              ))}
-            </div>
           </div>
 
           {/* Product Info */}
@@ -173,36 +149,77 @@ const ProductDetail = () => {
             {/* Description */}
             <p className="text-lg text-muted-foreground">{product.description}</p>
 
-            {/* Variants */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Choose Size:</h3>
-              <div className="flex gap-3">
-                {product.variants.map((variant, index) => (
-                  <Button
-                    key={variant.id}
-                    variant={selectedVariant === index ? "default" : "outline"}
-                    className="flex flex-col items-center p-4 h-auto"
-                    onClick={() => setSelectedVariant(index)}
-                  >
-                    <div className="w-4 h-4 rounded-full border-2 border-current mb-2" />
-                    <span className="font-medium">{variant.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      ${variant.price}
-                    </span>
-                  </Button>
-                ))}
+            {/* Flavors/Sizing */}
+            {product.flavors && product.flavors.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold">
+                  {product.type === "subscription" ? "Choose Sizing:" : "Choose Flavor:"}
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {product.flavors.map((flavor, index) => {
+                    return (
+                      <Button
+                        key={index}
+                        variant={selectedFlavor === flavor ? "default" : "outline"}
+                        size="lg"
+                        className={`px-6 py-3 min-w-[120px] ${
+                          selectedFlavor === flavor 
+                            ? "bg-primary text-primary-foreground shadow-md" 
+                            : "hover:bg-primary/10"
+                        }`}
+                        onClick={() => setSelectedFlavor(flavor)}
+                      >
+                        {flavor}
+                      </Button>
+                    );
+                  })}
+                </div>
+                {selectedFlavor && (
+                  <p className="text-sm text-muted-foreground">
+                    Selected: <span className="font-medium text-foreground">{selectedFlavor}</span>
+                  </p>
+                )}
+                
+                {/* Pricing breakdown for subscription boxes */}
+                {product.type === "subscription" && (
+                  <div className="mt-4 p-4 bg-muted/30 rounded-lg">
+                    <h4 className="text-sm font-medium mb-2">Pricing Options:</h4>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span>Monthly:</span>
+                        <span className="font-medium">${product.price.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Quarterly:</span>
+                        <span className="font-medium">${(product.price * 0.9).toFixed(2)} <span className="text-green-600 text-xs">(10% off)</span></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Annual:</span>
+                        <span className="font-medium">${(product.price * 0.8).toFixed(2)} <span className="text-green-600 text-xs">(20% off)</span></span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-sm text-muted-foreground">
-                {currentVariant.description}
-              </p>
-            </div>
+            )}
 
             {/* Price */}
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold">${currentVariant.price}</span>
+              <span className="text-3xl font-bold">
+                ${product.type === "subscription" && selectedFlavor ? 
+                  (selectedFlavor === "Monthly" ? product.price : 
+                   selectedFlavor === "Quarterly" ? (product.price * 0.9).toFixed(2) : 
+                   selectedFlavor === "Annual" ? (product.price * 0.8).toFixed(2) : product.price) : 
+                  product.price}
+              </span>
               {product.originalPrice && (
                 <span className="text-xl text-muted-foreground line-through">
                   ${product.originalPrice}
+                </span>
+              )}
+              {product.type === "subscription" && selectedFlavor && selectedFlavor !== "Monthly" && (
+                <span className="text-sm text-green-600 font-medium">
+                  {selectedFlavor === "Quarterly" ? "10% off" : "20% off"}
                 </span>
               )}
             </div>

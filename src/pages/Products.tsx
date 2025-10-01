@@ -10,77 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Heart, ShoppingCart, Search, Filter, Star } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useProducts } from "@/contexts/ProductContext";
 
-const mockProducts = [
-  {
-    id: 1,
-    name: "Premium Dog Food - Chicken & Rice",
-    price: 29.99,
-    originalPrice: 34.99,
-    category: "dogs",
-    type: "treats",
-    rating: 4.8,
-    reviews: 324,
-    image: "🛍️",
-    onSale: true
-  },
-  {
-    id: 2,
-    name: "Interactive Cat Feather Toy",
-    price: 15.99,
-    category: "cats",
-    type: "toys",
-    rating: 4.6,
-    reviews: 156,
-    image: "🛍️",
-    onSale: false
-  },
-  {
-    id: 3,
-    name: "Cozy Dog Sweater",
-    price: 24.99,
-    category: "dogs",
-    type: "clothes",
-    rating: 4.7,
-    reviews: 89,
-    image: "🛍️",
-    onSale: false
-  },
-  {
-    id: 4,
-    name: "Cat Subscription Box",
-    price: 39.99,
-    category: "cats",
-    type: "subscription",
-    rating: 4.9,
-    reviews: 512,
-    image: "🛍️",
-    onSale: false
-  },
-  {
-    id: 5,
-    name: "Dog Training Treats",
-    price: 12.99,
-    originalPrice: 16.99,
-    category: "dogs",
-    type: "treats",
-    rating: 4.5,
-    reviews: 203,
-    image: "🛍️",
-    onSale: true
-  },
-  {
-    id: 6,
-    name: "Cat Scratching Post",
-    price: 45.99,
-    category: "cats",
-    type: "toys",
-    rating: 4.4,
-    reviews: 127,
-    image: "🛍️",
-    onSale: false
-  }
-];
 
 const Products = () => {
   const [searchParams] = useSearchParams();
@@ -88,10 +19,12 @@ const Products = () => {
   const [sortBy, setSortBy] = useState("featured");
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { products } = useProducts();
   
   const categoryFilter = searchParams.get("category") || "all";
   const typeFilter = searchParams.get("type") || "all";
   const searchQuery = searchParams.get("search") || "";
+
 
   // Set search term from URL parameter
   useEffect(() => {
@@ -100,10 +33,11 @@ const Products = () => {
     }
   }, [searchQuery]);
 
-  const filteredProducts = mockProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
     const matchesType = typeFilter === "all" || product.type === typeFilter;
+    
     
     return matchesSearch && matchesCategory && matchesType;
   });
@@ -174,22 +108,31 @@ const Products = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
           {sortedProducts.map((product) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full">
-              <Card className="group hover:shadow-soft transition-all duration-200 overflow-hidden cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 h-full flex flex-col">
+              <Card className="group hover:shadow-soft transition-all duration-200 overflow-hidden cursor-pointer bg-secondary/5 border-secondary/20 h-full flex flex-col">
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative bg-orange-200/30 h-24 sm:h-32 md:h-40 lg:h-48 flex items-center justify-center">
-                  {product.image.startsWith('data:') || product.image.startsWith('blob:') || product.image.startsWith('http') ? (
+                <div className="relative bg-secondary/10 h-32 sm:h-40 md:h-48 lg:h-56 flex items-center justify-center">
+                  {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img 
                       src={product.image} 
                       alt={product.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                      }}
                     />
                   ) : (
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl">{product.image}</div>
+                    <div className="w-full h-full flex items-center justify-center text-6xl">
+                      🐾
+                    </div>
                   )}
+                  <div className="w-full h-full flex items-center justify-center text-6xl" style={{display: 'none'}}>
+                    🐾
+                  </div>
                   
                   {product.onSale && (
                     <Badge variant="destructive" className="absolute top-3 left-3">
@@ -214,7 +157,7 @@ const Products = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 flex-1 flex flex-col">
+                <div className="p-3 sm:p-4 md:p-4 lg:p-5 flex-1 flex flex-col">
                   <div className="flex items-center gap-1 mb-2">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -223,7 +166,7 @@ const Products = () => {
                     <span className="text-sm text-muted-foreground">({product.reviews})</span>
                   </div>
                   
-                  <h3 className="font-semibold mb-1 line-clamp-2 text-xs sm:text-sm md:text-base">{product.name}</h3>
+                  <h3 className="font-semibold mb-2 line-clamp-2 text-sm sm:text-base md:text-lg">{product.name}</h3>
                   
                   <div className="flex items-center gap-1 mb-1 sm:mb-2">
                     <Badge variant="outline" className="capitalize text-xs px-1 py-0.5">
@@ -234,11 +177,29 @@ const Products = () => {
                     </Badge>
                   </div>
 
-                  <div className="flex items-center justify-between mt-auto">
+                  {/* Flavors */}
+                  {product.flavors && product.flavors.length > 0 && (
+                    <div className="mb-2">
+                      <div className="flex flex-wrap gap-1">
+                        {product.flavors.slice(0, 3).map((flavor, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs px-1 py-0.5">
+                            {flavor}
+                          </Badge>
+                        ))}
+                        {product.flavors.length > 3 && (
+                          <Badge variant="secondary" className="text-xs px-1 py-0.5">
+                            +{product.flavors.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mt-auto pt-2">
                     <div className="flex items-center gap-1">
-                      <span className="text-xs sm:text-sm md:text-lg font-bold text-primary">${product.price}</span>
+                      <span className="text-sm sm:text-base md:text-lg font-bold text-primary">${product.price}</span>
                       {product.originalPrice && (
-                        <span className="text-xs text-muted-foreground line-through">
+                        <span className="text-xs sm:text-sm text-muted-foreground line-through">
                           ${product.originalPrice}
                         </span>
                       )}
@@ -246,10 +207,10 @@ const Products = () => {
                     
                     <Button 
                       size="sm" 
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs px-2 py-1"
                       onClick={(e) => handleAddToCart(e, product)}
                     >
-                      <ShoppingCart className="h-4 w-4 mr-1" />
+                      <ShoppingCart className="h-3 w-3 mr-1" />
                       Add
                     </Button>
                   </div>
@@ -267,11 +228,18 @@ const Products = () => {
           </div>
         )}
 
-        {/* Load More */}
-        {sortedProducts.length > 0 && (
+        {/* Load More - Currently showing all products */}
+        {sortedProducts.length > 0 && sortedProducts.length >= 6 && (
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Load More Products
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => {
+                // For now, just scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              Back to Top
             </Button>
           </div>
         )}

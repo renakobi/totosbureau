@@ -19,21 +19,21 @@ import {
   XCircle
 } from "lucide-react";
 import { useOrders, Order } from "@/contexts/OrderContext";
+import { useUser } from "@/contexts/UserContext";
 import { Link } from "react-router-dom";
 
 const Orders = () => {
   const { orders, getRecentOrders } = useOrders();
+  const { currentUser } = useUser();
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Check authentication on component mount
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("totos-bureau-user") === "true" || localStorage.getItem("totos-bureau-admin") === "true";
-    
-    if (!isLoggedIn) {
+    if (!currentUser) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [currentUser, navigate]);
 
   const recentOrders = getRecentOrders(20);
 

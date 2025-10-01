@@ -5,92 +5,16 @@ import { Heart, Star, ShoppingCart, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useProducts } from "@/contexts/ProductContext";
 import OptimizedImage from "./OptimizedImage";
 
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Secret Mission Box - Cats",
-    price: 39.99,
-    originalPrice: 49.99,
-    rating: 4.8,
-    reviews: 124,
-    category: "Cat",
-    type: "Mission Box",
-    image: "📦",
-    badge: "Best Seller",
-    description: "Monthly surprise box for your feline agent"
-  },
-  {
-    id: 2,
-    name: "Interactive Cat Toy Set",
-    price: 19.99,
-    originalPrice: null,
-    rating: 4.9,
-    reviews: 89,
-    category: "Cat",
-    type: "Toys",
-    image: "🐱",
-    badge: "New",
-    description: "Keep your cat entertained for hours"
-  },
-  {
-    id: 3,
-    name: "Secret Mission Box - Dogs",
-    price: 49.99,
-    originalPrice: 59.99,
-    rating: 4.7,
-    reviews: 67,
-    category: "Dog",
-    type: "Mission Box",
-    image: "📦",
-    badge: "20% Off",
-    description: "Monthly surprise box for your canine agent"
-  },
-  {
-    id: 4,
-    name: "Premium Pet Bed",
-    price: 59.99,
-    originalPrice: 69.99,
-    rating: 4.9,
-    reviews: 156,
-    category: "Both",
-    type: "Comfort",
-    image: "🛏️",
-    badge: "Premium",
-    description: "Memory foam support for joint health"
-  },
-  {
-    id: 5,
-    name: "Catnip Scratch Tower",
-    price: 34.99,
-    originalPrice: null,
-    rating: 4.6,
-    reviews: 93,
-    category: "Cat",
-    type: "Furniture",
-    image: "🏗️",
-    badge: "Popular",
-    description: "Multi-level scratching and climbing"
-  },
-  {
-    id: 6,
-    name: "Dental Treat Bundle",
-    price: 24.99,
-    originalPrice: 29.99,
-    rating: 4.8,
-    reviews: 201,
-    category: "Dog",
-    type: "Treats",
-    image: "🦴",
-    badge: "Vet Approved",
-    description: "Promotes healthy teeth and gums"
-  }
-];
 
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { getFeaturedProducts } = useProducts();
+  
+  const featuredProducts = getFeaturedProducts();
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -104,15 +28,15 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-amber-50/40 to-muted/20">
+    <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-amber-50/40 to-muted/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center space-y-4 sm:space-y-6">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-medium">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium">
             <Star className="h-3 w-3 sm:h-4 sm:w-4" />
             Featured Products
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
             <span className="text-foreground">
               Top Picks
             </span>
@@ -128,38 +52,56 @@ const FeaturedProducts = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0">
-          {featuredProducts.map((product, index) => (
+        {featuredProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0">
+            {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
-                className="group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer bg-card/90 backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4"
+                className={`group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
+                  index === 0 ? 'bg-secondary/5 border-secondary/20' :
+                  index === 1 ? 'bg-primary/5 border-primary/20' :
+                  'bg-accent/5 border-accent/20'
+                }`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-24 sm:h-32 md:h-40 lg:h-48 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
-                  <OptimizedImage
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full relative z-10"
-                    fallback={product.image}
-                    lazy={true}
-                  />
+                <div className="relative h-32 sm:h-40 md:h-48 lg:h-56 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                  {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover relative z-10"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const nextElement = target.nextElementSibling as HTMLElement;
+                        target.style.display = 'none';
+                        if (nextElement) nextElement.style.display = 'flex';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-6xl">
+                      🐾
+                    </div>
+                  )}
+                  <div className="w-full h-full flex items-center justify-center text-6xl" style={{display: 'none'}}>
+                    🐾
+                  </div>
                   <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
                   <Button
                     variant="ghost"
                     size="icon"
                     className={`absolute top-3 right-3 transition-all duration-200 bg-background/90 hover:bg-background shadow-medium hover:scale-105 ${
-                      isFavorite(product.id) ? 'text-red-500' : 'text-muted-foreground'
+                      isFavorite(product.id.toString()) ? 'text-red-500' : 'text-muted-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      toggleFavorite(product.id);
+                      toggleFavorite(product.id.toString());
                     }}
                   >
-                    <Heart className={`h-4 w-4 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
                   </Button>
                   
                   {product.badge && (
@@ -191,6 +133,24 @@ const FeaturedProducts = () => {
                   <h3 className="font-bold text-sm sm:text-base md:text-lg mb-2 sm:mb-3 group-hover:text-primary transition-colors duration-300">
                     {product.name}
                   </h3>
+
+                  {/* Flavors */}
+                  {product.flavors && product.flavors.length > 0 && (
+                    <div className="mb-2 sm:mb-3">
+                      <div className="flex flex-wrap gap-1">
+                        {product.flavors.slice(0, 2).map((flavor, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs px-1 py-0.5">
+                            {flavor}
+                          </Badge>
+                        ))}
+                        {product.flavors.length > 2 && (
+                          <Badge variant="secondary" className="text-xs px-1 py-0.5">
+                            +{product.flavors.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   
                   <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed hidden sm:block">
                     {product.description}
@@ -232,8 +192,26 @@ const FeaturedProducts = () => {
               </CardFooter>
               </Card>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 sm:py-16 md:py-20">
+            <div className="text-6xl mb-4">🐾</div>
+            <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
+              No Featured Products Yet
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Products will appear here once they're added through the admin panel. 
+              Check back soon for amazing pet products!
+            </p>
+            <Link to="/products">
+              <Button variant="outline" size="lg" className="px-8 py-6 text-lg border-2 hover:bg-primary/5 transition-all duration-300 hover:scale-105">
+                Browse All Products
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* View All Button */}
         <div className="text-center">

@@ -12,6 +12,7 @@ import { Eye, EyeOff, User, Mail, Phone, MapPin, Lock, CheckCircle, XCircle } fr
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 import { validateForm, validationRules } from "@/utils/validation";
+import { validatePassword } from "@/utils/auth";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -71,13 +72,10 @@ const SignUp = () => {
       email: validationRules.email,
       password: {
         required: true,
-        minLength: 8,
         custom: (value: string) => {
-          if (value.length < 8) {
-            return 'Password must be at least 8 characters';
-          }
-          if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
-            return 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+          const validation = validatePassword(value);
+          if (!validation.isValid) {
+            return validation.errors[0]; // Return first error
           }
           return null;
         }
