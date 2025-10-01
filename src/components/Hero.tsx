@@ -14,14 +14,14 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920&h=1080&fit=crop&crop=center')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=1920&h=1080&fit=crop&crop=center')`
           }}
         />
         {/* Mobile Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920&h=1080&fit=crop&crop=center')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=1920&h=1080&fit=crop&crop=center')`
           }}
         />
         {/* Warm, natural overlay */}
