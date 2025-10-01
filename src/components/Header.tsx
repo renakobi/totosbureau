@@ -49,6 +49,11 @@ const Header = () => {
                   src="/logo.jpg" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
+                  onLoad={() => console.log('Logo loaded successfully')}
+                  onError={(e) => {
+                    console.error('Logo failed to load:', e);
+                    console.log('Current src:', e.currentTarget.src);
+                  }}
                 />
               </div>
             </div>
