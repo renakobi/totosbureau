@@ -10,6 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
+  // Force deployment update
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
