@@ -8,6 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
 import ThemeToggle from "./ThemeToggle";
+import logoImage from "@/assets/logo.jpg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,20 +47,16 @@ const Header = () => {
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
                 <img 
-                  src="/logo.png" 
+                  src={logoImage} 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    console.log('PNG failed, trying JPG...');
-                    e.currentTarget.src = '/logo.jpg';
-                    e.currentTarget.onerror = () => {
-                      console.log('JPG also failed, using fallback...');
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
-                      }
-                    };
+                    console.log('Logo failed, using fallback...');
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
+                    }
                   }}
                 />
               </div>
