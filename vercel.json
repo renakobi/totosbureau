@@ -1,8 +1,19 @@
 {
   "rewrites": [
     {
-      "source": "/((?!.*\\.).*)$",
+      "source": "/((?!.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|txt)).*)$",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.(png|jpg|jpeg|gif|svg|ico|webp))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ]
 }
