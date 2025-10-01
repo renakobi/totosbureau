@@ -54,9 +54,13 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src="/logo.png" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.log('PNG failed, trying JPG...');
+                    e.currentTarget.src = '/logo.jpg';
+                  }}
                 />
               </div>
               <div className="text-lg font-bold text-secondary">
@@ -88,9 +92,13 @@ const Footer = () => {
             <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
                 <img 
-                  src="/logo.jpg" 
+                  src="/logo.png" 
                   alt="Toto's Bureau Logo" 
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.log('PNG failed, trying JPG...');
+                    e.currentTarget.src = '/logo.jpg';
+                  }}
                 />
               </div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
