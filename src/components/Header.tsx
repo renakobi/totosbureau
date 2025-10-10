@@ -8,7 +8,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
 import ThemeToggle from "./ThemeToggle";
-import logoImage from "/logo.jpg";
+import logoImage from "@/assets/logo.jpg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

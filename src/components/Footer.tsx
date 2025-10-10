@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, PawPrint, ArrowRight } from "lucide-react";
-import logoImage from "/logo.jpg";
+import logoImage from "@/assets/logo.jpg";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
