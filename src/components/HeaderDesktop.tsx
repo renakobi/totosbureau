@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Heart, ShoppingCart, Search, ChevronRight, User } from "lucide-react";
+import { Heart, ShoppingCart, Search, ChevronRight, User, Menu } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
@@ -17,6 +17,8 @@ const HeaderDesktop = () => {
   const { currentUser } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,9 +28,18 @@ const HeaderDesktop = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 sm:h-20 items-center justify-between">
+    <div className="container mx-auto px-4">
+      <div className="flex h-16 sm:h-20 items-center justify-between">
+          {/* Hamburger Menu */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-secondary/10 transition-smooth"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
             <div className="relative">
@@ -113,9 +124,143 @@ const HeaderDesktop = () => {
               <User className="h-4 w-4" />
             </Button>
           </div>
-        </div>
       </div>
-    </header>
+
+      {/* Desktop Menu Overlay */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
+          <div className="flex h-full">
+            <div className="w-[35%] h-full overflow-y-auto space-y-4 bg-card/95 backdrop-blur-md p-8 pb-10 shadow-strong border-r border-border" onClick={(e) => e.stopPropagation()}>
+              {/* Close Button */}
+              <div className="flex justify-end mb-6">
+                <button 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-foreground hover:text-primary transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Home Link */}
+              <div>
+                <Link 
+                  to="/" 
+                  className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform inline-block">Home</span>
+                </Link>
+              </div>
+              
+              {/* Shop Category */}
+              <div>
+                <button 
+                  className="flex items-center justify-between w-full text-left text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform inline-block">Shop</span>
+                  <ChevronRight className={`h-4 w-4 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+                </button>
+                {activeDropdown === 'shop' && (
+                  <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
+                    {/* Dogs Section */}
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium text-foreground py-1">Dogs</div>
+                      <Link to="/products?category=dogs" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">All Dog Products</span>
+                      </Link>
+                      <Link to="/products?category=dogs&type=treats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Treats</span>
+                      </Link>
+                      <Link to="/products?category=dogs&type=toys" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Toys</span>
+                      </Link>
+                      <Link to="/products?category=dogs&type=food" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Food</span>
+                      </Link>
+                    </div>
+                    {/* Cats Section */}
+                    <div className="space-y-1 mt-3">
+                      <div className="text-sm font-medium text-foreground py-1">Cats</div>
+                      <Link to="/products?category=cats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">All Cat Products</span>
+                      </Link>
+                      <Link to="/products?category=cats&type=treats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Treats</span>
+                      </Link>
+                      <Link to="/products?category=cats&type=toys" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Toys</span>
+                      </Link>
+                      <Link to="/products?category=cats&type=food" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Food</span>
+                      </Link>
+                    </div>
+                    {/* Other Categories */}
+                    <div className="space-y-1 mt-3">
+                      <Link to="/products?type=subscription" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Boxes</span>
+                      </Link>
+                      <Link to="/products" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                        <span className="group-hover:translate-x-2 transition-transform inline-block">All Products</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Subscription Boxes Link */}
+              <div>
+                <Link 
+                  to="/products?category=subscription" 
+                  className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Boxes</span>
+                </Link>
+              </div>
+
+              {/* Get to know Toto (About Us) Link */}
+              <div>
+                <Link 
+                  to="/about" 
+                  className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform inline-block">Get to know Toto</span>
+                </Link>
+              </div>
+
+
+              {/* Contact Link */}
+              <div>
+                <Link 
+                  to="/contact" 
+                  className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform inline-block">Contact</span>
+                </Link>
+              </div>
+
+              {/* Account Links */}
+              <div className="pt-2 space-y-1">
+                <Link 
+                  to="/login" 
+                  className="flex items-center justify-between text-sm font-medium text-foreground hover:text-primary transition-smooth py-1 group"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform">Sign In</span>
+                  <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

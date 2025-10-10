@@ -1,19 +1,287 @@
-import HeaderDesktop from "./HeaderDesktop";
-import HeaderMobile from "./HeaderMobile";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Heart, ShoppingCart, Search, Menu, X, User, ChevronRight, PawPrint } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { useUser } from "@/contexts/UserContext";
+import ThemeToggle from "./ThemeToggle";
+import logoImage from "@/assets/logo.jpg";
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { getTotalItems } = useCart();
+  const { favorites } = useFavorites();
+  const { currentUser } = useUser();
+  const navigate = useNavigate();
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to products page with search query
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
-    <>
-      {/* Desktop Header */}
-      <div className="hidden lg:block">
-        <HeaderDesktop />
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
+      <div className="container mx-auto px-4">
+        {/* Single Row Layout */}
+        <div className="flex h-12 sm:h-14 items-center justify-between">
+          {/* Left Side: Menu + Logo + Search */}
+          <div className="flex items-center gap-4">
+            {/* Hamburger Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative z-50 hover:bg-primary/10 transition-smooth"
+            >
+              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}   
+            </Button>
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2 group">
+              <div className="relative">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
+                  <img
+                    src={logoImage}
+                    alt="Toto's Bureau Logo"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      console.log('Logo failed, using fallback...');
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-sm sm:text-lg font-bold" style={{ color: '#9aedb6' }}>
+                Toto's Bureau
+              </div>
+            </Link>
+
+            {/* Search Bar - Longer and more to the right */}
+            <div className="relative w-80 ml-8">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                className="pl-10 pr-4 h-8 sm:h-10 text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Right Side: Action Buttons */}
+          <div className="flex items-center space-x-1">
+            {/* Liked Items */}
+            <Link to="/favorites">
+              <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 transition-smooth">
+                <Heart className="h-4 w-4" />
+                {favorites.length > 0 && (
+                  <Badge
+                    className="absolute -top-1 -right-1 h-3 w-3 flex items-center justify-center text-xs bg-accent text-accent-foreground animate-bounce"
+                  >
+                    {favorites.length}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* Cart */}
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 transition-smooth">
+                <ShoppingCart className="h-4 w-4" />
+                {getTotalItems() > 0 && (
+                  <Badge
+                    className="absolute -top-1 -right-1 h-3 w-3 flex items-center justify-center text-xs bg-accent text-accent-foreground animate-bounce"
+                  >
+                    {getTotalItems()}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
+            {/* Profile */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-forest/10 transition-smooth"
+              onClick={() => {
+                navigate(currentUser ? "/profile" : "/login");
+              }}
+            >
+              <User className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
-      
-      {/* Mobile Header */}
-      <div className="block lg:hidden">
-        <HeaderMobile />
-      </div>
-    </>
+
+        {/* Category Menu Overlay */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
+            <div className="container mx-auto px-4 pt-24 pb-8">
+              <div className="max-w-md max-h-[80vh] overflow-y-auto space-y-4 bg-card/95 backdrop-blur-md p-8 pb-12 rounded-2xl shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
+                {/* Home Link */}
+                <div>
+                  <Link
+                    to="/"
+                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Home</span>
+                  </Link>
+                </div>
+
+                {/* Shop Category */}
+                <div>
+                  <button
+                    className="flex items-center justify-between w-full text-left text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"   
+                    onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Shop</span>
+                    <ChevronRight className={`h-6 w-6 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+                  </button>
+                  {activeDropdown === 'shop' && (
+                    <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
+                      {/* Dogs Section */}
+                      <div className="space-y-1">
+                        <div className="text-lg font-medium text-foreground py-1">Dogs</div>
+                        <Link to="/products?category=dogs" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">All Dog Products</span>
+                        </Link>
+                        <Link to="/products?category=dogs&type=treats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Treats</span>
+                        </Link>
+                        <Link to="/products?category=dogs&type=toys" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Toys</span>
+                        </Link>
+                        <Link to="/products?category=dogs&type=clothes" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Clothes</span>
+                        </Link>
+                        <Link to="/products?category=dogs&type=subscription" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Box</span>
+                        </Link>
+                      </div>
+
+                      {/* Cats Section */}
+                      <div className="space-y-1">
+                        <div className="text-lg font-medium text-foreground py-1">Cats</div>
+                        <Link to="/products?category=cats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">All Cat Products</span>
+                        </Link>
+                        <Link to="/products?category=cats&type=treats" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Treats</span>
+                        </Link>
+                        <Link to="/products?category=cats&type=toys" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Toys</span>
+                        </Link>
+                        <Link to="/products?category=cats&type=clothes" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Clothes</span>
+                        </Link>
+                        <Link to="/products?category=cats&type=subscription" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
+                          <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Box</span>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Subscription Boxes Link */}
+                <div>
+                  <Link
+                    to="/products?category=subscription"
+                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Boxes</span>
+                  </Link>
+                </div>
+
+                {/* Get to know Toto (About Us) Link */}
+                <div>
+                  <Link
+                    to="/about"
+                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Get to know Toto</span>
+                  </Link>
+                </div>
+
+
+                {/* Contact Link */}
+                <div>
+                  <Link
+                    to="/contact"
+                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Contact</span>
+                  </Link>
+                </div>
+
+                {/* Account Links */}
+                <div className="pt-4 space-y-2">
+                  <Link
+                    to="/login"
+                    className="flex items-center justify-between text-lg font-medium text-foreground hover:text-primary transition-smooth py-3 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform">Sign In</span>
+                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+
+                <div className="pt-6 border-t border-border/50">
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch();
+                            setIsMenuOpen(false);
+                          }
+                        }}
+                        className="pl-10 pr-4 py-3 w-full bg-background/80 border-border/50 focus:bg-background focus:border-primary/50"
+                      />
+                    </div>
+                    <Button
+                      onClick={() => {
+                        handleSearch();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full"
+                      size="lg"
+                    >
+                      <Search className="h-4 w-4 mr-2" />
+                      Search Products
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+    </header>
   );
 };
 

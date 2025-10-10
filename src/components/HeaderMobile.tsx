@@ -28,7 +28,6 @@ const HeaderMobile = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
       <div className="container mx-auto px-4">
         <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Logo */}
@@ -248,7 +247,6 @@ const HeaderMobile = () => {
           </div>
         )}
       </div>
-    </header>
   );
 };
 
