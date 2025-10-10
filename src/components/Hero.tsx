@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-// import heroImage from "@/assets/tempbackground.webp";
-// import mobileHeroImage from "@/assets/mobile.jpeg";
+import heroImage from "/tempbackground.webp";
+import mobileHeroImage from "/mobile.jpeg";
 
 const Hero = () => {
   // Force rebuild timestamp
@@ -16,14 +16,14 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
-            backgroundImage: `url('/tempbackground.webp?v=${Date.now()}')`
+            backgroundImage: `url(${heroImage})`
           }}
         />
         {/* Mobile Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
           style={{
-            backgroundImage: `url('/mobile.jpeg?v=${Date.now()}')`
+            backgroundImage: `url(${mobileHeroImage})`
           }}
         />
         {/* Dark charcoal overlay for optimal text readability */}
