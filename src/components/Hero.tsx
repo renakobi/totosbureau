@@ -9,7 +9,7 @@ const Hero = () => {
   // Force rebuild timestamp
   const buildTime = new Date().toISOString();
   return (
-    <section className="relative min-h-[50vh] sm:min-h-[60vh] flex items-center justify-center overflow-hidden section-spacing">
+    <section className="relative min-h-[70vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden section-spacing">
       {/* Background Images - Desktop and Mobile */}
       <div className="absolute inset-0">
         {/* Desktop Background */}
@@ -36,39 +36,39 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto container-spacing">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col items-center text-center space-y-6 px-4">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-12">
             
             {/* Text Content Block */}
-            <div className="space-y-4 max-w-3xl">
+            <div className="flex-1 space-y-6 px-4">
               {/* Main Heading */}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-left">
                 <span style={{ color: '#fd9f48' }}>
                   Pamper Your Pets with
                 </span>
                 <br />
-                <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl" style={{ color: '#fd9f48' }}>
+                <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl" style={{ color: '#fd9f48' }}>
                   Toto's Bureau!
                 </span>
               </h1>
               
               {/* Subheading */}
-              <p className="text-sm sm:text-base md:text-lg text-stone-100 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-stone-100 max-w-2xl text-left">
                 Cool bundles, mischievous treats, and eco-friendly fun for cats and dogs - 
                 no fuss, just tail-wags and purrs.
               </p>
             </div>
             
             {/* CTA Buttons Block */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md">
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:gap-4 w-full lg:w-auto lg:min-w-[280px] px-4">
               <Link to="/products">
-                <Button size="md" className="text-sm sm:text-base px-6 py-3 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#fd9f48' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e88f3f'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fd9f48'}>
+                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#fd9f48' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e88f3f'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fd9f48'}>
                   Start shopping
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
               <Link to="/products?category=subscription">
-                <Button size="md" className="text-sm sm:text-base px-6 py-3 bg-forest hover:bg-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
-                  <Gift className="mr-2 h-4 w-4" />
+                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-forest hover:bg-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                  <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Subscription Boxes
                 </Button>
               </Link>

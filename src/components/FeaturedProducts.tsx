@@ -53,7 +53,7 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 lg:gap-3 mb-4 sm:mb-6 px-4 sm:px-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6 px-4 sm:px-0">
             {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 

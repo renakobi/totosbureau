@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, PawPrint, ArrowRight } from "lucide-react";
+import { Heart, Mail, Phone, MapPin, PawPrint, ArrowRight, ChevronRight } from "lucide-react";
+import { InstagramIcon, WhatsAppIcon, TikTokIcon } from "@/components/SocialIcons";
 import logoImage from "@/assets/logo.jpg";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,16 +80,13 @@ const Footer = () => {
             </p>
             <div className="flex space-x-2">
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
-                <Facebook className="h-4 w-4" />
+                <InstagramIcon className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
-                <Twitter className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8">
-                <Youtube className="h-4 w-4" />
+                <TikTokIcon className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -120,168 +119,155 @@ const Footer = () => {
             </p>
             <div className="flex space-x-2 sm:space-x-3">
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
-                <Facebook className="h-4 w-4 sm:h-5 sm:w-5" />
+                <InstagramIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
-                <Twitter className="h-4 w-4 sm:h-5 sm:w-5" />
+                <WhatsAppIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
-                <Instagram className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
-                <Youtube className="h-4 w-4 sm:h-5 sm:w-5" />
+                <TikTokIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
           </div>
 
-          {/* Mobile Grid - Shop, Support, Contact side by side */}
-          <div className="grid grid-cols-3 gap-4 sm:hidden">
-            {/* Quick Links */}
+          {/* Mobile Dropdowns */}
+          <div className="space-y-4 sm:hidden">
+            {/* Shop Dropdown */}
             <div>
-              <h4 className="font-bold text-xs mb-2 text-foreground">Shop</h4>
-              <ul className="space-y-1 text-muted-foreground text-xs">
-              <li><Link to="/products?category=dogs" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Dog Supplies
-              </Link></li>
-              <li><Link to="/products?category=cats" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Cat Essentials
-              </Link></li>
-              <li><Link to="/products?type=subscription" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Subscription Boxes
-              </Link></li>
-              <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Premium Products
-              </Link></li>
-              <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                All Products
-              </Link></li>
-            </ul>
+              <button 
+                className="flex items-center justify-between w-full text-left font-bold text-sm text-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
+              >
+                <span>Shop</span>
+                <ChevronRight className={`h-4 w-4 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+              </button>
+              {activeDropdown === 'shop' && (
+                <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
+                  <Link to="/products?type=subscription" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Subscription Boxes
+                  </Link>
+                  <Link to="/products" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                    All Products
+                  </Link>
+                </div>
+              )}
             </div>
 
-            {/* Support */}
+            {/* Support Dropdown */}
             <div>
-              <h4 className="font-bold text-xs mb-2 text-foreground">Support</h4>
-              <ul className="space-y-1 text-muted-foreground text-xs">
-              <li><Link to="/profile" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Account
-              </Link></li>
-              <li><Link to="/cart" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Cart
-              </Link></li>
-              <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Browse Products
-              </Link></li>
-              <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Shipping Info
-              </Link></li>
-              <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                Pet Care Guide
-              </Link></li>
-            </ul>
+              <button 
+                className="flex items-center justify-between w-full text-left font-bold text-sm text-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setActiveDropdown(activeDropdown === 'support' ? null : 'support')}
+              >
+                <span>Support</span>
+                <ChevronRight className={`h-4 w-4 transition-transform ${activeDropdown === 'support' ? 'rotate-90' : ''}`} />
+              </button>
+              {activeDropdown === 'support' && (
+                <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
+                  <Link to="/profile" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Account
+                  </Link>
+                  <Link to="/cart" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Cart
+                  </Link>
+                  <Link to="/about" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Get to Know Toto
+                  </Link>
+                </div>
+              )}
             </div>
 
-            {/* Contact */}
+            {/* Contact Dropdown */}
             <div>
-              <h4 className="font-bold text-xs mb-2 text-foreground">Contact</h4>
-              <div className="space-y-1 text-muted-foreground text-xs">
-              <div className="flex items-center group">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                <span className="group-hover:text-foreground transition-colors">1-800-TOTO-BUREAU</span>
-              </div>
-              <div className="flex items-center group">
-                <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                <span className="group-hover:text-foreground transition-colors">totosbureau.com</span>
-              </div>
-              <div className="flex items-center group">
-                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                <span className="group-hover:text-foreground transition-colors">Pet Paradise Plaza, Suite 100</span>
-              </div>
-            </div>
+              <button 
+                className="flex items-center justify-between w-full text-left font-bold text-sm text-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setActiveDropdown(activeDropdown === 'contact' ? null : 'contact')}
+              >
+                <span>Contact Us</span>
+                <ChevronRight className={`h-4 w-4 transition-transform ${activeDropdown === 'contact' ? 'rotate-90' : ''}`} />
+              </button>
+              {activeDropdown === 'contact' && (
+                <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
+                  <div className="flex items-center group">
+                    <Mail className="h-4 w-4 mr-2 text-primary group-hover:text-primary transition-colors" />
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">totosbureau@gmail.com</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Desktop Grid - Shop, Support, Contact */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
-            {/* Quick Links */}
-            <div>
-              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Shop</h4>
-              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
-                <li><Link to="/products?category=dogs" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Dog Supplies
-                </Link></li>
-                <li><Link to="/products?category=cats" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Cat Essentials
-                </Link></li>
-                <li><Link to="/products?type=subscription" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Subscription Boxes
-                </Link></li>
-                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Premium Products
-                </Link></li>
-                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  All Products
-                </Link></li>
-              </ul>
-            </div>
+          {/* Desktop Dropdowns - Centered */}
+          <div className="hidden sm:flex justify-center">
+            <div className="flex space-x-12">
+              {/* Shop Dropdown */}
+              <div className="relative">
+                <button 
+                  className="flex items-center justify-between text-left font-bold text-base sm:text-lg text-foreground hover:text-primary transition-colors py-2"
+                  onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
+                >
+                  <span>Shop</span>
+                  <ChevronRight className={`h-4 w-4 ml-2 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+                </button>
+                {activeDropdown === 'shop' && (
+                  <div className="absolute mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50 animate-in slide-in-from-top-2 duration-200">
+                    <div className="py-2">
+                      <Link to="/products?type=subscription" className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition-colors">
+                        Subscription Boxes
+                      </Link>
+                      <Link to="/products" className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition-colors">
+                        All Products
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            {/* Support */}
-            <div>
-              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Support</h4>
-              <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
-                <li><Link to="/profile" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Account
-                </Link></li>
-                <li><Link to="/cart" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Cart
-                </Link></li>
-                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Browse Products
-                </Link></li>
-                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Shipping Info
-                </Link></li>
-                <li><Link to="/products" className="hover:text-primary transition-colors duration-300 group flex items-center">
-                  <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  Pet Care Guide
-                </Link></li>
-              </ul>
-            </div>
+              {/* Support Dropdown */}
+              <div className="relative">
+                <button 
+                  className="flex items-center justify-between text-left font-bold text-base sm:text-lg text-foreground hover:text-primary transition-colors py-2"
+                  onClick={() => setActiveDropdown(activeDropdown === 'support' ? null : 'support')}
+                >
+                  <span>Support</span>
+                  <ChevronRight className={`h-4 w-4 ml-2 transition-transform ${activeDropdown === 'support' ? 'rotate-90' : ''}`} />
+                </button>
+                {activeDropdown === 'support' && (
+                  <div className="absolute mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50 animate-in slide-in-from-top-2 duration-200">
+                    <div className="py-2">
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition-colors">
+                        Account
+                      </Link>
+                      <Link to="/cart" className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition-colors">
+                        Cart
+                      </Link>
+                      <Link to="/about" className="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 transition-colors">
+                        Get to Know Toto
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            {/* Contact */}
-            <div>
-              <h4 className="font-bold text-base sm:text-lg mb-4 sm:mb-6 text-foreground">Contact Us</h4>
-              <div className="space-y-3 sm:space-y-4 text-muted-foreground text-sm sm:text-base">
-                <div className="flex items-center group">
-                  <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                  <span className="group-hover:text-foreground transition-colors">1-800-TOTO-BUREAU</span>
-                </div>
-                <div className="flex items-center group">
-                  <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                  <span className="group-hover:text-foreground transition-colors">totosbureau@gmail.com</span>
-                </div>
-                <div className="flex items-center group">
-                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-primary group-hover:text-primary transition-colors" />
-                  <span className="group-hover:text-foreground transition-colors">Pet Paradise Plaza, Suite 100</span>
-                </div>
+              {/* Contact Dropdown */}
+              <div className="relative">
+                <button 
+                  className="flex items-center justify-between text-left font-bold text-base sm:text-lg text-foreground hover:text-primary transition-colors py-2"
+                  onClick={() => setActiveDropdown(activeDropdown === 'contact' ? null : 'contact')}
+                >
+                  <span>Contact Us</span>
+                  <ChevronRight className={`h-4 w-4 ml-2 transition-transform ${activeDropdown === 'contact' ? 'rotate-90' : ''}`} />
+                </button>
+                {activeDropdown === 'contact' && (
+                  <div className="absolute mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50 animate-in slide-in-from-top-2 duration-200">
+                    <div className="py-2">
+                      <div className="flex items-center px-4 py-2 text-sm text-muted-foreground">
+                        <Mail className="h-4 w-4 mr-2 text-primary" />
+                        <span>totosbureau@gmail.com</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

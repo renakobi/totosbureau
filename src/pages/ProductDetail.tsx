@@ -153,7 +153,7 @@ const ProductDetail = () => {
             {product.flavors && product.flavors.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold">
-                  {product.type === "subscription" ? "Choose Sizing:" : "Choose Flavor:"}
+                  {product.type === "subscription" ? "Choose Sizing:" : "Choose Product:"}
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {product.flavors.map((flavor, index) => {
