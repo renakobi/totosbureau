@@ -64,54 +64,71 @@ const HowItWorks = () => {
             </p>
           </div>
 
-          {/* Mobile Circular Layout */}
+          {/* Mobile 2x2 Grid Layout */}
           <div className="block md:hidden">
-            <div className="relative w-80 h-80 mx-auto">
-              {/* Circular container */}
-              <div className="relative w-full h-full">
-                {steps.map((step, index) => {
-                  const IconComponent = step.icon;
-                  const angle = (index * 90) - 90; // Start from top, go clockwise
-                  const radius = 120; // Distance from center
-                  const x = Math.cos(angle * Math.PI / 180) * radius;
-                  const y = Math.sin(angle * Math.PI / 180) * radius;
-                  
-                  return (
-                    <div
-                      key={index}
-                      className="absolute w-16 h-16 transform -translate-x-1/2 -translate-y-1/2"
-                      style={{
-                        left: `calc(50% + ${x}px)`,
-                        top: `calc(50% + ${y}px)`
-                      }}
-                    >
-                      <div className={`w-full h-full rounded-full ${step.bgColor} border-2 ${step.borderColor} flex flex-col items-center justify-center p-2 group cursor-pointer hover:scale-110 transition-all duration-300`}>
-                        {/* Step Number */}
-                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                          {step.number}
-                        </div>
-                        
-                        {/* Icon */}
-                        <div className={`w-6 h-6 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center mb-1`}>
-                          <IconComponent className="h-3 w-3 text-white" />
-                        </div>
-                        
-                        {/* Title */}
-                        <h3 className="text-xs font-bold text-foreground text-center leading-tight">
-                          {step.title}
-                        </h3>
-                      </div>
-                    </div>
-                  );
-                })}
-                
-                {/* Center circle */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-r from-primary/20 to-forest/20 rounded-full border-2 border-primary/30 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-xs font-bold text-primary">Toto's</div>
-                    <div className="text-xs font-bold text-forest">Bureau</div>
-                  </div>
+            <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+              {/* Step 1 - Top Left */}
+              <div className={`relative p-3 rounded-lg ${steps[0].bgColor} border-2 ${steps[0].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {steps[0].number}
                 </div>
+                <div className={`w-8 h-8 bg-gradient-to-r ${steps[0].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(steps[0].icon, { className: "h-4 w-4 text-white" })}
+                </div>
+                <h3 className="text-xs font-bold text-foreground mb-1">
+                  {steps[0].title}
+                </h3>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  {steps[0].subtitle}
+                </h4>
+              </div>
+
+              {/* Step 2 - Top Right */}
+              <div className={`relative p-3 rounded-lg ${steps[1].bgColor} border-2 ${steps[1].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {steps[1].number}
+                </div>
+                <div className={`w-8 h-8 bg-gradient-to-r ${steps[1].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(steps[1].icon, { className: "h-4 w-4 text-white" })}
+                </div>
+                <h3 className="text-xs font-bold text-foreground mb-1">
+                  {steps[1].title}
+                </h3>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  {steps[1].subtitle}
+                </h4>
+              </div>
+
+              {/* Step 4 - Bottom Left */}
+              <div className={`relative p-3 rounded-lg ${steps[3].bgColor} border-2 ${steps[3].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {steps[3].number}
+                </div>
+                <div className={`w-8 h-8 bg-gradient-to-r ${steps[3].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(steps[3].icon, { className: "h-4 w-4 text-white" })}
+                </div>
+                <h3 className="text-xs font-bold text-foreground mb-1">
+                  {steps[3].title}
+                </h3>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  {steps[3].subtitle}
+                </h4>
+              </div>
+
+              {/* Step 3 - Bottom Right */}
+              <div className={`relative p-3 rounded-lg ${steps[2].bgColor} border-2 ${steps[2].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {steps[2].number}
+                </div>
+                <div className={`w-8 h-8 bg-gradient-to-r ${steps[2].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(steps[2].icon, { className: "h-4 w-4 text-white" })}
+                </div>
+                <h3 className="text-xs font-bold text-foreground mb-1">
+                  {steps[2].title}
+                </h3>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  {steps[2].subtitle}
+                </h4>
               </div>
             </div>
           </div>

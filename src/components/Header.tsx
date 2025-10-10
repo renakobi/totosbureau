@@ -141,13 +141,13 @@ const Header = () => {
         {/* Category Menu Overlay */}
         {isMenuOpen && (
           <div className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
-            <div className="container mx-auto px-4 pt-20 pb-4">
-              <div className="max-w-sm max-h-[70vh] overflow-y-auto space-y-3 bg-card/95 backdrop-blur-md p-6 pb-8 rounded-xl shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
+            <div className="container mx-auto px-4 pt-16 pb-4">
+              <div className="max-w-xs max-h-[60vh] overflow-y-auto space-y-2 bg-card/95 backdrop-blur-md p-4 pb-6 rounded-lg shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
                 {/* Home Link */}
                 <div>
                   <Link 
                     to="/" 
-                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Home</span>
@@ -157,17 +157,17 @@ const Header = () => {
                 {/* Shop Category */}
                 <div>
                   <button 
-                    className="flex items-center justify-between w-full text-left text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="flex items-center justify-between w-full text-left text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Shop</span>
-                    <ChevronRight className={`h-5 w-5 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-4 w-4 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
                   </button>
                   {activeDropdown === 'shop' && (
                     <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
                       {/* Dogs Section */}
                       <div className="space-y-1">
-                        <div className="text-lg font-medium text-foreground py-1">Dogs</div>
+                        <div className="text-sm font-medium text-foreground py-1">Dogs</div>
                         <Link to="/products?category=dogs" className="block text-base text-muted-foreground hover:text-primary transition-smooth py-1 group" onClick={() => setIsMenuOpen(false)}>
                           <span className="group-hover:translate-x-2 transition-transform inline-block">All Dog Products</span>
                         </Link>
@@ -212,7 +212,7 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/products?category=subscription" 
-                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Boxes</span>
@@ -223,7 +223,7 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/about" 
-                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Get to know Toto</span>
@@ -234,7 +234,7 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/favorites" 
-                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Liked Items ({favorites.length})</span>
@@ -245,7 +245,7 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/contact" 
-                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    className="block text-sm font-semibold text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Contact</span>
@@ -253,14 +253,14 @@ const Header = () => {
                 </div>
 
                 {/* Account Links */}
-                <div className="pt-4 space-y-2">
+                <div className="pt-2 space-y-1">
                   <Link 
                     to="/login" 
-                    className="flex items-center justify-between text-lg font-medium text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="flex items-center justify-between text-sm font-medium text-foreground hover:text-primary transition-smooth py-1 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform">Sign In</span>
-                    <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
 
