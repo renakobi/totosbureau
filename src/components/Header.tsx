@@ -29,7 +29,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 border-b border-border/50 shadow-soft">
+    <header className="sticky top-0 z-50 w-full bg-background/99 backdrop-blur-md supports-[backdrop-filter]:bg-background/98 border-b border-border/50 shadow-soft">
       <div className="container mx-auto px-4">
         <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Hamburger Menu Button */}
@@ -62,9 +62,9 @@ const Header = () => {
               </div>
             </div>
             <div className="flex flex-col">
-              <div className="text-lg sm:text-2xl font-bold text-secondary">
-                Toto's Bureau
-              </div>
+        <div className="text-lg sm:text-2xl font-bold" style={{ color: '#9aedb6' }}>
+          Toto's Bureau
+        </div>
               <div className="text-xs text-muted-foreground font-medium -mt-1 hidden sm:block">
                 Premium Pet Care
               </div>
@@ -226,27 +226,6 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* FAQs Link */}
-                <div>
-                  <Link 
-                    to="/faqs" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="group-hover:translate-x-2 transition-transform inline-block">FAQs</span>
-                  </Link>
-                </div>
-
-                {/* Blog Link */}
-                <div>
-                  <Link 
-                    to="/blog" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span className="group-hover:translate-x-2 transition-transform inline-block">Blog</span>
-                  </Link>
-                </div>
 
                 {/* Contact Link */}
                 <div>

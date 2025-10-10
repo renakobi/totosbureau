@@ -195,10 +195,10 @@ const Cart = () => {
           <div className="max-w-2xl mx-auto text-center">
             <Card className="p-12">
               <CardContent className="space-y-6">
-                <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ backgroundColor: '#9aedb6' }}>
+                  <CheckCircle className="h-8 w-8 text-white" />
                 </div>
-                <h1 className="text-3xl font-bold text-green-600">Order Placed Successfully!</h1>
+                <h1 className="text-3xl font-bold" style={{ color: '#9aedb6' }}>Order Placed Successfully!</h1>
                 <p className="text-lg text-muted-foreground">
                   Thank you for your order. You will receive a confirmation email shortly.
                 </p>

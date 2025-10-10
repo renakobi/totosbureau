@@ -170,13 +170,13 @@ const Profile = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
+      <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, rgba(253, 159, 72, 0.1), rgba(253, 159, 72, 0.2))' }}>
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-md mx-auto">
             <Card>
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold text-orange-600">
+                <CardTitle className="text-2xl font-bold" style={{ color: '#fd9f48' }}>
                   Toto's Bureau
                 </CardTitle>
                 <p className="text-muted-foreground">Admin Login</p>
@@ -256,7 +256,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, rgba(253, 159, 72, 0.1), rgba(253, 159, 72, 0.2))' }}>
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -465,11 +465,12 @@ const Profile = () => {
                           <Badge 
                             variant="outline" 
                             className={`${
-                              order.status === 'delivered' ? 'bg-green-100 text-green-800 border-green-300' :
+                              order.status === 'delivered' ? 'text-white border-white' :
                               order.status === 'shipped' ? 'bg-blue-100 text-blue-800 border-blue-300' :
                               order.status === 'processing' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
                               'bg-gray-100 text-gray-800 border-gray-300'
                             }`}
+                            style={order.status === 'delivered' ? { backgroundColor: '#9aedb6' } : {}}
                           >
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                           </Badge>

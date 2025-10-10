@@ -63,7 +63,7 @@ const Orders = () => {
       case 'shipped':
         return 'bg-purple-100 text-purple-800';
       case 'delivered':
-        return 'bg-green-100 text-green-800';
+        return 'text-white';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
       default:
@@ -106,7 +106,10 @@ const Orders = () => {
                       Placed on {formatDate(selectedOrder.orderDate)}
                     </p>
                   </div>
-                  <Badge className={`${getStatusColor(selectedOrder.status)} flex items-center gap-1`}>
+                  <Badge 
+                    className={`${getStatusColor(selectedOrder.status)} flex items-center gap-1`}
+                    style={selectedOrder.status === 'delivered' ? { backgroundColor: '#9aedb6' } : {}}
+                  >
                     {getStatusIcon(selectedOrder.status)}
                     {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                   </Badge>

@@ -28,24 +28,24 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-amber-50/40 to-muted/20">
+    <section className="py-4 sm:py-6 bg-gradient-to-b from-amber-50/40 to-muted/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium">
-            <Star className="h-3 w-3 sm:h-4 sm:w-4" />
+        <div className="text-center space-y-1 sm:space-y-2 mb-2 sm:mb-3">
+          <div className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
+            <Star className="h-3 w-3" />
             Featured Products
           </div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
+          <h2 className="text-base sm:text-lg font-bold">
             <span className="text-foreground">
               Top Picks
             </span>
             <br />
-            <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-forest">
+            <span className="text-base sm:text-lg text-forest">
               for Your Furry Friends
             </span>
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-4xl mx-auto px-4">
+          <p className="text-xs text-muted-foreground max-w-2xl mx-auto px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             Hand-selected products that pets and their parents absolutely love. 
             Each item is carefully chosen for quality, safety, and maximum pet happiness.
           </p>
@@ -53,7 +53,7 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6 mb-8 sm:mb-12 md:mb-16 px-4 sm:px-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 lg:gap-3 mb-4 sm:mb-6 px-4 sm:px-0">
             {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
@@ -66,7 +66,7 @@ const FeaturedProducts = () => {
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-32 sm:h-40 md:h-48 lg:h-56 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                <div className="relative h-24 sm:h-28 md:h-32 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img
                       src={product.image}
@@ -120,23 +120,23 @@ const FeaturedProducts = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-3 sm:p-4 md:p-6 flex-1 flex flex-col">
-                  <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-2 py-1">
+                <div className="p-1.5 sm:p-2 flex-1 flex flex-col">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-1 py-0.5">
                       {product.category}
                     </Badge>
-                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20 px-2 py-1">
+                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20 px-1 py-0.5">
                       {product.type}
                     </Badge>
                   </div>
                   
-                  <h3 className="font-bold text-sm sm:text-base md:text-lg mb-2 sm:mb-3 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-bold text-xs mb-1 group-hover:text-primary transition-colors duration-300">
                     {product.name}
                   </h3>
 
                   {/* Flavors */}
                   {product.flavors && product.flavors.length > 0 && (
-                    <div className="mb-2 sm:mb-3">
+                    <div className="mb-1">
                       <div className="flex flex-wrap gap-1">
                         {product.flavors.slice(0, 2).map((flavor, index) => (
                           <Badge key={index} variant="secondary" className="text-xs px-1 py-0.5">
@@ -152,28 +152,28 @@ const FeaturedProducts = () => {
                     </div>
                   )}
                   
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 leading-relaxed hidden sm:block">
+                  <p className="text-xs text-muted-foreground mb-1 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {product.description}
                   </p>
                   
                   {/* Rating */}
-                  <div className="flex items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-1 mb-1">
                     <div className="flex items-center">
-                      <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-accent text-accent" />
-                      <span className="text-xs sm:text-sm font-semibold ml-1">{product.rating}</span>
+                      <Star className="h-3 w-3 fill-accent text-accent" />
+                      <span className="text-xs font-semibold ml-1">{product.rating}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground hidden sm:block">
+                    <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       ({product.reviews} reviews)
                     </span>
                   </div>
                   
                   {/* Price */}
-                  <div className="flex items-center gap-1 sm:gap-2 mb-4 sm:mb-6 mt-auto">
-                    <span className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
+                  <div className="flex items-center gap-1 mb-2 mt-auto">
+                    <span className="text-sm font-bold text-foreground">
                       ${product.price}
                     </span>
                     {product.originalPrice && (
-                      <span className="text-xs sm:text-sm text-muted-foreground line-through">
+                      <span className="text-xs text-muted-foreground line-through">
                         ${product.originalPrice}
                       </span>
                     )}
@@ -181,12 +181,12 @@ const FeaturedProducts = () => {
                 </div>
               </CardContent>
               
-              <CardFooter className="p-3 sm:p-4 md:p-6 pt-0">
+              <CardFooter className="p-1.5 sm:p-2 pt-0">
                 <Button 
-                  className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102"
+                  className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1.5"
                   onClick={(e) => handleAddToCart(e, product)}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  <ShoppingCart className="h-3 w-3 mr-1" />
                   Add to Cart
                 </Button>
               </CardFooter>

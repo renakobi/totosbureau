@@ -67,21 +67,21 @@ html {
     --primary: 155 35% 55%;
     --primary-foreground: 0 0% 25%;
 
-    /* Secondary - Heavily Muted Orange */
-    --secondary: 30 70% 45%;
+    /* Secondary - Custom Orange #fd9f48 */
+    --secondary: 30 95% 64%;
     --secondary-foreground: 0 0% 100%;
 
     /* Accent - Heavily Muted Yellow */
     --accent: 44 70% 50%;
     --accent-foreground: 0 0% 25%;
 
-    /* Forest Green - Heavily Muted */
-    --forest: 155 20% 28%;
-    --forest-foreground: 0 0% 100%;
+    /* Forest Green - Custom #9aedb6 */
+    --forest: 155 50% 75%;
+    --forest-foreground: 0 0% 20%;
 
-    /* Teal - Heavily Muted */
-    --teal: 172 70% 28%;
-    --teal-foreground: 0 0% 100%;
+    /* Teal - Custom #9aedb6 */
+    --teal: 155 50% 75%;
+    --teal-foreground: 0 0% 20%;
 
     --muted: 30 10% 80%;
     --muted-foreground: 30 8% 45%;
@@ -133,10 +133,10 @@ html {
     --secondary-foreground: 0 0% 100%;
     --accent: 44 65% 45%;
     --accent-foreground: 155 20% 20%;
-    --forest: 155 15% 25%;
-    --forest-foreground: 0 0% 100%;
-    --teal: 172 60% 25%;
-    --teal-foreground: 0 0% 100%;
+    --forest: 155 50% 75%;
+    --forest-foreground: 0 0% 20%;
+    --teal: 155 50% 75%;
+    --teal-foreground: 0 0% 20%;
     --muted: 155 15% 15%;
     --muted-foreground: 155 8% 55%;
     --destructive: 0 60% 40%;

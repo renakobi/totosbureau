@@ -38,7 +38,7 @@ const DiscountPopup = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-orange-400/90 to-orange-500/90 text-white border-none shadow-strong">
+      <DialogContent className="sm:max-w-md text-white border-none shadow-strong" style={{ background: 'linear-gradient(to bottom right, rgba(253, 159, 72, 0.9), rgba(253, 159, 72, 0.9))' }}>
         <DialogHeader>
           <div className="flex items-center justify-center">
             <Badge variant="secondary" className="bg-white/20 text-white border-none">
@@ -69,7 +69,8 @@ const DiscountPopup = () => {
             <Button 
               type="submit" 
               variant="secondary"
-              className="w-full bg-white text-orange-600 hover:bg-white/90 shadow-soft"
+              className="w-full bg-white hover:bg-white/90 shadow-soft"
+              style={{ color: '#fd9f48' }}
               size="lg"
             >
               <Gift className="h-4 w-4 mr-2" />

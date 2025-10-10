@@ -9,7 +9,8 @@ const SubscriptionAdvantages = () => {
       description: "Hand-picked treats and toys tailored to your pet's preferences, delivered monthly",
       color: "from-orange-400 to-orange-500",
       bgColor: "bg-orange-50",
-      borderColor: "border-orange-200"
+      borderColor: "border-orange-200",
+      customColor: "#fd9f48"
     },
     {
       icon: Leaf,
@@ -17,7 +18,8 @@ const SubscriptionAdvantages = () => {
       description: "Sustainable, recyclable packaging that's safe for your pets and the environment",
       color: "from-green-400 to-green-500",
       bgColor: "bg-green-50",
-      borderColor: "border-green-200"
+      borderColor: "border-green-200",
+      customColor: "#9aedb6"
     },
     {
       icon: Clock,
@@ -49,7 +51,8 @@ const SubscriptionAdvantages = () => {
       description: "Get more value with exclusive discounts and bulk pricing on premium pet products",
       color: "from-teal-400 to-teal-500",
       bgColor: "bg-teal-50",
-      borderColor: "border-teal-200"
+      borderColor: "border-teal-200",
+      customColor: "#9aedb6"
     }
   ];
 
@@ -77,10 +80,17 @@ const SubscriptionAdvantages = () => {
               return (
                 <div
                   key={index}
-                  className={`p-6 sm:p-8 rounded-2xl ${advantage.bgColor} border-2 ${advantage.borderColor} hover:shadow-lg transition-all duration-300 group`}
+                  className={`p-6 sm:p-8 rounded-2xl border-2 hover:shadow-lg transition-all duration-300 group`}
+                  style={advantage.customColor ? { 
+                    backgroundColor: `${advantage.customColor}20`, 
+                    borderColor: `${advantage.customColor}40` 
+                  } : {}}
                 >
                   {/* Icon */}
-                  <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${advantage.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <div 
+                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    style={advantage.customColor ? { background: `linear-gradient(to right, ${advantage.customColor}, ${advantage.customColor})` } : { background: `linear-gradient(to right, var(--${advantage.color.split(' ')[0].replace('from-', '')}), var(--${advantage.color.split(' ')[2].replace('to-', '')}))` }}
+                  >
                     <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
 

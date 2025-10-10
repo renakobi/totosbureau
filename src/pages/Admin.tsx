@@ -730,11 +730,12 @@ const Admin = () => {
                             <Badge 
                               variant="outline" 
                               className={`${
-                                order.status === 'delivered' ? 'bg-green-100 text-green-800 border-green-300' :
+                                order.status === 'delivered' ? 'text-white border-white' :
                                 order.status === 'shipped' ? 'bg-blue-100 text-blue-800 border-blue-300' :
                                 order.status === 'processing' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
                                 'bg-gray-100 text-gray-800 border-gray-300'
                               }`}
+                              style={order.status === 'delivered' ? { backgroundColor: '#9aedb6' } : {}}
                             >
                               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </Badge>
@@ -1723,7 +1724,8 @@ const Admin = () => {
                                 <Button
                                   size="sm"
                                   onClick={() => approvePost(post.id)}
-                                  className="bg-green-600 hover:bg-green-700"
+                                  style={{ backgroundColor: '#9aedb6' }}
+                                  className="hover:opacity-90"
                                 >
                                   <Check className="h-4 w-4 mr-1" />
                                   Approve
@@ -1778,7 +1780,7 @@ const Admin = () => {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="font-semibold">{post.user}</span>
-                                <Badge variant="default" className="bg-green-600">Approved</Badge>
+                                <Badge variant="default" style={{ backgroundColor: '#9aedb6', color: 'white' }}>Approved</Badge>
                                 <span className="text-sm text-muted-foreground">{post.time}</span>
                               </div>
                               <p className="text-foreground mb-3">{post.content}</p>

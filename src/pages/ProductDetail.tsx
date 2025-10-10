@@ -191,11 +191,11 @@ const ProductDetail = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>Quarterly:</span>
-                        <span className="font-medium">${(product.price * 0.9).toFixed(2)} <span className="text-green-600 text-xs">(10% off)</span></span>
+                        <span className="font-medium">${(product.price * 0.9).toFixed(2)} <span className="text-xs" style={{ color: '#9aedb6' }}>(10% off)</span></span>
                       </div>
                       <div className="flex justify-between">
                         <span>Annual:</span>
-                        <span className="font-medium">${(product.price * 0.8).toFixed(2)} <span className="text-green-600 text-xs">(20% off)</span></span>
+                        <span className="font-medium">${(product.price * 0.8).toFixed(2)} <span className="text-xs" style={{ color: '#9aedb6' }}>(20% off)</span></span>
                       </div>
                     </div>
                   </div>
@@ -218,7 +218,7 @@ const ProductDetail = () => {
                 </span>
               )}
               {product.type === "subscription" && selectedFlavor && selectedFlavor !== "Monthly" && (
-                <span className="text-sm text-green-600 font-medium">
+                <span className="text-sm font-medium" style={{ color: '#9aedb6' }}>
                   {selectedFlavor === "Quarterly" ? "10% off" : "20% off"}
                 </span>
               )}

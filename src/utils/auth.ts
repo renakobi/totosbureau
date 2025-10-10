@@ -16,6 +16,7 @@ export const verifyPassword = (password: string, hashedPassword: string): boolea
 
 // Default admin credentials (should be changed in production)
 export const DEFAULT_ADMIN = {
+  id: 'admin-001',
   username: 'admin',
   email: 'admin@totosbureau.com',
   password: hashPassword('admin123'), // Changed from 'admin' to 'admin123'
@@ -29,6 +30,7 @@ export const DEFAULT_ADMIN = {
     zipCode: '12345',
     country: 'USA'
   },
+  createdAt: new Date().toISOString(),
   isAdmin: true,
   isActive: true
 };

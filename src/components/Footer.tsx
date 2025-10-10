@@ -68,9 +68,9 @@ const Footer = () => {
                   }}
                 />
               </div>
-              <div className="text-lg font-bold text-secondary">
-                Toto's Bureau
-              </div>
+        <div className="text-lg font-bold" style={{ color: '#9aedb6' }}>
+          Toto's Bureau
+        </div>
             </div>
             <p className="text-muted-foreground mb-4 leading-relaxed text-sm">
               Your one-stop shop for premium pet supplies. We believe every pet deserves the best care, 
@@ -289,7 +289,7 @@ const Footer = () => {
 
         {/* Community Section */}
         <div className="mt-12 sm:mt-16 text-center">
-          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium">
+          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium" style={{ background: 'linear-gradient(to right, rgba(253, 159, 72, 0.25), rgba(253, 159, 72, 0.25))' }}>
             <div className="flex items-center justify-center gap-3 mb-4">
               <PawPrint className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
