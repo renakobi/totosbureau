@@ -16,14 +16,14 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden sm:block"
           style={{
-            backgroundImage: `url('./tempbackground.webp?v=${Date.now()}')`
+            backgroundImage: `url('/tempbackground.webp?v=${Date.now()}')`
           }}
         />
         {/* Mobile Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat block sm:hidden"
           style={{
-            backgroundImage: `url('./mobile.jpeg?v=${Date.now()}')`
+            backgroundImage: `url('/mobile.jpeg?v=${Date.now()}')`
           }}
         />
         {/* Dark charcoal overlay for optimal text readability */}
