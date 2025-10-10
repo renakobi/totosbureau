@@ -64,52 +64,105 @@ const HowItWorks = () => {
             </p>
           </div>
 
-          {/* Steps Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {steps.map((step, index) => {
-              const IconComponent = step.icon;
-              return (
-                <div
-                  key={index}
-                  className={`relative p-3 sm:p-4 rounded-lg ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer ${
-                    index === 0 ? 'bg-secondary/15 border-secondary/40' :
-                    index === 1 ? 'bg-primary/15 border-primary/40' :
-                    index === 2 ? 'bg-accent/15 border-accent/40' :
-                    'bg-forest/15 border-forest/40'
-                  }`}
-                >
-                  {/* Step Number */}
-                  <div className="absolute -top-3 -left-3 w-6 h-6 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                    {step.number}
-                  </div>
-
-                  {/* Icon */}
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="space-y-2">
-                    <h3 className="text-sm sm:text-base font-bold text-foreground">
-                      {step.title}
-                    </h3>
-                    <h4 className="text-xs font-semibold text-muted-foreground">
-                      {step.subtitle}
-                    </h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  {/* Arrow for desktop */}
-                  {index < steps.length - 1 && (
-                    <div className="hidden lg:block absolute -right-3 top-1/2 transform -translate-y-1/2">
-                      <ArrowRight className="h-4 w-4 text-muted-foreground/50" />
+          {/* Circular Steps Layout */}
+          <div className="relative max-w-2xl mx-auto">
+            {/* Mobile: Vertical Stack */}
+            <div className="block md:hidden space-y-4">
+              {steps.map((step, index) => {
+                const IconComponent = step.icon;
+                return (
+                  <div
+                    key={index}
+                    className={`relative p-4 rounded-xl ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      {/* Step Number Circle */}
+                      <div className="w-10 h-10 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        {step.number}
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="text-base font-bold text-foreground mb-1">
+                          {step.title}
+                        </h3>
+                        <h4 className="text-sm font-semibold text-muted-foreground mb-2">
+                          {step.subtitle}
+                        </h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          {step.description}
+                        </p>
+                      </div>
+                      
+                      {/* Icon */}
+                      <div className={`w-8 h-8 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                        <IconComponent className="h-4 w-4 text-white" />
+                      </div>
                     </div>
-                  )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop: Circular Layout */}
+            <div className="hidden md:block relative">
+              {/* Circular Container */}
+              <div className="relative w-80 h-80 mx-auto">
+                {steps.map((step, index) => {
+                  const IconComponent = step.icon;
+                  const angle = (index * 90) - 45; // Start at -45 degrees
+                  const radius = 120;
+                  const x = Math.cos(angle * Math.PI / 180) * radius;
+                  const y = Math.sin(angle * Math.PI / 180) * radius;
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`absolute w-32 h-32 p-4 rounded-2xl ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2`}
+                      style={{
+                        left: `calc(50% + ${x}px)`,
+                        top: `calc(50% + ${y}px)`,
+                      }}
+                    >
+                      {/* Step Number */}
+                      <div className="absolute -top-2 -left-2 w-6 h-6 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                        {step.number}
+                      </div>
+
+                      {/* Content */}
+                      <div className="text-center h-full flex flex-col justify-center">
+                        <div className={`w-8 h-8 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mb-2 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                          <IconComponent className="h-4 w-4 text-white" />
+                        </div>
+                        <h3 className="text-xs font-bold text-foreground mb-1 leading-tight">
+                          {step.title}
+                        </h3>
+                        <h4 className="text-xs font-semibold text-muted-foreground leading-tight">
+                          {step.subtitle}
+                        </h4>
+                        <p className="text-xs text-muted-foreground leading-tight opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1">
+                          {step.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Connecting Arrows */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-64 h-64 relative">
+                  {/* Arrow 1 -> 2 */}
+                  <ArrowRight className="absolute top-8 right-0 h-4 w-4 text-muted-foreground/50" />
+                  {/* Arrow 2 -> 3 */}
+                  <ArrowRight className="absolute bottom-0 right-8 h-4 w-4 text-muted-foreground/50 rotate-90" />
+                  {/* Arrow 3 -> 4 */}
+                  <ArrowRight className="absolute bottom-8 left-0 h-4 w-4 text-muted-foreground/50 rotate-180" />
+                  {/* Arrow 4 -> 1 */}
+                  <ArrowRight className="absolute top-0 left-8 h-4 w-4 text-muted-foreground/50 -rotate-90" />
                 </div>
-              );
-            })}
+              </div>
+            </div>
           </div>
 
           {/* CTA */}

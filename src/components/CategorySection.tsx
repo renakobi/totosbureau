@@ -57,78 +57,46 @@ const CategorySection = () => {
     }
   ];
   return (
-    <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-b from-amber-50/5 to-accent/2">
+    <section className="py-6 sm:py-8 bg-white">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-2 bg-forest/10 text-forest px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Package className="h-4 w-4" />
-            Categories
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3">
-            <span className="text-foreground">
-              Find Everything
-            </span>
-            <br />
-            <span className="text-3xl md:text-4xl text-forest">
-              for Your Best Friend
-            </span>
+        <div className="text-center mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+            Find Everything for Your Best Friend
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Browse our carefully organized categories to find exactly what your pet needs. 
-            From daily essentials to special treats, we've got it all covered.
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+            Browse our carefully organized categories
           </p>
         </div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {/* Category Grid - Etsy Style */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {categories.map((category, index) => {
             const IconComponent = category.icon;
             return (
               <Link key={category.id} to={category.link} className="block h-full group">
                 <Card 
-                  className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer relative overflow-hidden backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
-                    index === 0 ? 'bg-secondary/5 border-secondary/20' :
-                    index === 1 ? 'bg-primary/5 border-primary/20' :
-                    index === 2 ? 'bg-accent/5 border-accent/20' :
-                    'bg-forest/5 border-forest/20'
-                  }`}
-                  style={{ animationDelay: `${index * 150}ms` }}
+                  className="group hover:shadow-md transition-all duration-200 cursor-pointer relative overflow-hidden bg-white border border-gray-200 h-full flex flex-col rounded-lg"
                 >
                   {category.featured && (
                     <Badge 
-                      className="absolute top-2 right-2 z-10 bg-secondary text-secondary-foreground shadow-medium text-xs px-2 py-1"
+                      className="absolute top-2 right-2 z-10 bg-orange-500 text-white shadow-sm text-xs px-2 py-1 rounded"
                     >
                       Popular
                     </Badge>
                   )}
                   
-                  <CardContent className="p-4 sm:p-5 text-center flex-1 flex flex-col">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 rounded-lg ${category.color} flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-medium`}>
-                      <IconComponent className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <CardContent className="p-3 text-center flex-1 flex flex-col">
+                    <div className={`w-8 h-8 mx-auto mb-2 rounded-lg ${category.color} flex items-center justify-center transition-all duration-200 group-hover:scale-110`}>
+                      <IconComponent className="h-4 w-4" />
                     </div>
                     
-                    <h3 className="text-sm sm:text-base font-bold mb-2 group-hover:text-primary transition-colors duration-300">
+                    <h3 className="text-xs font-medium text-gray-900 mb-1 group-hover:text-orange-500 transition-colors duration-200">
                       {category.title}
                     </h3>
-                    
-                    <p className="text-muted-foreground mb-3 text-xs leading-relaxed flex-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {category.description}
-                    </p>
-                    
-                    <Badge 
-                      variant="outline" 
-                      className={`mb-3 ${category.color} border-current/20 text-xs`}
-                    >
+                    <p className="text-xs text-gray-500">
                       {category.products}
-                    </Badge>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 group-hover:scale-105 text-xs py-2"
-                    >
-                      Explore
-                    </Button>
+                    </p>
                   </CardContent>
                 </Card>
               </Link>
