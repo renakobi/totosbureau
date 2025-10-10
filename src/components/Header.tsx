@@ -31,8 +31,89 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
       <div className="container mx-auto px-4">
-        {/* Single Row Layout */}
-        <div className="flex h-12 sm:h-14 items-center justify-between">
+        {/* Mobile Layout - Two Rows */}
+        <div className="block lg:hidden">
+          {/* Top Row - Mobile */}
+          <div className="flex h-12 sm:h-14 items-center justify-between">
+            {/* Hamburger Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative z-50 hover:bg-primary/10 transition-smooth"
+            >
+              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}   
+            </Button>
+
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2 group">
+              <div className="relative">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
+                  <img
+                    src={logoImage}
+                    alt="Toto's Bureau Logo"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      console.log('Logo failed, using fallback...');
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-sm sm:text-lg font-bold" style={{ color: '#9aedb6' }}>
+                Toto's Bureau
+              </div>
+            </Link>
+
+            {/* Right: Theme, Profile, Cart */}
+            <div className="flex items-center space-x-1">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-forest/10 transition-smooth"
+                onClick={() => {
+                  navigate(currentUser ? "/profile" : "/login");
+                }}
+              >
+                <User className="h-4 w-4" />
+              </Button>
+              <Link to="/cart">
+                <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 transition-smooth">
+                  <ShoppingCart className="h-4 w-4" />
+                  {getTotalItems() > 0 && (
+                    <Badge
+                      className="absolute -top-1 -right-1 h-3 w-3 flex items-center justify-center text-xs bg-accent text-accent-foreground animate-bounce"
+                    >
+                      {getTotalItems()}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Bottom Row - Search Bar Mobile */}
+          <div className="flex h-10 sm:h-12 items-center px-2">
+            <div className="relative flex-1 max-w-2xl mx-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                className="pl-10 pr-4 h-8 sm:h-10 text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Layout - Single Row */}
+        <div className="hidden lg:flex h-12 sm:h-14 items-center justify-between">
           {/* Left Side: Menu + Logo + Search */}
           <div className="flex items-center gap-4">
             {/* Hamburger Menu Button */}
