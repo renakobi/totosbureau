@@ -11,9 +11,9 @@ const HowItWorks = () => {
       subtitle: "Toto Scouts the Goods",
       description: "Select pet type, bundle size, and preferences for the perfect curated mix.",
       icon: Search,
-      color: "from-secondary/60 to-secondary/40",
-      bgColor: "bg-secondary/5",
-      borderColor: "border-secondary/20"
+      color: "from-secondary/80 to-secondary/60",
+      bgColor: "bg-secondary/15",
+      borderColor: "border-secondary/40"
     },
     {
       number: "02", 
@@ -21,9 +21,9 @@ const HowItWorks = () => {
       subtitle: "Enlist in Toto's Crew",
       description: "Quick signup, choose frequency (monthly/quarterly), and add extras.",
       icon: UserPlus,
-      color: "from-teal/60 to-teal/40",
-      bgColor: "bg-teal/5",
-      borderColor: "border-teal/20"
+      color: "from-teal/80 to-teal/60",
+      bgColor: "bg-teal/15",
+      borderColor: "border-teal/40"
     },
     {
       number: "03",
@@ -31,9 +31,9 @@ const HowItWorks = () => {
       subtitle: "The Mystery Arrives", 
       description: "Track your eco-box delivery with free shipping—faster than a cat's pounce!",
       icon: Truck,
-      color: "from-primary/60 to-primary/40",
-      bgColor: "bg-primary/5",
-      borderColor: "border-primary/20"
+      color: "from-primary/80 to-primary/60",
+      bgColor: "bg-primary/15",
+      borderColor: "border-primary/40"
     },
     {
       number: "04",
@@ -41,9 +41,9 @@ const HowItWorks = () => {
       subtitle: "Unleash the Mischief",
       description: "Watch your pet go wild! Unbox, share photos, and auto-renew for endless fun.",
       icon: Heart,
-      color: "from-forest/60 to-forest/40",
-      bgColor: "bg-forest/5",
-      borderColor: "border-forest/20"
+      color: "from-forest/80 to-forest/60",
+      bgColor: "bg-forest/15",
+      borderColor: "border-forest/40"
     }
   ];
 
@@ -71,11 +71,11 @@ const HowItWorks = () => {
               return (
                 <div
                   key={index}
-                  className={`relative p-4 sm:p-6 rounded-xl ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer ${
-                    index === 0 ? 'bg-secondary/5 border-secondary/20' :
-                    index === 1 ? 'bg-primary/5 border-primary/20' :
-                    index === 2 ? 'bg-accent/5 border-accent/20' :
-                    'bg-forest/5 border-forest/20'
+                  className={`relative p-3 sm:p-4 rounded-lg ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer ${
+                    index === 0 ? 'bg-secondary/15 border-secondary/40' :
+                    index === 1 ? 'bg-primary/15 border-primary/40' :
+                    index === 2 ? 'bg-accent/15 border-accent/40' :
+                    'bg-forest/15 border-forest/40'
                   }`}
                 >
                   {/* Step Number */}
@@ -84,19 +84,19 @@ const HowItWorks = () => {
                   </div>
 
                   {/* Icon */}
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
 
                   {/* Content */}
                   <div className="space-y-2">
-                    <h3 className="text-base sm:text-lg font-bold text-foreground">
+                    <h3 className="text-sm sm:text-base font-bold text-foreground">
                       {step.title}
                     </h3>
-                    <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground">
+                    <h4 className="text-xs font-semibold text-muted-foreground">
                       {step.subtitle}
                     </h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-xs text-muted-foreground leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {step.description}
                     </p>
                   </div>
@@ -114,15 +114,15 @@ const HowItWorks = () => {
 
           {/* CTA */}
           <div className="text-center mt-8 sm:mt-10">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <Link to="/products?category=subscription">
-                <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
+                <Button size="sm" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
                   Subscription Boxes
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/about">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 hover:scale-105">
+                <Button variant="outline" size="sm" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 hover:scale-105">
                   Get to Know Toto
                 </Button>
               </Link>

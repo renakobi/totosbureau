@@ -66,7 +66,7 @@ const FeaturedProducts = () => {
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-24 sm:h-28 md:h-32 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                <div className="relative h-20 sm:h-24 md:h-28 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img
                       src={product.image}
@@ -120,7 +120,7 @@ const FeaturedProducts = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-1.5 sm:p-2 flex-1 flex flex-col">
+                <div className="p-1 sm:p-1.5 flex-1 flex flex-col">
                   <div className="flex items-center gap-1 mb-1">
                     <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-1 py-0.5">
                       {product.category}
@@ -182,10 +182,10 @@ const FeaturedProducts = () => {
               </CardContent>
               
               <CardFooter className="p-1.5 sm:p-2 pt-0">
-                <Button 
-                  className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1.5"
-                  onClick={(e) => handleAddToCart(e, product)}
-                >
+        <Button 
+          className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1"
+          onClick={(e) => handleAddToCart(e, product)}
+        >
                   <ShoppingCart className="h-3 w-3 mr-1" />
                   Add to Cart
                 </Button>
