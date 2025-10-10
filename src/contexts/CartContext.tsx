@@ -6,13 +6,14 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  variant?: string; // Add variant to distinguish different options
 }
 
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  updateQuantity: (id: number, quantity: number) => void;
-  removeFromCart: (id: number) => void;
+  updateQuantity: (id: number, quantity: number, variant?: string) => void;
+  removeFromCart: (id: number, variant?: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -33,10 +34,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     setCartItems(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === item.id);
+      // Create unique key combining id and variant
+      const uniqueKey = `${item.id}-${item.variant || 'default'}`;
+      const existingItem = prev.find(cartItem => 
+        `${cartItem.id}-${cartItem.variant || 'default'}` === uniqueKey
+      );
+      
       if (existingItem) {
         return prev.map(cartItem =>
-          cartItem.id === item.id
+          `${cartItem.id}-${cartItem.variant || 'default'}` === uniqueKey
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -45,20 +51,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: number, quantity: number, variant?: string) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(id, variant);
       return;
     }
     setCartItems(prev =>
       prev.map(item =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id && (item.variant || 'default') === (variant || 'default')
+          ? { ...item, quantity }
+          : item
       )
     );
   };
 
-  const removeFromCart = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const removeFromCart = (id: number, variant?: string) => {
+    setCartItems(prev => 
+      prev.filter(item => 
+        !(item.id === id && (item.variant || 'default') === (variant || 'default'))
+      )
+    );
   };
 
   const clearCart = () => {

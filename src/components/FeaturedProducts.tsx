@@ -23,7 +23,8 @@ const FeaturedProducts = () => {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image
+      image: product.image,
+      variant: undefined // No variant when adding from featured products
     });
   };
 
@@ -53,7 +54,7 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-3 sm:mb-6 px-2 sm:px-0">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-3 sm:mb-6 px-2 sm:px-0">
             {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
@@ -66,7 +67,7 @@ const FeaturedProducts = () => {
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-16 sm:h-24 md:h-28 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                <div className="relative h-24 sm:h-32 md:h-36 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img
                       src={product.image}

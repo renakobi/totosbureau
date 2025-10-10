@@ -62,7 +62,8 @@ const Products = () => {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: "📦" // Using emoji as placeholder
+      image: product.image || "📦", // Use product image or emoji placeholder
+      variant: undefined // No variant when adding from product grid
     });
   };
 
@@ -121,8 +122,12 @@ const Products = () => {
                       alt={product.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.style.display = 'none';
+                        const nextElement = target.nextElementSibling as HTMLElement;
+                        if (nextElement) {
+                          nextElement.style.display = 'flex';
+                        }
                       }}
                     />
                   ) : (
@@ -144,15 +149,15 @@ const Products = () => {
                     variant="ghost" 
                     size="icon"
                     className={`absolute top-3 right-3 transition-all duration-200 bg-white/90 hover:bg-white shadow-medium hover:scale-105 ${
-                      isFavorite(product.id) ? 'text-red-500' : 'text-muted-foreground'
+                      isFavorite(product.id.toString()) ? 'text-red-500' : 'text-muted-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      toggleFavorite(product.id);
+                      toggleFavorite(product.id.toString());
                     }}
                   >
-                    <Heart className={`h-4 w-4 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
                   </Button>
                 </div>
 

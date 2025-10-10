@@ -43,11 +43,11 @@ const ProductDetail = () => {
   }
 
   const handleAddToCart = () => {
-    // Check if product has flavors but none is selected
-    if (product.flavors && product.flavors.length > 0 && !selectedFlavor) {
+    // Check if product has multiple options but none is selected
+    if (product.flavors && product.flavors.length > 1 && !selectedFlavor) {
       toast({
-        title: product.type === "subscription" ? "Please select a size" : "Please select a flavor",
-        description: product.type === "subscription" ? "Choose a size before adding to cart." : "Choose a flavor before adding to cart.",
+        title: product.type === "subscription" ? "Please select a size" : "Please select an option",
+        description: product.type === "subscription" ? "Choose a size before adding to cart." : "Choose an option before adding to cart.",
         variant: "destructive"
       });
       return;
@@ -67,7 +67,8 @@ const ProductDetail = () => {
         id: product.id,
         name: productName,
         price: finalPrice,
-        image: product.image
+        image: product.image,
+        variant: selectedFlavor || undefined
       });
     }
     toast({
@@ -248,20 +249,65 @@ const ProductDetail = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
+              <Button 
+                size="lg" 
+                className="flex-1" 
+                onClick={handleAddToCart}
+                disabled={product.flavors && product.flavors.length > 1 && !selectedFlavor}
+              >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart
+                {product.flavors && product.flavors.length > 1 && !selectedFlavor 
+                  ? "Select Option First" 
+                  : "Add to Cart"
+                }
               </Button>
               <Button 
                 variant="outline" 
                 size="icon" 
                 className={`w-12 h-12 ${
-                  isFavorite(product.id) ? 'text-red-500 border-red-500' : ''
+                  isFavorite(product.id.toString()) ? 'text-red-500 border-red-500' : ''
                 }`}
                 onClick={handleToggleFavorite}
               >
-                <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+                <Heart className={`h-5 w-5 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
               </Button>
+            </div>
+
+            {/* Product Details Dropdowns */}
+            <div className="space-y-4">
+              {/* Ingredients Dropdown */}
+              <details className="group">
+                <summary className="flex items-center justify-between p-4 bg-muted/30 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <span className="font-medium">Ingredients</span>
+                  <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="p-4 pt-2 text-sm text-muted-foreground">
+                  {product.ingredients ? (
+                    <p className="whitespace-pre-line">{product.ingredients}</p>
+                  ) : (
+                    <p className="italic">No ingredients information available.</p>
+                  )}
+                </div>
+              </details>
+
+              {/* About This Product Dropdown */}
+              <details className="group">
+                <summary className="flex items-center justify-between p-4 bg-muted/30 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                  <span className="font-medium">About This Product</span>
+                  <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="p-4 pt-2 text-sm text-muted-foreground">
+                  {product.aboutProduct ? (
+                    <p className="whitespace-pre-line">{product.aboutProduct}</p>
+                  ) : (
+                    <p className="italic">No additional product information available.</p>
+                  )}
+                </div>
+              </details>
             </div>
 
             {/* Additional Info */}

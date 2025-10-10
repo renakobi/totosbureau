@@ -20,6 +20,22 @@ import { useToast } from "@/hooks/use-toast";
 
 // Types
 
+interface ProductForm {
+  name: string;
+  description: string;
+  price: string;
+  originalPrice: string;
+  category: string;
+  subcategory: string;
+  type: string;
+  image: string;
+  badge: string;
+  stockQuantity: string;
+  flavors: string[];
+  ingredients: string;
+  aboutProduct: string;
+}
+
 interface Category {
   id: number;
   name: string;
@@ -245,7 +261,7 @@ const Admin = () => {
   const [editingDiscount, setEditingDiscount] = useState<Discount | null>(null);
 
   // Product form state
-  const [productForm, setProductForm] = useState({
+  const [productForm, setProductForm] = useState<ProductForm>({
     name: "",
     description: "",
     price: "",
@@ -256,7 +272,9 @@ const Admin = () => {
     image: "",
     badge: "",
     stockQuantity: "",
-    flavors: [] as string[]
+    flavors: [],
+    ingredients: "",
+    aboutProduct: ""
   });
   const [newFlavor, setNewFlavor] = useState("");
 
@@ -324,7 +342,9 @@ const Admin = () => {
       image: "",
       badge: "",
       stockQuantity: "",
-      flavors: []
+      flavors: [],
+      ingredients: "",
+      aboutProduct: ""
     });
     setNewFlavor("");
     setFormErrors({});
@@ -361,7 +381,9 @@ const Admin = () => {
       reviews: 0,
       inStock: parseInt(productForm.stockQuantity) > 0,
       stockQuantity: parseInt(productForm.stockQuantity),
-      flavors: productForm.flavors
+      flavors: productForm.flavors,
+      ingredients: productForm.ingredients || undefined,
+      aboutProduct: productForm.aboutProduct || undefined
     });
     resetProductForm();
     setIsProductDialogOpen(false);
@@ -380,7 +402,9 @@ const Admin = () => {
       image: product.image,
       badge: product.badge || "",
       stockQuantity: product.stockQuantity.toString(),
-      flavors: product.flavors || []
+      flavors: product.flavors || [],
+      ingredients: product.ingredients || "",
+      aboutProduct: product.aboutProduct || ""
     });
     setIsProductDialogOpen(true);
   };
@@ -416,7 +440,9 @@ const Admin = () => {
       badge: productForm.badge || undefined,
       inStock: parseInt(productForm.stockQuantity) > 0,
       stockQuantity: parseInt(productForm.stockQuantity),
-      flavors: productForm.flavors
+      flavors: productForm.flavors,
+      ingredients: productForm.ingredients || undefined,
+      aboutProduct: productForm.aboutProduct || undefined
     });
     resetProductForm();
     setEditingProduct(null);
@@ -947,6 +973,26 @@ const Admin = () => {
                             </div>
                           )}
                         </div>
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label htmlFor="ingredients">Ingredients</Label>
+                        <Textarea
+                          id="ingredients"
+                          value={productForm.ingredients}
+                          onChange={(e) => setProductForm({...productForm, ingredients: e.target.value})}
+                          placeholder="Enter ingredients (one per line or comma separated)"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="col-span-2 space-y-2">
+                        <Label htmlFor="aboutProduct">About This Product</Label>
+                        <Textarea
+                          id="aboutProduct"
+                          value={productForm.aboutProduct}
+                          onChange={(e) => setProductForm({...productForm, aboutProduct: e.target.value})}
+                          placeholder="Enter detailed product information, care instructions, etc."
+                          rows={4}
+                        />
                       </div>
                       <div className="col-span-2 space-y-2">
                         <Label htmlFor="badge">Badge (e.g., New, Sale, Best Seller)</Label>

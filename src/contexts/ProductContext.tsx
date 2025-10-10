@@ -17,6 +17,8 @@ export interface Product {
   flavors?: string[];
   type: string;
   onSale?: boolean;
+  ingredients?: string;
+  aboutProduct?: string;
 }
 
 interface ProductContextType {

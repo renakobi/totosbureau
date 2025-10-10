@@ -40,7 +40,8 @@ const Cart = () => {
       return;
     }
     
-    setShowCheckoutReview(true);
+    // Navigate to the new Stripe checkout page
+    navigate("/checkout");
   };
 
   const handleProceedToPayment = async () => {
@@ -179,8 +180,8 @@ const Cart = () => {
     });
   };
 
-  const handleRemoveItem = (id: number, name: string) => {
-    removeFromCart(id);
+  const handleRemoveItem = (id: number, name: string, variant?: string) => {
+    removeFromCart(id, variant);
     toast({
       title: "Item Removed",
       description: `${name} has been removed from your cart.`,
@@ -285,8 +286,16 @@ const Cart = () => {
                   <Card key={item.id} className="overflow-hidden">
                     <CardContent className="p-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-primary/10 rounded-lg flex items-center justify-center text-2xl">
-                          {item.image}
+                        <div className="w-20 h-20 bg-muted/30 rounded-lg flex items-center justify-center overflow-hidden">
+                          {item.image && (item.image.startsWith('http') || item.image.startsWith('data:')) ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="text-2xl">🐾</div>
+                          )}
                         </div>
                         
                         <div className="flex-1">
@@ -298,7 +307,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.variant)}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -306,7 +315,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.variant)}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -317,7 +326,7 @@ const Cart = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleRemoveItem(item.id, item.name)}
+                            onClick={() => handleRemoveItem(item.id, item.name, item.variant)}
                             className="text-destructive hover:text-destructive/80"
                           >
                             <Trash2 className="h-4 w-4 mr-1" />

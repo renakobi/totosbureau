@@ -45,7 +45,7 @@ export interface Order {
 
 interface OrderContextType {
   orders: Order[];
-  addOrder: (order: Omit<Order, 'id' | 'orderNumber' | 'orderDate' | 'status'>) => void;
+  addOrder: (order: Omit<Order, 'id' | 'orderNumber' | 'orderDate' | 'status'>) => Order;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   getOrderById: (orderId: string) => Order | undefined;
   getRecentOrders: (limit?: number) => Order[];
@@ -69,7 +69,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return `TB-${timestamp}-${random}`;
   };
 
-  const addOrder = (orderData: Omit<Order, 'id' | 'orderNumber' | 'orderDate' | 'status'>) => {
+  const addOrder = (orderData: Omit<Order, 'id' | 'orderNumber' | 'orderDate' | 'status'>): Order => {
     const newOrder: Order = {
       ...orderData,
       id: `order-${Date.now()}`,
