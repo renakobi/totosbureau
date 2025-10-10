@@ -51,7 +51,7 @@ const Header = () => {
                 />
               </div>
             </div>
-            <div className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
+            <div className="text-sm sm:text-xl md:text-2xl font-bold text-secondary">
               Toto's Bureau
             </div>
           </Link>
@@ -80,21 +80,6 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-1 lg:space-x-2">
-            <Button variant="ghost" size="icon" className="lg:hidden hover:bg-primary/10 transition-smooth">
-              <Search className="h-4 w-4" />
-            </Button>
-            <Link to="/favorites">
-              <Button variant="ghost" size="icon" className="relative hover:bg-secondary/10 transition-smooth">
-                <Heart className="h-4 w-4" />
-                {favorites.length > 0 && (
-                  <Badge 
-                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs bg-secondary text-secondary-foreground animate-bounce"
-                  >
-                    {favorites.length}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
             <Link to="/cart">
               <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 transition-smooth">
                 <ShoppingCart className="h-4 w-4" />
@@ -131,16 +116,38 @@ const Header = () => {
           </Button>
         </div>
 
+        {/* Mobile Search Bar */}
+        <div className="lg:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-3">
+            <form onSubmit={handleSearch} className="w-full relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className={`pl-10 pr-4 py-2 w-full bg-background/80 border-border/50 focus:bg-background focus:border-primary/50 transition-all duration-300 ${
+                    isSearchFocused ? 'shadow-medium' : ''
+                  }`}
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+
         {/* Category Menu Overlay */}
         {isMenuOpen && (
           <div className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
-            <div className="container mx-auto px-4 pt-24 pb-8">
-              <div className="max-w-md max-h-[80vh] overflow-y-auto space-y-4 bg-card/95 backdrop-blur-md p-8 pb-12 rounded-2xl shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
+            <div className="container mx-auto px-4 pt-20 pb-4">
+              <div className="max-w-sm max-h-[70vh] overflow-y-auto space-y-3 bg-card/95 backdrop-blur-md p-6 pb-8 rounded-xl shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
                 {/* Home Link */}
                 <div>
                   <Link 
                     to="/" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Home</span>
@@ -150,11 +157,11 @@ const Header = () => {
                 {/* Shop Category */}
                 <div>
                   <button 
-                    className="flex items-center justify-between w-full text-left text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="flex items-center justify-between w-full text-left text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
                     onClick={() => setActiveDropdown(activeDropdown === 'shop' ? null : 'shop')}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Shop</span>
-                    <ChevronRight className={`h-6 w-6 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-5 w-5 transition-transform ${activeDropdown === 'shop' ? 'rotate-90' : ''}`} />
                   </button>
                   {activeDropdown === 'shop' && (
                     <div className="pl-4 space-y-2 mt-2 animate-in slide-in-from-top-2 duration-200">
@@ -205,7 +212,7 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/products?category=subscription" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Subscription Boxes</span>
@@ -216,19 +223,29 @@ const Header = () => {
                 <div>
                   <Link 
                     to="/about" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Get to know Toto</span>
                   </Link>
                 </div>
 
+                {/* Liked Items Link */}
+                <div>
+                  <Link 
+                    to="/favorites" 
+                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="group-hover:translate-x-2 transition-transform inline-block">Liked Items ({favorites.length})</span>
+                  </Link>
+                </div>
 
                 {/* Contact Link */}
                 <div>
                   <Link 
                     to="/contact" 
-                    className="block text-2xl font-semibold text-foreground hover:text-primary transition-smooth py-3 group"
+                    className="block text-lg font-semibold text-foreground hover:text-primary transition-smooth py-2 group"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <span className="group-hover:translate-x-2 transition-transform inline-block">Contact</span>
@@ -247,37 +264,6 @@ const Header = () => {
                   </Link>
                 </div>
 
-                <div className="pt-6 border-t border-border/50">
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSearch();
-                            setIsMenuOpen(false);
-                          }
-                        }}
-                        className="pl-10 pr-4 py-3 w-full bg-background/80 border-border/50 focus:bg-background focus:border-primary/50"
-                      />
-                    </div>
-                    <Button 
-                      onClick={() => {
-                        handleSearch();
-                        setIsMenuOpen(false);
-                      }}
-                      className="w-full" 
-                      size="lg"
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      Search Products
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

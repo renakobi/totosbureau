@@ -28,7 +28,7 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-4 sm:py-6 bg-gradient-to-b from-amber-50/40 to-muted/20">
+    <section className="py-3 sm:py-6 bg-gradient-to-b from-amber-50/40 to-muted/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center space-y-1 sm:space-y-2 mb-2 sm:mb-3">
@@ -36,12 +36,12 @@ const FeaturedProducts = () => {
             <Star className="h-3 w-3" />
             Featured Products
           </div>
-          <h2 className="text-base sm:text-lg font-bold">
+          <h2 className="text-sm sm:text-lg font-bold">
             <span className="text-foreground">
               Top Picks
             </span>
             <br />
-            <span className="text-base sm:text-lg text-forest">
+            <span className="text-sm sm:text-lg text-forest">
               for Your Furry Friends
             </span>
           </h2>
@@ -53,7 +53,7 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6 px-4 sm:px-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-3 sm:mb-6 px-2 sm:px-0">
             {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
@@ -66,7 +66,7 @@ const FeaturedProducts = () => {
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative h-20 sm:h-24 md:h-28 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+                <div className="relative h-16 sm:h-24 md:h-28 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img
                       src={product.image}
@@ -183,7 +183,7 @@ const FeaturedProducts = () => {
               
               <CardFooter className="p-1.5 sm:p-2 pt-0">
         <Button 
-          className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1"
+          className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1 h-7 sm:h-8"
           onClick={(e) => handleAddToCart(e, product)}
         >
                   <ShoppingCart className="h-3 w-3 mr-1" />

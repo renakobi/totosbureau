@@ -64,8 +64,60 @@ const HowItWorks = () => {
             </p>
           </div>
 
-          {/* Steps Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Mobile Circular Layout */}
+          <div className="block md:hidden">
+            <div className="relative w-80 h-80 mx-auto">
+              {/* Circular container */}
+              <div className="relative w-full h-full">
+                {steps.map((step, index) => {
+                  const IconComponent = step.icon;
+                  const angle = (index * 90) - 90; // Start from top, go clockwise
+                  const radius = 120; // Distance from center
+                  const x = Math.cos(angle * Math.PI / 180) * radius;
+                  const y = Math.sin(angle * Math.PI / 180) * radius;
+                  
+                  return (
+                    <div
+                      key={index}
+                      className="absolute w-16 h-16 transform -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        left: `calc(50% + ${x}px)`,
+                        top: `calc(50% + ${y}px)`
+                      }}
+                    >
+                      <div className={`w-full h-full rounded-full ${step.bgColor} border-2 ${step.borderColor} flex flex-col items-center justify-center p-2 group cursor-pointer hover:scale-110 transition-all duration-300`}>
+                        {/* Step Number */}
+                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                          {step.number}
+                        </div>
+                        
+                        {/* Icon */}
+                        <div className={`w-6 h-6 bg-gradient-to-r ${step.color} rounded-full flex items-center justify-center mb-1`}>
+                          <IconComponent className="h-3 w-3 text-white" />
+                        </div>
+                        
+                        {/* Title */}
+                        <h3 className="text-xs font-bold text-foreground text-center leading-tight">
+                          {step.title}
+                        </h3>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {/* Center circle */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-r from-primary/20 to-forest/20 rounded-full border-2 border-primary/30 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-primary">Toto's</div>
+                    <div className="text-xs font-bold text-forest">Bureau</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Grid Layout */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
@@ -113,16 +165,16 @@ const HowItWorks = () => {
           </div>
 
           {/* CTA */}
-          <div className="text-center mt-8 sm:mt-10">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+          <div className="text-center mt-6 sm:mt-10">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
               <Link to="/products?category=subscription">
-                <Button size="sm" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
+                <Button size="sm" className="text-xs sm:text-base px-3 sm:px-6 py-2 sm:py-4 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
                   Subscription Boxes
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </Link>
               <Link to="/about">
-                <Button variant="outline" size="sm" className="text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4 border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 hover:scale-105">
+                <Button variant="outline" size="sm" className="text-xs sm:text-base px-3 sm:px-6 py-2 sm:py-4 border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 hover:scale-105">
                   Get to Know Toto
                 </Button>
               </Link>

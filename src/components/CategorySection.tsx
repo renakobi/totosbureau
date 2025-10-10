@@ -57,31 +57,31 @@ const CategorySection = () => {
     }
   ];
   return (
-    <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-b from-amber-50/5 to-accent/2">
+    <section className="py-4 sm:py-8 md:py-10 bg-gradient-to-b from-amber-50/5 to-accent/2">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-4 sm:mb-6">
+        <div className="text-center mb-3 sm:mb-6">
           <div className="inline-flex items-center gap-2 bg-forest/10 text-forest px-4 py-2 rounded-full text-sm font-medium mb-3">
             <Package className="h-4 w-4" />
             Categories
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3">
+          <h2 className="text-xl sm:text-4xl md:text-5xl font-bold mb-3">
             <span className="text-foreground">
               Find Everything
             </span>
             <br />
-            <span className="text-3xl md:text-4xl text-forest">
+            <span className="text-xl md:text-4xl text-forest">
               for Your Best Friend
             </span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Browse our carefully organized categories to find exactly what your pet needs. 
             From daily essentials to special treats, we've got it all covered.
           </p>
         </div>
 
         {/* Category Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
           {categories.map((category, index) => {
             const IconComponent = category.icon;
             return (
