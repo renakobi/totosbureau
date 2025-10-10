@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 // import mobileHeroImage from "@/assets/mobile.jpeg";
 
 const Hero = () => {
+  // Force rebuild timestamp
+  const buildTime = new Date().toISOString();
   return (
     <section className="relative min-h-[70vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden section-spacing">
       {/* Background Images - Desktop and Mobile */}

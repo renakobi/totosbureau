@@ -1,0 +1,3 @@
+Deployment trigger - Force rebuild
+Timestamp: 2025-01-03T13:30:00Z
+Changes: UI improvements, image cache busting, menu fixes
