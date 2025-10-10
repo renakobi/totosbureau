@@ -28,30 +28,45 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-6 sm:py-8 bg-white">
+    <section className="py-4 sm:py-6 bg-gradient-to-b from-amber-50/40 to-muted/20">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
-            Top Picks for Your Furry Friends
+        <div className="text-center space-y-1 sm:space-y-2 mb-2 sm:mb-3">
+          <div className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
+            <Star className="h-3 w-3" />
+            Featured Products
+          </div>
+          <h2 className="text-base sm:text-lg font-bold">
+            <span className="text-foreground">
+              Top Picks
+            </span>
+            <br />
+            <span className="text-base sm:text-lg text-forest">
+              for Your Furry Friends
+            </span>
           </h2>
-          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-            Hand-selected products that pets and their parents absolutely love
+          <p className="text-xs text-muted-foreground max-w-2xl mx-auto px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Hand-selected products that pets and their parents absolutely love. 
+            Each item is carefully chosen for quality, safety, and maximum pet happiness.
           </p>
         </div>
 
-        {/* Products Grid - Etsy Style */}
+        {/* Products Grid */}
         {featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 mb-4 sm:mb-6 px-2 sm:px-0">
-            {featuredProducts.slice(0, 10).map((product, index) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-1 sm:gap-2 lg:gap-3 mb-4 sm:mb-6 px-4 sm:px-0">
+            {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
-                className="group hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer bg-white border border-gray-200 h-full flex flex-col rounded-lg"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className={`group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
+                  index === 0 ? 'bg-secondary/5 border-secondary/20' :
+                  index === 1 ? 'bg-primary/5 border-primary/20' :
+                  'bg-accent/5 border-accent/20'
+                }`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
               <CardContent className="p-0 flex-1 flex flex-col">
                 {/* Product Image */}
-                <div className="relative aspect-square bg-gray-50 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                <div className="relative h-20 sm:h-24 md:h-28 bg-muted/30 flex items-center justify-center group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                   {product.image && (product.image.startsWith('http') || product.image.startsWith('data:')) ? (
                     <img
                       src={product.image}
@@ -77,8 +92,8 @@ const FeaturedProducts = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute top-2 right-2 transition-all duration-200 bg-white/90 hover:bg-white shadow-sm hover:scale-105 rounded-full h-6 w-6 ${
-                      isFavorite(product.id.toString()) ? 'text-red-500' : 'text-gray-600'
+                    className={`absolute top-3 right-3 transition-all duration-200 bg-background/90 hover:bg-background shadow-medium hover:scale-105 ${
+                      isFavorite(product.id.toString()) ? 'text-red-500' : 'text-muted-foreground'
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -86,12 +101,18 @@ const FeaturedProducts = () => {
                       toggleFavorite(product.id.toString());
                     }}
                   >
-                    <Heart className={`h-3 w-3 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
                   </Button>
                   
                   {product.badge && (
                     <Badge 
-                      className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-1.5 py-0.5 shadow-sm rounded"
+                      className={`absolute top-3 left-3 shadow-medium ${
+                        product.badge === "Best Seller" ? "bg-secondary text-secondary-foreground" :
+                        product.badge === "New" ? "bg-primary text-primary-foreground" :
+                        product.badge === "20% Off" ? "bg-accent text-accent-foreground" :
+                        product.badge === "Premium" ? "bg-forest text-forest-foreground" :
+                        "bg-muted text-muted-foreground"
+                      }`}
                     >
                       {product.badge}
                     </Badge>
@@ -99,37 +120,60 @@ const FeaturedProducts = () => {
                 </div>
 
                 {/* Product Info */}
-                <div className="p-2 flex-1 flex flex-col">
-                  <h3 className="text-xs font-medium text-gray-900 mb-1 group-hover:text-orange-500 transition-colors duration-200 line-clamp-2">
+                <div className="p-1 sm:p-1.5 flex-1 flex flex-col">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-1 py-0.5">
+                      {product.category}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20 px-1 py-0.5">
+                      {product.type}
+                    </Badge>
+                  </div>
+                  
+                  <h3 className="font-bold text-xs mb-1 group-hover:text-primary transition-colors duration-300">
                     {product.name}
                   </h3>
+
+                  {/* Flavors */}
+                  {product.flavors && product.flavors.length > 0 && (
+                    <div className="mb-1">
+                      <div className="flex flex-wrap gap-1">
+                        {product.flavors.slice(0, 2).map((flavor, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs px-1 py-0.5">
+                            {flavor}
+                          </Badge>
+                        ))}
+                        {product.flavors.length > 2 && (
+                          <Badge variant="secondary" className="text-xs px-1 py-0.5">
+                            +{product.flavors.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-muted-foreground mb-1 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {product.description}
+                  </p>
                   
                   {/* Rating */}
                   <div className="flex items-center gap-1 mb-1">
                     <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-2.5 w-2.5 ${
-                            i < Math.floor(product.rating) 
-                              ? 'text-yellow-400 fill-yellow-400' 
-                              : 'text-gray-300'
-                          }`} 
-                        />
-                      ))}
+                      <Star className="h-3 w-3 fill-accent text-accent" />
+                      <span className="text-xs font-semibold ml-1">{product.rating}</span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      ({product.reviews})
+                    <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      ({product.reviews} reviews)
                     </span>
                   </div>
                   
                   {/* Price */}
-                  <div className="flex items-center gap-1 mt-auto">
-                    <span className="text-sm font-bold text-gray-900">
+                  <div className="flex items-center gap-1 mb-2 mt-auto">
+                    <span className="text-sm font-bold text-foreground">
                       ${product.price}
                     </span>
                     {product.originalPrice && (
-                      <span className="text-xs text-gray-500 line-through">
+                      <span className="text-xs text-muted-foreground line-through">
                         ${product.originalPrice}
                       </span>
                     )}
@@ -137,6 +181,15 @@ const FeaturedProducts = () => {
                 </div>
               </CardContent>
               
+              <CardFooter className="p-1.5 sm:p-2 pt-0">
+        <Button 
+          className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1"
+          onClick={(e) => handleAddToCart(e, product)}
+        >
+                  <ShoppingCart className="h-3 w-3 mr-1" />
+                  Add to Cart
+                </Button>
+              </CardFooter>
               </Card>
             </Link>
             ))}
