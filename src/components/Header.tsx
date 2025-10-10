@@ -29,7 +29,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/99 backdrop-blur-md supports-[backdrop-filter]:bg-background/98 border-b border-border/50 shadow-soft">
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
       <div className="container mx-auto px-4">
         <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Hamburger Menu Button */}
@@ -136,9 +136,9 @@ const Header = () => {
 
         {/* Category Menu Overlay */}
         {isMenuOpen && (
-          <div className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
-            <div className="container mx-auto px-4 pt-24 pb-8" onClick={(e) => e.stopPropagation()}>
-              <div className="max-w-md max-h-[80vh] overflow-y-auto space-y-4 bg-gradient-to-br from-card to-primary/5 p-8 pb-12 rounded-2xl shadow-strong border border-border/50">
+          <div className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
+            <div className="container mx-auto px-4 pt-24 pb-8">
+              <div className="max-w-md max-h-[80vh] overflow-y-auto space-y-4 bg-card/95 backdrop-blur-md p-8 pb-12 rounded-2xl shadow-strong border border-border" onClick={(e) => e.stopPropagation()}>
                 {/* Home Link */}
                 <div>
                   <Link 
