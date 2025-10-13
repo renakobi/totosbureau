@@ -1,5 +1,20 @@
 {
+  "functions": {
+    "api/create-payment-intent.js": {
+      "runtime": "nodejs18.x"
+    },
+    "api/confirm-payment.js": {
+      "runtime": "nodejs18.x"
+    },
+    "api/send-payment-email.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
     {
       "source": "/((?!.*\\.).*)$",
       "destination": "/index.html"

@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, ShoppingCart, CreditCard } from 'lucide-react';
-// import StripePayment from '@/components/StripePayment';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, ShoppingCart, CreditCard, Mail } from 'lucide-react';
+import StripePayment from '@/components/StripePayment';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Checkout = () => {
@@ -15,6 +17,8 @@ const Checkout = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // Debug logging
   console.log('Checkout page loaded, cartItems:', cartItems);
@@ -23,6 +27,21 @@ const Checkout = () => {
   const shipping = totalPrice > 50 ? 0 : 9.99; // Free shipping over $50
   const tax = totalPrice * 0.08; // 8% tax
   const finalTotal = totalPrice + shipping + tax;
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    setCustomerEmail(email);
+    setEmailError(null);
+    
+    if (email && !validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+    }
+  };
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     setPaymentSuccess(true);
@@ -36,6 +55,26 @@ const Checkout = () => {
 
   const handlePaymentError = (error: string) => {
     setPaymentError(error);
+  };
+
+  const handleProceedToPayment = () => {
+    if (!customerEmail) {
+      setEmailError('Email is required');
+      return;
+    }
+    if (!validateEmail(customerEmail)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+    setShowPayment(true);
+  };
+
+  const getOrderItems = () => {
+    return cartItems.map(item => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price
+    }));
   };
 
   if (cartItems.length === 0 && !paymentSuccess) {
@@ -164,19 +203,41 @@ const Checkout = () => {
             {!showPayment ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>Payment Method</CardTitle>
+                  <CardTitle>Payment Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
-                    Choose your preferred payment method to complete your order.
+                    Enter your email address and choose your preferred payment method to complete your order.
                   </p>
+                  
+                  {/* Email Input */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address *</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={customerEmail}
+                        onChange={handleEmailChange}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                    {emailError && (
+                      <p className="text-sm text-destructive">{emailError}</p>
+                    )}
+                  </div>
+
                   <Button
-                    onClick={() => setShowPayment(true)}
+                    onClick={handleProceedToPayment}
                     className="w-full"
                     size="lg"
+                    disabled={!customerEmail || !!emailError}
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    Pay with Card
+                    Proceed to Payment
                   </Button>
                 </CardContent>
               </Card>
@@ -197,44 +258,14 @@ const Checkout = () => {
                   </Alert>
                 )}
 
-                {/* Demo Payment Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CreditCard className="w-5 h-5" />
-                      Demo Payment
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      This is a demonstration checkout. No real payment will be processed.
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Alert className="bg-blue-50 border-blue-200">
-                      <AlertDescription className="text-blue-800">
-                        <strong>Demo Mode:</strong> Click the button below to simulate a successful payment.
-                      </AlertDescription>
-                    </Alert>
-                    
-                    <Button
-                      onClick={() => {
-                        // Simulate payment processing
-                        const paymentIntent = {
-                          id: `pi_demo_${Date.now()}`,
-                          amount: finalTotal * 100,
-                          currency: 'usd',
-                          status: 'succeeded',
-                          payment_method: 'demo_card',
-                        };
-                        handlePaymentSuccess(paymentIntent);
-                      }}
-                      className="w-full bg-primary hover:bg-primary/90 text-white"
-                      size="lg"
-                    >
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Pay ${finalTotal.toFixed(2)} (Demo)
-                    </Button>
-                  </CardContent>
-                </Card>
+                {/* Real Stripe Payment Form */}
+                <StripePayment
+                  amount={finalTotal}
+                  customerEmail={customerEmail}
+                  orderItems={getOrderItems()}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                />
               </div>
             )}
           </div>
