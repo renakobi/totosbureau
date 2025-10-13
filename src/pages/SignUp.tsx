@@ -56,7 +56,8 @@ const SignUp = () => {
   };
 
   const validateFormData = () => {
-    const validationErrors = validateForm(formData, {
+    try {
+      const validationErrors = validateForm(formData, {
       username: {
         required: true,
         minLength: 3,
@@ -144,8 +145,13 @@ const SignUp = () => {
       }
     });
 
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+      setErrors(validationErrors);
+      return Object.keys(validationErrors).length === 0;
+    } catch (error) {
+      console.error('Validation error:', error);
+      setErrors({ general: 'Validation failed. Please try again.' });
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

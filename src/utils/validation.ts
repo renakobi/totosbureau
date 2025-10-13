@@ -11,42 +11,80 @@ export interface ValidationErrors {
 }
 
 export const validateField = (value: string, rules: ValidationRule): string | null => {
-  if (rules.required && (!value || value.trim() === '')) {
-    return 'This field is required';
-  }
+  try {
+    // Ensure value is a string
+    const fieldValue = value || '';
+    
+    if (!rules || typeof rules !== 'object') {
+      console.error('Invalid rules passed to validateField:', rules);
+      return 'Invalid validation rules';
+    }
 
-  if (value && rules.minLength && value.length < rules.minLength) {
-    return `Must be at least ${rules.minLength} characters`;
-  }
+    if (rules.required && (!fieldValue || fieldValue.trim() === '')) {
+      return 'This field is required';
+    }
 
-  if (value && rules.maxLength && value.length > rules.maxLength) {
-    return `Must be no more than ${rules.maxLength} characters`;
-  }
+    if (fieldValue && rules.minLength && fieldValue.length < rules.minLength) {
+      return `Must be at least ${rules.minLength} characters`;
+    }
 
-  if (value && rules.pattern && !rules.pattern.test(value)) {
-    return 'Invalid format';
-  }
+    if (fieldValue && rules.maxLength && fieldValue.length > rules.maxLength) {
+      return `Must be no more than ${rules.maxLength} characters`;
+    }
 
-  if (value && rules.custom) {
-    return rules.custom(value);
-  }
+    if (fieldValue && rules.pattern && !rules.pattern.test(fieldValue)) {
+      return 'Invalid format';
+    }
 
-  return null;
+    if (fieldValue && rules.custom && typeof rules.custom === 'function') {
+      try {
+        return rules.custom(fieldValue);
+      } catch (customError) {
+        console.error('Error in custom validation:', customError);
+        return 'Validation error';
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error in validateField:', error);
+    return 'Validation error';
+  }
 };
 
 export const validateForm = (data: Record<string, string>, rules: Record<string, ValidationRule>): ValidationErrors => {
-  const errors: ValidationErrors = {};
+  try {
+    const errors: ValidationErrors = {};
 
-  Object.keys(rules).forEach(field => {
-    // Ensure the field value is a string
-    const fieldValue = data[field] || '';
-    const error = validateField(fieldValue, rules[field]);
-    if (error) {
-      errors[field] = error;
+    if (!data || typeof data !== 'object') {
+      console.error('Invalid data passed to validateForm:', data);
+      return { general: 'Invalid form data' };
     }
-  });
 
-  return errors;
+    if (!rules || typeof rules !== 'object') {
+      console.error('Invalid rules passed to validateForm:', rules);
+      return { general: 'Invalid validation rules' };
+    }
+
+    Object.keys(rules).forEach(field => {
+      try {
+        // Ensure the field value is a string
+        const fieldValue = data[field] || '';
+        const error = validateField(fieldValue, rules[field]);
+        if (error) {
+          errors[field] = error;
+        }
+      } catch (fieldError) {
+        console.error(`Error validating field ${field}:`, fieldError);
+        errors[field] = 'Validation error for this field';
+      }
+    });
+
+    return errors;
+  } catch (error) {
+    console.error('Error in validateForm:', error);
+    return { general: 'Validation failed' };
+  }
 };
 
 // Common validation rules
