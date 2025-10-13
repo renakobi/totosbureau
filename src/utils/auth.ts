@@ -35,14 +35,10 @@ export const DEFAULT_ADMIN = {
   isActive: true
 };
 
-// Password validation rules
+// Password validation rules - simplified
 export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
-  // Debug logging
-  console.log('validatePassword called with:', password, 'type:', typeof password);
-  
   // Ensure password is a string and not empty
   if (!password || typeof password !== 'string' || password.trim() === '') {
-    console.log('Password validation failed - empty or invalid');
     return {
       isValid: false,
       errors: ['Password is required']
@@ -51,23 +47,18 @@ export const validatePassword = (password: string): { isValid: boolean; errors: 
 
   const errors: string[] = [];
   
-  if (password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
+  // Minimum length
+  if (password.length < 6) {
+    errors.push('Password must be at least 6 characters long');
   }
   
-  if (!/(?=.*[a-z])/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
-  }
-  
-  if (!/(?=.*[A-Z])/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
-  }
-  
-  if (!/(?=.*\d)/.test(password)) {
+  // Must contain at least one number
+  if (!/\d/.test(password)) {
     errors.push('Password must contain at least one number');
   }
   
-  if (!/(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(password)) {
+  // Must contain at least one special character
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
     errors.push('Password must contain at least one special character');
   }
   
