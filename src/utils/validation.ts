@@ -38,7 +38,9 @@ export const validateForm = (data: Record<string, string>, rules: Record<string,
   const errors: ValidationErrors = {};
 
   Object.keys(rules).forEach(field => {
-    const error = validateField(data[field] || '', rules[field]);
+    // Ensure the field value is a string
+    const fieldValue = data[field] || '';
+    const error = validateField(fieldValue, rules[field]);
     if (error) {
       errors[field] = error;
     }

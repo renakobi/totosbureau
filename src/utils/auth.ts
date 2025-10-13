@@ -37,11 +37,11 @@ export const DEFAULT_ADMIN = {
 
 // Password validation rules
 export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
-  // Ensure password is a string
-  if (typeof password !== 'string') {
+  // Ensure password is a string and not empty
+  if (!password || typeof password !== 'string' || password.trim() === '') {
     return {
       isValid: false,
-      errors: ['Password must be a valid string']
+      errors: ['Password is required']
     };
   }
 
