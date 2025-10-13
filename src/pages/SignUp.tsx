@@ -73,9 +73,16 @@ const SignUp = () => {
       password: {
         required: true,
         custom: (value: string) => {
+          // Debug logging
+          console.log('Password validation - value:', value, 'type:', typeof value);
+          
           // Ensure value is a string
           const passwordValue = value || '';
+          console.log('Password validation - passwordValue:', passwordValue);
+          
           const validation = validatePassword(passwordValue);
+          console.log('Password validation - result:', validation);
+          
           if (!validation.isValid) {
             return validation.errors && validation.errors.length > 0 
               ? validation.errors[0] 
