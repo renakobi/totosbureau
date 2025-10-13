@@ -74,8 +74,6 @@ const SignUp = () => {
         required: true,
         minLength: 6,
         custom: (value: string) => {
-          console.log('Password custom validation called with:', value);
-          
           // Ensure value is a string
           const passwordValue = value || '';
           

@@ -98,14 +98,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error('Username or email already exists');
     }
 
-    // Validate password
-    const passwordValidation = validatePassword(userData.password);
-    if (!passwordValidation.isValid) {
-      const errorMessage = passwordValidation.errors && passwordValidation.errors.length > 0 
-        ? passwordValidation.errors.join(', ')
-        : 'Invalid password';
-      throw new Error(errorMessage);
-    }
+    // Password validation is handled in the form validation
+    // No need to validate again here
 
     const newUser: User = {
       ...userData,
