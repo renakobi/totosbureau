@@ -72,16 +72,23 @@ const SignUp = () => {
       email: validationRules.email,
       password: {
         required: true,
+        minLength: 6,
         custom: (value: string) => {
+          console.log('Password custom validation called with:', value);
+          
           // Ensure value is a string
           const passwordValue = value || '';
-          const validation = validatePassword(passwordValue);
           
-          if (!validation.isValid) {
-            return validation.errors && validation.errors.length > 0 
-              ? validation.errors[0] 
-              : 'Invalid password';
+          // Check for number
+          if (!/\d/.test(passwordValue)) {
+            return 'Password must contain at least one number';
           }
+          
+          // Check for special character
+          if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordValue)) {
+            return 'Password must contain at least one special character';
+          }
+          
           return null;
         }
       },
