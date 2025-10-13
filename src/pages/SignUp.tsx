@@ -75,7 +75,9 @@ const SignUp = () => {
         custom: (value: string) => {
           const validation = validatePassword(value);
           if (!validation.isValid) {
-            return validation.errors[0]; // Return first error
+            return validation.errors && validation.errors.length > 0 
+              ? validation.errors[0] 
+              : 'Invalid password';
           }
           return null;
         }

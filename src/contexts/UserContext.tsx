@@ -101,7 +101,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Validate password
     const passwordValidation = validatePassword(userData.password);
     if (!passwordValidation.isValid) {
-      throw new Error(passwordValidation.errors.join(', '));
+      const errorMessage = passwordValidation.errors && passwordValidation.errors.length > 0 
+        ? passwordValidation.errors.join(', ')
+        : 'Invalid password';
+      throw new Error(errorMessage);
     }
 
     const newUser: User = {

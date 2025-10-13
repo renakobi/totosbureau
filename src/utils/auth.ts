@@ -37,6 +37,14 @@ export const DEFAULT_ADMIN = {
 
 // Password validation rules
 export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+  // Ensure password is a string
+  if (typeof password !== 'string') {
+    return {
+      isValid: false,
+      errors: ['Password must be a valid string']
+    };
+  }
+
   const errors: string[] = [];
   
   if (password.length < 8) {
@@ -61,6 +69,6 @@ export const validatePassword = (password: string): { isValid: boolean; errors: 
   
   return {
     isValid: errors.length === 0,
-    errors
+    errors: errors || []
   };
 };
