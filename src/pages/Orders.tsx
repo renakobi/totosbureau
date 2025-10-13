@@ -149,7 +149,7 @@ const Orders = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
-                    <span>Subtotal ({selectedOrder.items.length} items)</span>
+                    <span>Subtotal ({selectedOrder.items?.length || 0} items)</span>
                     <span>${selectedOrder.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
@@ -259,7 +259,7 @@ const Orders = () => {
             <p className="text-muted-foreground">Track and manage your recent orders</p>
           </div>
 
-          {recentOrders.length === 0 ? (
+          {(recentOrders?.length || 0) === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
                 <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -301,7 +301,7 @@ const Orders = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div>
                         <p className="text-sm text-muted-foreground">Items</p>
-                        <p className="font-medium">{order.items.length} items</p>
+                        <p className="font-medium">{order.items?.length || 0} items</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Total</p>
@@ -314,16 +314,16 @@ const Orders = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      {order.items.slice(0, 3).map((item) => (
+                      {order.items?.slice(0, 3).map((item) => (
                         <div key={item.id} className="flex items-center space-x-2 text-sm text-muted-foreground">
                           <span className="text-lg">{item.image}</span>
                           <span>{item.name}</span>
                           {item.quantity > 1 && <span>({item.quantity})</span>}
                         </div>
                       ))}
-                      {order.items.length > 3 && (
+                      {(order.items?.length || 0) > 3 && (
                         <span className="text-sm text-muted-foreground">
-                          +{order.items.length - 3} more items
+                          +{(order.items?.length || 0) - 3} more items
                         </span>
                       )}
                     </div>

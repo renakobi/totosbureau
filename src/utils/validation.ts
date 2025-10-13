@@ -103,6 +103,9 @@ export const validationRules = {
     required: true,
     minLength: 6,
     custom: (value: string) => {
+      if (!value || typeof value !== 'string') {
+        return 'Password is required';
+      }
       if (value.length < 6) {
         return 'Password must be at least 6 characters';
       }

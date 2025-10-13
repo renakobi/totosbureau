@@ -44,7 +44,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (storedUsers) {
         const parsed = JSON.parse(storedUsers);
         // Initialize with default admin if no users exist
-        if (parsed.length === 0) {
+        if (!parsed || parsed.length === 0) {
           return [DEFAULT_ADMIN];
         }
         return parsed;
