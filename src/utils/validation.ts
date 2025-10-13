@@ -11,7 +11,11 @@ export interface ValidationErrors {
 }
 
 export const validateField = (value: string, rules: ValidationRule): string | null => {
+  // Debug logging
+  console.log('validateField called with:', { value, type: typeof value, rules });
+  
   if (rules.required && (!value || value.trim() === '')) {
+    console.log('Field is required but empty');
     return 'This field is required';
   }
 
@@ -28,6 +32,7 @@ export const validateField = (value: string, rules: ValidationRule): string | nu
   }
 
   if (value && rules.custom) {
+    console.log('Calling custom validation with value:', value);
     return rules.custom(value);
   }
 
@@ -37,11 +42,15 @@ export const validateField = (value: string, rules: ValidationRule): string | nu
 export const validateForm = (data: Record<string, string>, rules: Record<string, ValidationRule>): ValidationErrors => {
   const errors: ValidationErrors = {};
 
+  console.log('validateForm called with data:', data);
+
   Object.keys(rules).forEach(field => {
     // Ensure the field value is a string
     const fieldValue = data[field] || '';
+    console.log(`Validating field ${field}:`, { fieldValue, type: typeof fieldValue });
     const error = validateField(fieldValue, rules[field]);
     if (error) {
+      console.log(`Error for field ${field}:`, error);
       errors[field] = error;
     }
   });
