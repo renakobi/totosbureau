@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/tempbackground.webp";
+import heroImage from "@/assets/backgroundnew.jpg";
 import mobileHeroImage from "@/assets/mobile.jpeg";
 
 const Hero = () => {
@@ -26,22 +26,19 @@ const Hero = () => {
             backgroundImage: `url(${mobileHeroImage})`
           }}
         />
-        {/* Dark charcoal overlay for optimal text readability */}
-        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(45, 45, 45, 0.6)' }}></div>
-        {/* Warm, natural overlay */}
-        <div className="absolute inset-0 bg-amber-50/5"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-100/3 via-transparent to-amber-50/5"></div>
+        {/* Subtle dark overlay to dim background */}
+        <div className="absolute inset-0 bg-black/5"></div>
       </div>
       
       {/* Content */}
       <div className="relative z-10 container mx-auto container-spacing">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-12">
+        <div className="max-w-4xl">
+          <div className="flex flex-col items-start space-y-8">
             
             {/* Text Content Block */}
-            <div className="flex-1 space-y-6 px-4">
+            <div className="space-y-6 px-4 max-w-lg text-center">
               {/* Main Heading */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-left">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 <span style={{ color: '#fd9f48' }}>
                   Pamper Your Pets with
                 </span>
@@ -52,22 +49,22 @@ const Hero = () => {
               </h1>
               
               {/* Subheading */}
-              <p className="text-base sm:text-lg md:text-xl text-stone-100 max-w-2xl text-left">
-                Cool bundles, mischievous treats, and eco-friendly fun for cats and dogs - 
+              <p className="text-base sm:text-lg md:text-xl max-w-lg mx-auto leading-relaxed font-semibold" style={{ color: 'black' }}>
+                Cool bundles, mischievous treats, and eco-friendly fun for cats and dogs -<br />
                 no fuss, just tail-wags and purrs.
               </p>
             </div>
             
             {/* CTA Buttons Block */}
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:gap-4 w-full lg:w-auto lg:min-w-[280px] px-4">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-md px-4">
               <Link to="/products">
-                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#fd9f48' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e88f3f'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fd9f48'}>
+                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#9aedb6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8dd4a3'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9aedb6'}>
                   Start shopping
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </Link>
               <Link to="/products?category=subscription">
-                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-forest hover:bg-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#9aedb6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8dd4a3'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9aedb6'}>
                   <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Subscription Boxes
                 </Button>

@@ -100,23 +100,7 @@ const HowItWorks = () => {
                 </h4>
               </div>
 
-              {/* Step 4 - Bottom Left */}
-              <div className={`relative p-3 rounded-lg ${steps[3].bgColor} border-2 ${steps[3].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
-                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                  {steps[3].number}
-                </div>
-                <div className={`w-8 h-8 bg-gradient-to-r ${steps[3].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
-                  {React.createElement(steps[3].icon, { className: "h-4 w-4 text-white" })}
-                </div>
-                <h3 className="text-xs font-bold text-foreground mb-1">
-                  {steps[3].title}
-                </h3>
-                <h4 className="text-xs font-semibold text-muted-foreground">
-                  {steps[3].subtitle}
-                </h4>
-              </div>
-
-              {/* Step 3 - Bottom Right */}
+              {/* Step 3 - Bottom Left */}
               <div className={`relative p-3 rounded-lg ${steps[2].bgColor} border-2 ${steps[2].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
                 <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
                   {steps[2].number}
@@ -131,22 +115,40 @@ const HowItWorks = () => {
                   {steps[2].subtitle}
                 </h4>
               </div>
+
+              {/* Step 4 - Bottom Right */}
+              <div className={`relative p-3 rounded-lg ${steps[3].bgColor} border-2 ${steps[3].borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer`}>
+                <div className="absolute -top-2 -left-2 w-5 h-5 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  {steps[3].number}
+                </div>
+                <div className={`w-8 h-8 bg-gradient-to-r ${steps[3].color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {React.createElement(steps[3].icon, { className: "h-4 w-4 text-white" })}
+                </div>
+                <h3 className="text-xs font-bold text-foreground mb-1">
+                  {steps[3].title}
+                </h3>
+                <h4 className="text-xs font-semibold text-muted-foreground">
+                  {steps[3].subtitle}
+                </h4>
+              </div>
             </div>
           </div>
 
           {/* Desktop Grid Layout */}
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="hidden md:grid md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
                 <div
                   key={index}
-                  className={`relative p-3 sm:p-4 rounded-lg ${step.bgColor} border-2 ${step.borderColor} hover:shadow-lg transition-all duration-300 group cursor-pointer ${
-                    index === 0 ? 'bg-secondary/15 border-secondary/40' :
-                    index === 1 ? 'bg-primary/15 border-primary/40' :
-                    index === 2 ? 'bg-accent/15 border-accent/40' :
-                    'bg-forest/15 border-forest/40'
-                  }`}
+                  className={`relative p-3 sm:p-4 rounded-lg hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col items-center justify-center text-center border-2`}
+                  style={{ 
+                    aspectRatio: '3/1',
+                    minHeight: '120px',
+                    width: '100%',
+                    backgroundColor: index % 2 === 0 ? '#9aedb620' : '#fd9f4820',
+                    borderColor: index % 2 === 0 ? '#9aedb640' : '#fd9f4840'
+                  }}
                 >
                   {/* Step Number */}
                   <div className="absolute -top-3 -left-3 w-6 h-6 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
@@ -154,7 +156,10 @@ const HowItWorks = () => {
                   </div>
 
                   {/* Icon */}
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r ${step.color} rounded-lg flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                  <div 
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300"
+                    style={{ backgroundColor: index % 2 === 0 ? '#9aedb6' : '#fd9f48' }}
+                  >
                     <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
 
@@ -171,12 +176,6 @@ const HowItWorks = () => {
                     </p>
                   </div>
 
-                  {/* Arrow for desktop */}
-                  {index < steps.length - 1 && (
-                    <div className="hidden lg:block absolute -right-3 top-1/2 transform -translate-y-1/2">
-                      <ArrowRight className="h-4 w-4 text-muted-foreground/50" />
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -184,19 +183,12 @@ const HowItWorks = () => {
 
           {/* CTA */}
           <div className="text-center mt-6 sm:mt-10">
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
-              <Link to="/products?category=subscription">
-                <Button size="sm" className="text-xs sm:text-base px-3 sm:px-6 py-2 sm:py-4 bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
-                  Subscription Boxes
-                  <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button variant="outline" size="sm" className="text-xs sm:text-base px-3 sm:px-6 py-2 sm:py-4 border-2 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 hover:scale-105">
-                  Get to Know Toto
-                </Button>
-              </Link>
-            </div>
+            <Link to="/products?category=subscription">
+              <Button size="sm" className="text-xs sm:text-base px-3 sm:px-6 py-2 sm:py-4 bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
+                Subscription Boxes
+                <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

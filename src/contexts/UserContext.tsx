@@ -44,7 +44,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (storedUsers) {
         const parsed = JSON.parse(storedUsers);
         // Initialize with default admin if no users exist
-        if (parsed.length === 0) {
+        if (!parsed || parsed.length === 0) {
           return [DEFAULT_ADMIN];
         }
         return parsed;
@@ -98,11 +98,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error('Username or email already exists');
     }
 
-    // Validate password
-    const passwordValidation = validatePassword(userData.password);
-    if (!passwordValidation.isValid) {
-      throw new Error(passwordValidation.errors.join(', '));
-    }
+    // Password validation is handled in the form validation
+    // No need to validate again here
 
     const newUser: User = {
       ...userData,

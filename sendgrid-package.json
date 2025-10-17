@@ -1,0 +1,21 @@
+{
+  "name": "totos-bureau-sendgrid-server",
+  "version": "1.0.0",
+  "description": "Backend server with SendGrid email integration",
+  "main": "sendgrid-server.cjs",
+  "scripts": {
+    "start": "node sendgrid-server.cjs",
+    "dev": "nodemon sendgrid-server.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "@sendgrid/mail": "^8.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

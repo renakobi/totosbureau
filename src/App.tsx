@@ -34,6 +34,8 @@ const About = lazy(() => import("./pages/About"));
 const Community = lazy(() => import("./pages/Community"));
 const Faqs = lazy(() => import("./pages/Faqs"));
 const Blog = lazy(() => import("./pages/Blog"));
+const StripeTest = lazy(() => import("./pages/StripeTest"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -73,6 +75,8 @@ const App = () => (
                     <Route path="/community" element={<Community />} />
                     <Route path="/faqs" element={<Faqs />} />
                     <Route path="/blog" element={<Blog />} />
+                    <Route path="/stripe-test" element={<StripeTest />} />
+                    <Route path="/order-confirmation" element={<OrderConfirmation />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

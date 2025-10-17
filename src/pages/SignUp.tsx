@@ -56,7 +56,8 @@ const SignUp = () => {
   };
 
   const validateFormData = () => {
-    const validationErrors = validateForm(formData, {
+    try {
+      const validationErrors = validateForm(formData, {
       username: {
         required: true,
         minLength: 3,
@@ -72,11 +73,21 @@ const SignUp = () => {
       email: validationRules.email,
       password: {
         required: true,
+        minLength: 6,
         custom: (value: string) => {
-          const validation = validatePassword(value);
-          if (!validation.isValid) {
-            return validation.errors[0]; // Return first error
+          // Ensure value is a string
+          const passwordValue = value || '';
+          
+          // Check for number
+          if (!/\d/.test(passwordValue)) {
+            return 'Password must contain at least one number';
           }
+          
+          // Check for special character
+          if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordValue)) {
+            return 'Password must contain at least one special character';
+          }
+          
           return null;
         }
       },
@@ -134,8 +145,13 @@ const SignUp = () => {
       }
     });
 
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+      setErrors(validationErrors);
+      return Object.keys(validationErrors).length === 0;
+    } catch (error) {
+      console.error('Validation error:', error);
+      setErrors({ general: 'Validation failed. Please try again.' });
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,6 +172,7 @@ const SignUp = () => {
       const newUser = addUser({
         username: formData.username,
         email: formData.email,
+        password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
