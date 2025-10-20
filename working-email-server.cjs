@@ -1,16 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-// Email configuration using a free service that works
+// Email configuration using environment variables (SECURE)
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'renakobeissi2004@gmail.com', // Use your actual Gmail
-    pass: 'lxle xkgr ahsy nqrh' // Gmail app password
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   }
 });
 
