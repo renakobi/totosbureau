@@ -23,27 +23,27 @@ const Footer = () => {
     <footer className="bg-gradient-to-b from-amber-50/5 to-forest/1 border-t border-border/50">
       <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16 lg:py-20">
         {/* Newsletter Section */}
-        <div className="bg-gradient-to-r from-teal/90 to-forest/90 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 text-center mb-8 sm:mb-12 md:mb-16 text-white shadow-strong">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <PawPrint className="h-6 w-6 sm:h-8 sm:w-8" />
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Stay in the Loop!</h3>
+        <div className="rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 text-center mb-6 sm:mb-8 md:mb-10 shadow-strong max-w-3xl mx-auto" style={{ backgroundColor: '#fd9f48' }}>
+          <div className="max-w-xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
+              <PawPrint className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: 'black' }} />
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: 'black' }}>Stay in the Loop!</h3>
             </div>
-            <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 md:mb-8 opacity-90 leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base mb-3 sm:mb-4 leading-relaxed" style={{ color: 'black' }}>
               Get the latest deals, pet care tips, and new product alerts delivered to your inbox. 
               Join thousands of happy pet parents!
             </p>
-            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <form onSubmit={handleSubscribe} className="max-w-lg mx-auto flex flex-col sm:flex-row gap-2">
               <Input 
                 type="email"
                 placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/70 focus:bg-white/20 h-10 sm:h-12 text-sm sm:text-base"
+                className="bg-white border-black/30 text-black placeholder:text-black/50 h-8 sm:h-9 text-xs sm:text-sm"
                 required
               />
-              <Button type="submit" className="bg-white text-forest hover:bg-white/90 h-10 sm:h-12 px-4 sm:px-6 text-sm sm:text-base">
-                <Mail className="h-4 w-4 mr-2" />
+              <Button type="submit" className="bg-black text-white hover:bg-black/90 h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm">
+                <Mail className="h-3 w-3 mr-1 sm:mr-2" />
                 Subscribe
               </Button>
             </form>
@@ -92,8 +92,8 @@ const Footer = () => {
           </div>
 
           {/* Desktop Company Info */}
-          <div className="hidden sm:block lg:col-span-1">
-            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+          <div className="hidden sm:block lg:col-span-1 text-center">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
                 <img 
                   src={logoImage} 
@@ -117,7 +117,7 @@ const Footer = () => {
               Your one-stop shop for premium pet supplies. We believe every pet deserves the best care, 
               love, and happiness in their lives.
             </p>
-            <div className="flex space-x-2 sm:space-x-3">
+            <div className="flex justify-center space-x-2 sm:space-x-3">
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
                 <InstagramIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
@@ -275,7 +275,7 @@ const Footer = () => {
 
         {/* Community Section */}
         <div className="mt-12 sm:mt-16 text-center">
-          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium" style={{ background: 'linear-gradient(to right, rgba(253, 159, 72, 0.25), rgba(253, 159, 72, 0.25))' }}>
+          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium" style={{ background: 'linear-gradient(to right, rgba(253, 159, 72, 0.5), rgba(253, 159, 72, 0.5))' }}>
             <div className="flex items-center justify-center gap-3 mb-4">
               <PawPrint className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">

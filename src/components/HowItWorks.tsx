@@ -5,58 +5,58 @@ import { Search, UserPlus, Truck, Heart, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const HowItWorks = () => {
-  const steps = [
-    {
-      number: "01",
-      title: "Pick Your Bundle",
-      subtitle: "Toto Scouts the Goods",
+    const steps = [
+      {
+        number: "1",
+        title: "Pick Your Bundle",
+        subtitle: "Toto Scouts the Goods",
       description: "Select pet type, bundle size, and preferences for the perfect curated mix.",
       icon: Search,
       color: "from-secondary/80 to-secondary/60",
-      bgColor: "bg-secondary/15",
-      borderColor: "border-secondary/40"
+      bgColor: "bg-secondary/40 md:bg-secondary/15",
+      borderColor: "border-secondary/60 md:border-secondary/40"
     },
-    {
-      number: "02", 
-      title: "Subscribe & Customize",
-      subtitle: "Enlist in Toto's Crew",
+      {
+        number: "2", 
+        title: "Subscribe & Customize",
+        subtitle: "Enlist in Toto's Crew",
       description: "Quick signup, choose frequency (monthly/quarterly), and add extras.",
       icon: UserPlus,
       color: "from-teal/80 to-teal/60",
-      bgColor: "bg-teal/15",
-      borderColor: "border-teal/40"
+      bgColor: "bg-teal/40 md:bg-teal/15",
+      borderColor: "border-teal/60 md:border-teal/40"
     },
-    {
-      number: "03",
-      title: "Delivery Day",
-      subtitle: "The Mystery Arrives", 
+      {
+        number: "3",
+        title: "Delivery Day",
+        subtitle: "The Mystery Arrives",
       description: "Track your eco-box delivery with free shipping—faster than a cat's pounce!",
       icon: Truck,
       color: "from-primary/80 to-primary/60",
-      bgColor: "bg-primary/15",
-      borderColor: "border-primary/40"
+      bgColor: "bg-primary/40 md:bg-primary/15",
+      borderColor: "border-primary/60 md:border-primary/40"
     },
-    {
-      number: "04",
-      title: "Enjoy & Repeat",
-      subtitle: "Unleash the Mischief",
+      {
+        number: "4",
+        title: "Enjoy & Repeat",
+        subtitle: "Unleash the Mischief",
       description: "Watch your pet go wild! Unbox, share photos, and auto-renew for endless fun.",
       icon: Heart,
       color: "from-forest/80 to-forest/60",
-      bgColor: "bg-forest/15",
-      borderColor: "border-forest/40"
+      bgColor: "bg-forest/40 md:bg-forest/15",
+      borderColor: "border-forest/60 md:border-forest/40"
     }
   ];
 
   return (
-    <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-b from-background to-amber-50/15">
+    <section className="py-6 sm:py-8 md:py-10">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-4 sm:mb-6">
-            <Badge variant="secondary" className="mb-2 px-3 py-1 text-xs font-medium">
-              How it works
-            </Badge>
+            <div className="text-center mb-4 sm:mb-6">
+              <Badge variant="secondary" className="mb-2 px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-base font-medium">
+                How it works
+              </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
               Monthly mystery boxes curated by Toto
             </h2>
@@ -139,32 +139,35 @@ const HowItWorks = () => {
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
-                <div
-                  key={index}
-                  className={`relative p-3 sm:p-4 rounded-lg hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col items-center justify-center text-center border-2`}
-                  style={{ 
-                    aspectRatio: '3/1',
-                    minHeight: '120px',
-                    width: '100%',
-                    backgroundColor: index % 2 === 0 ? '#9aedb620' : '#fd9f4820',
-                    borderColor: index % 2 === 0 ? '#9aedb640' : '#fd9f4840'
-                  }}
-                >
+                  <div
+                    key={index}
+                    className={`relative p-3 sm:p-4 rounded-lg hover:shadow-lg transition-all duration-300 group cursor-pointer flex items-center border-2`}
+                    style={{ 
+                      aspectRatio: '3/1',
+                      minHeight: '120px',
+                      width: '100%',
+                      backgroundColor: index % 2 === 0 ? '#9aedb660' : '#fd9f4860',
+                      borderColor: index % 2 === 0 ? '#9aedb680' : '#fd9f4880'
+                    }}
+                  >
                   {/* Step Number */}
-                  <div className="absolute -top-3 -left-3 w-6 h-6 bg-gradient-to-r from-primary/80 to-forest/80 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                  <div 
+                    className="absolute -top-3 -left-3 w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs"
+                    style={{ backgroundColor: index === 0 || index === 2 ? '#fd9f48' : '#9aedb6' }}
+                  >
                     {step.number}
                   </div>
 
-                  {/* Icon */}
+                  {/* Icon on the left */}
                   <div 
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300 flex-shrink-0"
                     style={{ backgroundColor: index % 2 === 0 ? '#9aedb6' : '#fd9f48' }}
                   >
-                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                    <IconComponent className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
 
-                  {/* Content */}
-                  <div className="space-y-2">
+                  {/* Content on the right */}
+                  <div className="space-y-1 text-left flex-1">
                     <h3 className="text-sm sm:text-base font-bold text-foreground">
                       {step.title}
                     </h3>

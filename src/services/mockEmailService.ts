@@ -70,7 +70,7 @@ feel free to contact us at totosbureau@gmail.com.
 Thanks for choosing Toto's Bureau!
 The Toto's Bureau Team
 
-© 2024 Toto's Bureau. All rights reserved.
+© 2025 Toto's Bureau. All rights reserved.
   `;
 
   // Log to console

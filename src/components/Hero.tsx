@@ -26,8 +26,8 @@ const Hero = () => {
             backgroundImage: `url(${mobileHeroImage})`
           }}
         />
-        {/* Subtle dark overlay to dim background */}
-        <div className="absolute inset-0 bg-black/5"></div>
+        {/* Mobile overlay for better text visibility in light mode */}
+        <div className="absolute inset-0 bg-black/40 block sm:hidden"></div>
       </div>
       
       {/* Content */}
@@ -49,24 +49,24 @@ const Hero = () => {
               </h1>
               
               {/* Subheading */}
-              <p className="text-base sm:text-lg md:text-xl max-w-lg mx-auto leading-relaxed font-semibold" style={{ color: 'black' }}>
+              <p className="text-base sm:text-lg md:text-xl max-w-lg mx-auto leading-relaxed font-semibold text-white sm:text-black">
                 Cool bundles, mischievous treats, and eco-friendly fun for cats and dogs -<br />
                 no fuss, just tail-wags and purrs.
               </p>
             </div>
             
-            {/* CTA Buttons Block */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-md px-4">
-              <Link to="/products">
-                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#9aedb6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8dd4a3'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9aedb6'}>
-                  Start shopping
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-              </Link>
-              <Link to="/products?category=subscription">
-                <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full" style={{ backgroundColor: '#9aedb6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8dd4a3'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9aedb6'}>
-                  <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Subscription Boxes
+              {/* CTA Buttons Block */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-lg">
+                <Link to="/products" className="flex-1">
+                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                    Start shopping
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                </Link>
+                <Link to="/products?category=subscription" className="flex-1">
+                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                    <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Subscription Boxes
                 </Button>
               </Link>
             </div>

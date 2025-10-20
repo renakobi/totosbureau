@@ -162,7 +162,7 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
         </div>
         
         <div class="footer">
-          <p>© 2024 Toto's Bureau. All rights reserved.</p>
+          <p>© 2024 Toto's Bureau. ghts reserved.</p>
           <p>This email was sent to ${customerEmail}</p>
         </div>
       </div>

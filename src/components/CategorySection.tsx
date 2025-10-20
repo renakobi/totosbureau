@@ -20,7 +20,8 @@ const CategorySection = () => {
       title: "Dog Supplies",
       description: "Premium food, toys, and accessories for your furry friend",
       icon: Dog,
-      color: "bg-secondary/10 text-secondary",
+      color: "bg-secondary/35 text-secondary",
+      badgeColor: "bg-secondary/20 text-secondary",
       products: `${dogProducts} Product${dogProducts !== 1 ? 's' : ''}`,
       featured: true,
       link: "/products?category=dogs"
@@ -30,7 +31,8 @@ const CategorySection = () => {
       title: "Cat Essentials",
       description: "Everything your feline companion needs to stay happy",
       icon: Cat,
-      color: "bg-primary/10 text-primary",
+      color: "bg-primary/35 text-primary",
+      badgeColor: "bg-primary/20 text-primary",
       products: `${catProducts} Product${catProducts !== 1 ? 's' : ''}`,
       featured: false,
       link: "/products?category=cats"
@@ -40,7 +42,8 @@ const CategorySection = () => {
       title: "Surprise Boxes",
       description: "Monthly curated boxes filled with premium pet products",
       icon: Package,
-      color: "bg-accent/10 text-accent",
+      color: "bg-accent/35 text-accent",
+      badgeColor: "bg-accent/20 text-accent",
       products: `${subscriptionProducts} Box${subscriptionProducts !== 1 ? 'es' : ''}`,
       featured: true,
       link: "/products?type=subscription"
@@ -50,7 +53,8 @@ const CategorySection = () => {
       title: "Premium Products",
       description: "High-quality, veterinarian-approved items for health & wellness",
       icon: Sparkles,
-      color: "bg-forest/10 text-forest",
+      color: "bg-forest/35 text-forest",
+      badgeColor: "bg-forest/20 text-forest",
       products: `${totalProducts} Product${totalProducts !== 1 ? 's' : ''}`,
       featured: false,
       link: "/products"
@@ -61,10 +65,9 @@ const CategorySection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-3 sm:mb-6">
-          <div className="inline-flex items-center gap-2 bg-forest/10 text-forest px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Package className="h-4 w-4" />
+          <Badge variant="secondary" className="mb-2 px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-base font-medium">
             Categories
-          </div>
+          </Badge>
           <h2 className="text-xl sm:text-4xl md:text-5xl font-bold mb-3">
             <span className="text-foreground">
               Find Everything
@@ -87,14 +90,11 @@ const CategorySection = () => {
             return (
               <Link key={category.id} to={category.link} className="block h-full group">
                 <Card 
-                  className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer relative overflow-hidden backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
-                    index === 0 ? 'bg-secondary/5 border-secondary/20' :
-                    index === 1 ? 'bg-primary/5 border-primary/20' :
-                    index === 2 ? 'bg-accent/5 border-accent/20' :
-                    'bg-forest/5 border-forest/20'
-                  }`}
+                  className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer relative overflow-hidden backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${category.color.replace('text-', 'border-').split(' ')[0].replace('bg-', 'border-') + '/20'}`}
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
+                  <div className={`absolute inset-0 ${category.color.split(' ')[0]} opacity-100`} style={{ zIndex: 0 }}></div>
+                  <div className="relative z-10 flex-1 flex flex-col">
                   {category.featured && (
                     <Badge 
                       className="absolute top-2 right-2 z-10 bg-secondary text-secondary-foreground shadow-medium text-xs px-2 py-1"
@@ -118,7 +118,7 @@ const CategorySection = () => {
                     
                     <Badge 
                       variant="outline" 
-                      className={`mb-3 ${category.color} border-current/20 text-xs`}
+                      className={`mb-3 ${category.badgeColor} border-current/20 text-xs text-center mx-auto`}
                     >
                       {category.products}
                     </Badge>
@@ -130,6 +130,7 @@ const CategorySection = () => {
                       Explore
                     </Button>
                   </CardContent>
+                  </div>
                 </Card>
               </Link>
             );

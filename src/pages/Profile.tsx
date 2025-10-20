@@ -67,29 +67,8 @@ const Profile = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (loginData.username && loginData.password) {
-      // Try user login (includes admin)
-      const user = loginUser(loginData.username, loginData.password);
-      
-      if (user) {
-        if (user.isAdmin) {
-          // Admin login - redirect to admin page
-          navigate("/admin");
-        } else {
-          // Regular user login - stay on profile page
-          localStorage.setItem("totos-bureau-user", "true");
-          localStorage.setItem("totos-bureau-username", loginData.username);
-          setIsLoggedIn(true);
-          setShowLogin(false);
-          setError("");
-        }
-      } else {
-        setError("Invalid username or password.");
-      }
-    } else {
-      setError("Please enter both username and password.");
-    }
+    // This is handled by the separate login page
+    navigate("/login");
   };
 
   const handleLogout = () => {
@@ -267,28 +246,28 @@ const Profile = () => {
                 <div className="w-24 h-24 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                   <User className="h-12 w-12 text-primary" />
                 </div>
-                <h2 className="text-xl font-bold mb-2">
+                <h2 className="text-xl font-bold mb-6">
                   {currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : (localStorage.getItem("totos-bureau-username") || "User")}
                 </h2>
-                <p className="text-muted-foreground mb-4">Pet lover since 2020</p>
-                <Badge variant="secondary" className="mb-4">Premium Member</Badge>
                 
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <User className="h-4 w-4 mr-2" />
-                    Profile Settings
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link to="/profile-settings">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile Settings
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Package className="h-4 w-4 mr-2" />
-                    Order History
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link to="/order-history">
+                      <Package className="h-4 w-4 mr-2" />
+                      Order History
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Wishlist
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Account Settings
+                  <Button variant="outline" className="w-full justify-start" asChild>
+                    <Link to="/favorites">
+                      <Heart className="h-4 w-4 mr-2" />
+                      Favorites
+                    </Link>
                   </Button>
                   <Separator />
                   <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive/80" onClick={handleLogout}>
@@ -302,7 +281,7 @@ const Profile = () => {
 
           {/* Profile Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Personal Information */}
+            {/* Personal Information - Read Only */}
             <Card>
               <CardHeader>
                 <CardTitle>Personal Information</CardTitle>
@@ -310,114 +289,69 @@ const Profile = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input 
-                      id="firstName" 
-                      name="firstName"
-                      value={profileData.firstName}
-                      onChange={handleProfileChange}
-                    />
+                    <Label>First Name</Label>
+                    <p className="mt-2 text-sm">{profileData.firstName || "Not set"}</p>
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input 
-                      id="lastName" 
-                      name="lastName"
-                      value={profileData.lastName}
-                      onChange={handleProfileChange}
-                    />
+                    <Label>Last Name</Label>
+                    <p className="mt-2 text-sm">{profileData.lastName || "Not set"}</p>
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <div className="flex">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        id="email" 
-                        name="email"
-                        value={profileData.email}
-                        onChange={handleProfileChange}
-                        className="pl-10" 
-                      />
-                    </div>
+                  <Label>Email Address</Label>
+                  <div className="flex items-center mt-2">
+                    <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-sm">{profileData.email || "Not set"}</p>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="flex">
-                    <div className="relative flex-1">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        id="phone" 
-                        name="phone"
-                        value={profileData.phone}
-                        onChange={handleProfileChange}
-                        className="pl-10" 
-                      />
-                    </div>
+                  <Label>Phone Number</Label>
+                  <div className="flex items-center mt-2">
+                    <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-sm">{profileData.phone || "Not set"}</p>
                   </div>
                 </div>
 
-                <Button onClick={handleUpdateProfile}>Update Profile</Button>
+                <Button asChild>
+                  <Link to="/profile-settings">Edit Profile</Link>
+                </Button>
               </CardContent>
             </Card>
 
-            {/* Shipping Address */}
+            {/* Shipping Address - Read Only */}
             <Card>
               <CardHeader>
                 <CardTitle>Shipping Address</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="address">Street Address</Label>
-                  <div className="flex">
-                    <div className="relative flex-1">
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        id="address" 
-                        name="address"
-                        value={profileData.address}
-                        onChange={handleProfileChange}
-                        className="pl-10" 
-                      />
-                    </div>
+                  <Label>Street Address</Label>
+                  <div className="flex items-center mt-2">
+                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <p className="text-sm">{profileData.address || "Not set"}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input 
-                      id="city" 
-                      name="city"
-                      value={profileData.city}
-                      onChange={handleProfileChange}
-                    />
+                    <Label>City</Label>
+                    <p className="mt-2 text-sm">{profileData.city || "Not set"}</p>
                   </div>
                   <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input 
-                      id="state" 
-                      name="state"
-                      value={profileData.state}
-                      onChange={handleProfileChange}
-                    />
+                    <Label>State</Label>
+                    <p className="mt-2 text-sm">{profileData.state || "Not set"}</p>
                   </div>
                   <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input 
-                      id="zip" 
-                      name="zip"
-                      value={profileData.zip}
-                      onChange={handleProfileChange}
-                    />
+                    <Label>ZIP Code</Label>
+                    <p className="mt-2 text-sm">{profileData.zip || "Not set"}</p>
                   </div>
                 </div>
 
-                <Button onClick={handleUpdateAddress}>Update Address</Button>
+                <Button asChild>
+                  <Link to="/profile-settings">Edit Address</Link>
+                </Button>
               </CardContent>
             </Card>
 

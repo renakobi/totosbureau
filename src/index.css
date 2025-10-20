@@ -54,7 +54,7 @@ html {
   
   :root {
     /* Brand Colors - Heavily Muted Theme */
-    --background: 30 20% 94%;
+    --background: 0 0% 88%;
     --foreground: 0 0% 18%;
 
     --card: 30 15% 92%;
@@ -63,23 +63,23 @@ html {
     --popover: 30 15% 92%;
     --popover-foreground: 0 0% 18%;
 
-    /* Primary - Heavily Muted Mint Green */
-    --primary: 155 35% 55%;
+    /* Primary - Brand Green #9aedb6 */
+    --primary: 155 50% 75%;
     --primary-foreground: 0 0% 25%;
 
-    /* Secondary - Custom Orange #fd9f48 */
-    --secondary: 30 95% 64%;
+    /* Secondary - Brand Orange #fd9f48 */
+    --secondary: 30 98% 64%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Accent - Heavily Muted Yellow */
-    --accent: 44 70% 50%;
+    /* Accent - Brand Yellow #ffbd59 */
+    --accent: 42 100% 68%;
     --accent-foreground: 0 0% 25%;
 
-    /* Forest Green - Custom #9aedb6 */
-    --forest: 155 50% 75%;
-    --forest-foreground: 0 0% 20%;
+    /* Forest Green - Brand Dark Green #50957d */
+    --forest: 160 31% 45%;
+    --forest-foreground: 0 0% 100%;
 
-    /* Teal - Custom #9aedb6 */
+    /* Teal - Brand Green #9aedb6 */
     --teal: 155 50% 75%;
     --teal-foreground: 0 0% 20%;
 
@@ -157,8 +157,10 @@ html {
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply text-foreground font-sans;
     font-family: 'Inter', 'Poppins', sans-serif;
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+    min-height: 100vh;
   }
 }
 

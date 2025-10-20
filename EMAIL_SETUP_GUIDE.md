@@ -88,7 +88,7 @@
         </div>
         
         <div style="background: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
-            <p>© 2024 Toto's Bureau. All rights reserved.</p>
+            <p>© 2025 Toto's Bureau. All rights reserved.</p>
             <p>This email was sent to {{to_email}}</p>
         </div>
     </div>

@@ -29,7 +29,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 shadow-soft">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-md border-b border-border/50 shadow-soft bg-background/70">
       <div className="container mx-auto px-4">
         {/* Mobile Layout - Two Rows */}
         <div className="block lg:hidden">
@@ -150,15 +150,15 @@ const Header = () => {
               </div>
             </Link>
 
-            {/* Search Bar - Longer and more to the right */}
-            <div className="relative w-80 ml-8">
+            {/* Search Bar - Double width and 50% transparent */}
+            <div className="relative w-[640px] ml-8">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10 pr-4 h-8 sm:h-10 text-sm"
+                className="pl-10 pr-4 h-8 sm:h-10 text-sm bg-background/50 border-border/40"
               />
             </div>
           </div>

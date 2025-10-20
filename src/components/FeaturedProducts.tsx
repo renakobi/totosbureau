@@ -29,14 +29,13 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-3 sm:py-6 bg-gradient-to-b from-amber-50/40 to-muted/20">
+    <section className="py-3 sm:py-6">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center space-y-1 sm:space-y-2 mb-2 sm:mb-3">
-          <div className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
-            <Star className="h-3 w-3" />
+          <Badge variant="secondary" className="mb-2 px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-base font-medium">
             Featured Products
-          </div>
+          </Badge>
           <h2 className="text-sm sm:text-lg font-bold">
             <span className="text-foreground">
               Top Picks
@@ -58,11 +57,7 @@ const FeaturedProducts = () => {
             {featuredProducts.slice(0, 3).map((product, index) => (
             <Link key={product.id} to={`/product/${product.id}`} className="block h-full group">
               <Card 
-                className={`group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 ${
-                  index === 0 ? 'bg-secondary/5 border-secondary/20' :
-                  index === 1 ? 'bg-primary/5 border-primary/20' :
-                  'bg-accent/5 border-accent/20'
-                }`}
+                className="group hover:shadow-medium transition-all duration-200 overflow-hidden cursor-pointer backdrop-blur-sm border-border/50 h-full flex flex-col animate-in fade-in-50 slide-in-from-bottom-4 bg-white dark:bg-gray-800"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
               <CardContent className="p-0 flex-1 flex flex-col">
@@ -122,31 +117,31 @@ const FeaturedProducts = () => {
 
                 {/* Product Info */}
                 <div className="p-1 sm:p-1.5 flex-1 flex flex-col">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 px-1 py-0.5">
+                  <div className="flex items-center gap-0.5 sm:gap-1 mb-1 justify-center">
+                    <Badge variant="outline" className="text-[10px] sm:text-xs bg-primary/10 text-primary border-primary/20 px-0.5 sm:px-1 py-0">
                       {product.category}
                     </Badge>
-                    <Badge variant="outline" className="text-xs bg-forest/10 text-forest border-forest/20 px-1 py-0.5">
+                    <Badge variant="outline" className="text-[10px] sm:text-xs bg-forest/10 text-forest border-forest/20 px-0.5 sm:px-1 py-0">
                       {product.type}
                     </Badge>
                   </div>
                   
-                  <h3 className="font-bold text-xs mb-1 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-bold text-xs mb-1 group-hover:text-primary transition-colors duration-300 text-center">
                     {product.name}
                   </h3>
 
                   {/* Flavors */}
                   {product.flavors && product.flavors.length > 0 && (
                     <div className="mb-1">
-                      <div className="flex flex-wrap gap-1">
-                        {product.flavors.slice(0, 2).map((flavor, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-1 py-0.5">
+                      <div className="flex flex-wrap gap-0.5 sm:gap-1 justify-center">
+                        {product.flavors.slice(0, 1).map((flavor, index) => (
+                          <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs px-0.5 sm:px-1 py-0">
                             {flavor}
                           </Badge>
                         ))}
-                        {product.flavors.length > 2 && (
-                          <Badge variant="secondary" className="text-xs px-1 py-0.5">
-                            +{product.flavors.length - 2}
+                        {product.flavors.length > 1 && (
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs px-0.5 sm:px-1 py-0">
+                            +{product.flavors.length - 1}
                           </Badge>
                         )}
                       </div>
@@ -184,7 +179,7 @@ const FeaturedProducts = () => {
               
               <CardFooter className="p-1.5 sm:p-2 pt-0">
         <Button 
-          className="w-full bg-teal hover:bg-teal/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102 text-xs py-1 h-7 sm:h-8"
+          className="w-full text-xs py-1 h-7 sm:h-8 bg-primary hover:bg-primary/90 text-white shadow-medium hover:shadow-strong transition-all duration-200 hover:scale-102"
           onClick={(e) => handleAddToCart(e, product)}
         >
                   <ShoppingCart className="h-3 w-3 mr-1" />
@@ -217,7 +212,7 @@ const FeaturedProducts = () => {
         {/* View All Button */}
         <div className="text-center">
           <Link to="/products">
-            <Button variant="outline" size="lg" className="px-8 py-6 text-lg border-2 hover:bg-primary/5 transition-all duration-300 hover:scale-105">
+            <Button size="lg" className="px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105">
               View All Products
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
