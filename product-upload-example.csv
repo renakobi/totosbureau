@@ -1,0 +1,5 @@
+name,description,price,originalPrice,category,subcategory,type,image,badge,stockQuantity,flavors,ingredients,aboutProduct
+Premium Dog Food,High-quality nutrition for your dog,45.99,59.99,dogs,food,dry food,https://example.com/dog-food.jpg,Best Seller,100,"Chicken,Beef,Lamb","Chicken meal, brown rice, vegetables","Premium dog food made with real meat and wholesome ingredients"
+Cat Toy Bundle,Interactive toys for cats,29.99,39.99,cats,toys,interactive,https://example.com/cat-toys.jpg,New,50,"","Feathers, bells, catnip","A collection of engaging toys to keep your cat entertained"
+Dog Leash,Durable nylon leash,19.99,,dogs,accessories,leash,https://example.com/leash.jpg,,75,"Red,Blue,Black","Nylon, metal clasp","Strong and comfortable leash for daily walks"
+

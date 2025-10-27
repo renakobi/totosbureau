@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,12 +123,8 @@ const Admin = () => {
     }
   ]);
 
-  // User management states
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "user", joinDate: "2024-01-15", lastLogin: "2024-09-28", totalOrders: 12, totalSpent: 450.50, status: "active" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user", joinDate: "2024-02-20", lastLogin: "2024-09-27", totalOrders: 8, totalSpent: 320.75, status: "active" },
-    { id: 3, name: "Admin User", email: "admin@example.com", role: "admin", joinDate: "2024-01-01", lastLogin: "2024-09-28", totalOrders: 0, totalSpent: 0, status: "active" }
-  ]);
+  // User management states - will be loaded from UserContext
+  const [users, setUsers] = useState<User[]>([]);
 
   // Discount management states
   const [discounts, setDiscounts] = useState<Discount[]>([
@@ -194,57 +190,60 @@ const Admin = () => {
     }
   ]);
 
-  // Calculate real analytics data
-  const allUsers = getAllUsers();
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-  const monthlyRevenue = Array.from({ length: 12 }, (_, i) => {
-    const month = new Date();
-    month.setMonth(month.getMonth() - (11 - i));
-    return orders
-      .filter(order => {
-        const orderDate = new Date(order.orderDate);
-        return orderDate.getMonth() === month.getMonth() && orderDate.getFullYear() === month.getFullYear();
-      })
-      .reduce((sum, order) => sum + order.total, 0);
-  });
-
-  const topProducts = products
-    .map(product => ({
-      id: product.id,
-      name: product.name,
-      sales: orders.reduce((count, order) => 
-        count + order.items.filter(item => item.id === product.id).reduce((sum, item) => sum + item.quantity, 0), 0
-      )
-    }))
-    .sort((a, b) => b.sales - a.sales)
-    .slice(0, 5);
-
-  const orderStatus = [
-    { status: "Pending", count: orders.filter(o => o.status === 'pending').length },
-    { status: "Processing", count: orders.filter(o => o.status === 'processing').length },
-    { status: "Shipped", count: orders.filter(o => o.status === 'shipped').length },
-    { status: "Delivered", count: orders.filter(o => o.status === 'delivered').length }
-  ];
-
-  const analytics: Analytics = {
-    totalUsers: allUsers.length,
-    totalOrders: orders.length,
-    totalRevenue,
-    monthlyRevenue,
-    topProducts,
-    userGrowth: Array.from({ length: 6 }, (_, i) => {
+  // Calculate real analytics data - wrapped in useMemo to avoid calling getAllUsers in component body
+  const analytics: Analytics = useMemo(() => {
+    const allUsers = getAllUsers();
+    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+    const monthlyRevenue = Array.from({ length: 12 }, (_, i) => {
       const month = new Date();
-      month.setMonth(month.getMonth() - (5 - i));
-      return {
-        month: month.toLocaleDateString('en-US', { month: 'short' }),
-        count: allUsers.filter(user => {
-          const userDate = new Date(user.createdAt);
-          return userDate.getMonth() === month.getMonth() && userDate.getFullYear() === month.getFullYear();
-        }).length
-      };
-    }),
-    orderStatus
-  };
+      month.setMonth(month.getMonth() - (11 - i));
+      return orders
+        .filter(order => {
+          const orderDate = new Date(order.orderDate);
+          return orderDate.getMonth() === month.getMonth() && orderDate.getFullYear() === month.getFullYear();
+        })
+        .reduce((sum, order) => sum + order.total, 0);
+    });
+
+    const topProducts = products
+      .map(product => ({
+        id: product.id,
+        name: product.name,
+        sales: orders.reduce((count, order) => 
+          count + order.items.filter(item => item.id === product.id).reduce((sum, item) => sum + item.quantity, 0), 0
+        )
+      }))
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 5);
+
+    const orderStatus = [
+      { status: "Pending", count: orders.filter(o => o.status === 'pending').length },
+      { status: "Processing", count: orders.filter(o => o.status === 'processing').length },
+      { status: "Shipped", count: orders.filter(o => o.status === 'shipped').length },
+      { status: "Delivered", count: orders.filter(o => o.status === 'delivered').length }
+    ];
+
+    return {
+      totalUsers: allUsers.length,
+      totalOrders: orders.length,
+      totalRevenue,
+      monthlyRevenue,
+      topProducts,
+      userGrowth: Array.from({ length: 6 }, (_, i) => {
+        const month = new Date();
+        month.setMonth(month.getMonth() - (5 - i));
+        return {
+          month: month.toLocaleDateString('en-US', { month: 'short' }),
+          count: allUsers.filter(user => {
+            if (!user.createdAt) return false;
+            const userDate = new Date(user.createdAt);
+            return userDate.getMonth() === month.getMonth() && userDate.getFullYear() === month.getFullYear();
+          }).length
+        };
+      }),
+      orderStatus
+    };
+  }, [orders, products, getAllUsers]);
 
   // Form states
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
@@ -295,6 +294,7 @@ const Admin = () => {
   const [userForm, setUserForm] = useState({
     name: "",
     email: "",
+    password: "",
     role: "user" as "admin" | "user",
     status: "active" as "active" | "inactive" | "banned"
   });
@@ -321,6 +321,26 @@ const Admin = () => {
       navigate("/login");
     }
   }, [navigate]);
+
+  // Load users from UserContext
+  useEffect(() => {
+    const contextUsers = getAllUsers();
+    const mappedUsers = contextUsers.map((u, index) => {
+      const today = new Date().toISOString().split('T')[0];
+      return {
+        id: index + 1,
+        name: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
+        email: u.email || '',
+        role: u.isAdmin ? 'admin' as const : 'user' as const,
+        joinDate: u.createdAt ? u.createdAt.split('T')[0] : today,
+        lastLogin: u.createdAt ? u.createdAt.split('T')[0] : today,
+        totalOrders: 0,
+        totalSpent: 0,
+        status: u.isActive ? 'active' as const : 'inactive' as const
+      };
+    });
+    setUsers(mappedUsers);
+  }, [getAllUsers]);
 
   const handleLogout = () => {
     localStorage.removeItem("totos-bureau-admin");
@@ -451,6 +471,205 @@ const Admin = () => {
 
   const handleDeleteProduct = (id: number) => {
     deleteProduct(id);
+  };
+
+  // CSV Upload handler
+  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const values = lines[i].split(',').map(v => v.trim());
+        const product: any = {};
+        
+        headers.forEach((header, index) => {
+          product[header] = values[index] || '';
+        });
+
+        try {
+          // Parse flavors if they exist
+          const flavors = product.flavors ? product.flavors.split(';').filter((f: string) => f.trim()) : [];
+          
+          addProduct({
+            name: product.name,
+            description: product.description,
+            price: parseFloat(product.price),
+            originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : undefined,
+            category: product.category.toLowerCase(),
+            subcategory: product.subcategory.toLowerCase(),
+            type: product.type.toLowerCase(),
+            image: product.image,
+            badge: product.badge,
+            stockQuantity: parseInt(product.stockQuantity) || 0,
+            flavors: flavors,
+            ingredients: product.ingredients,
+            aboutProduct: product.aboutProduct,
+            rating: 0,
+            reviews: 0,
+            inStock: true
+          });
+          successCount++;
+        } catch (error) {
+          errorCount++;
+          console.error(`Error adding product from line ${i + 1}:`, error);
+        }
+      }
+
+      toast({
+        title: "CSV Upload Complete",
+        description: `Successfully added ${successCount} products. ${errorCount} errors.`,
+      });
+    };
+
+    reader.readAsText(file);
+    // Reset the input
+    event.target.value = '';
+  };
+
+  // User CRUD operations
+  const handleAddUser = () => {
+    if (!userForm.name || !userForm.email || !userForm.password) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newUser = {
+      id: users.length + 1,
+      name: userForm.name,
+      email: userForm.email,
+      role: userForm.role,
+      joinDate: new Date().toISOString().split('T')[0],
+      lastLogin: new Date().toISOString().split('T')[0],
+      totalOrders: 0,
+      totalSpent: 0,
+      status: userForm.status
+    };
+    
+    setUsers([...users, newUser]);
+    setUserForm({ name: "", email: "", password: "", role: "user", status: "active" });
+    setIsUserDialogOpen(false);
+    
+    toast({
+      title: "User Added",
+      description: "New user has been created successfully.",
+    });
+  };
+
+  const handleDeleteUser = (id: number) => {
+    setUsers(users.filter(u => u.id !== id));
+    toast({
+      title: "User Deleted",
+      description: "User has been removed successfully.",
+    });
+  };
+
+  // Category CRUD operations
+  const handleAddCategory = () => {
+    if (!categoryForm.name || !categoryForm.description) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newCategory: Category = {
+      id: categories.length + 1,
+      name: categoryForm.name,
+      description: categoryForm.description,
+      subcategories: []
+    };
+    
+    setCategories([...categories, newCategory]);
+    setCategoryForm({ name: "", description: "" });
+    setIsCategoryDialogOpen(false);
+    
+    toast({
+      title: "Category Added",
+      description: "New category has been created successfully.",
+    });
+  };
+
+  const handleDeleteCategory = (id: number) => {
+    setCategories(categories.filter(c => c.id !== id));
+    toast({
+      title: "Category Deleted",
+      description: "Category has been removed successfully.",
+    });
+  };
+
+  // Subcategory CRUD operations
+  const handleAddSubcategory = () => {
+    if (!subcategoryForm.name || !subcategoryForm.description || !subcategoryForm.categoryId) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const categoryId = parseInt(subcategoryForm.categoryId);
+    const category = categories.find(c => c.id === categoryId);
+    
+    if (!category) {
+      toast({
+        title: "Error",
+        description: "Category not found",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newSubcategory: Subcategory = {
+      id: Date.now(),
+      name: subcategoryForm.name,
+      description: subcategoryForm.description,
+      categoryId: categoryId
+    };
+    
+    setCategories(categories.map(c => 
+      c.id === categoryId 
+        ? { ...c, subcategories: [...c.subcategories, newSubcategory] }
+        : c
+    ));
+    
+    setSubcategoryForm({ name: "", description: "", categoryId: "" });
+    setIsSubcategoryDialogOpen(false);
+    
+    toast({
+      title: "Subcategory Added",
+      description: "New subcategory has been created successfully.",
+    });
+  };
+
+  const handleDeleteSubcategory = (categoryId: number, subcategoryId: number) => {
+    setCategories(categories.map(c => 
+      c.id === categoryId 
+        ? { ...c, subcategories: c.subcategories.filter(s => s.id !== subcategoryId) }
+        : c
+    ));
+    
+    toast({
+      title: "Subcategory Deleted",
+      description: "Subcategory has been removed successfully.",
+    });
   };
 
   // Flavor management functions
@@ -1028,6 +1247,24 @@ const Admin = () => {
                     </div>
                   </DialogContent>
                 </Dialog>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleCSVUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    id="csv-upload"
+                  />
+                  <Button 
+                    className="bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white"
+                    asChild
+                  >
+                    <label htmlFor="csv-upload" className="cursor-pointer flex items-center">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload CSV
+                    </label>
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -1134,6 +1371,7 @@ const Admin = () => {
                     </Button>
                     <Button
                       className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white"
+                      onClick={handleAddCategory}
                     >
                       <Save className="h-4 w-4 mr-2" />
                       {editingCategory ? "Update" : "Add"} Category
@@ -1166,6 +1404,14 @@ const Admin = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 hover:bg-secondary/10"
+                              onClick={() => {
+                                setEditingCategory(category);
+                                setCategoryForm({
+                                  name: category.name,
+                                  description: category.description
+                                });
+                                setIsCategoryDialogOpen(true);
+                              }}
                             >
                               <Edit className="h-3 w-3" />
                             </Button>
@@ -1173,6 +1419,7 @@ const Admin = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 hover:bg-destructive/10"
+                              onClick={() => handleDeleteCategory(category.id)}
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -1253,6 +1500,7 @@ const Admin = () => {
                     </Button>
                     <Button
                       className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
+                      onClick={handleAddSubcategory}
                     >
                       <Save className="h-4 w-4 mr-2" />
                       {editingSubcategory ? "Update" : "Add"} Subcategory
@@ -1311,7 +1559,7 @@ const Admin = () => {
                   <Button
                     className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
                     onClick={() => {
-                      setUserForm({ name: "", email: "", role: "user", status: "active" });
+                      setUserForm({ name: "", email: "", password: "", role: "user", status: "active" });
                       setEditingUser(null);
                     }}
                   >
@@ -1346,6 +1594,16 @@ const Admin = () => {
                       />
                     </div>
                     <div className="space-y-2">
+                      <Label htmlFor="userPassword">Password</Label>
+                      <Input
+                        id="userPassword"
+                        type="password"
+                        value={userForm.password}
+                        onChange={(e) => setUserForm({...userForm, password: e.target.value})}
+                        placeholder="Enter password"
+                      />
+                    </div>
+                    <div className="space-y-2">
                       <Label htmlFor="userRole">Role</Label>
                       <Select value={userForm.role} onValueChange={(value: "admin" | "user") => setUserForm({...userForm, role: value})}>
                         <SelectTrigger>
@@ -1377,6 +1635,7 @@ const Admin = () => {
                 </Button>
                     <Button
                       className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
+                      onClick={handleAddUser}
                     >
                       <Save className="h-4 w-4 mr-2" />
                       {editingUser ? "Update" : "Add"} User
@@ -1427,6 +1686,7 @@ const Admin = () => {
                                 setUserForm({
                                   name: user.name,
                                   email: user.email,
+                                  password: "",
                                   role: user.role,
                                   status: user.status
                                 });
@@ -1439,7 +1699,7 @@ const Admin = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => setUsers(users.filter(u => u.id !== user.id))}
+                              onClick={() => handleDeleteUser(user.id)}
                               className="h-8 w-8 hover:bg-destructive/10"
                             >
                               <Trash2 className="h-3 w-3" />

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, ArrowRight, Gift, Heart, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/backgroundnew.jpg";
-import mobileHeroImage from "@/assets/mobile.jpeg";
+import mobileHeroImage from "@/assets/backgroundnew - Copy.jpg";
 
 const Hero = () => {
   // Force rebuild timestamp

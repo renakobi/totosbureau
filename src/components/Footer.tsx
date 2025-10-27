@@ -274,18 +274,18 @@ const Footer = () => {
         </div>
 
         {/* Community Section */}
-        <div className="mt-12 sm:mt-16 text-center">
-          <Link to="/community" className="inline-block bg-gradient-to-r from-amber-50/25 to-orange-50/25 hover:from-amber-100/25 hover:to-orange-100/25 rounded-xl p-6 sm:p-8 transition-all duration-300 hover:shadow-medium" style={{ background: 'linear-gradient(to right, rgba(253, 159, 72, 0.5), rgba(253, 159, 72, 0.5))' }}>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <PawPrint className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+        <div className="mt-12 sm:mt-16 text-center max-w-5xl mx-auto">
+          <Link to="/community" className="block rounded-xl py-4 sm:py-5 px-8 transition-all duration-300 hover:shadow-medium" style={{ backgroundColor: '#9aedb6' }}>
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <PawPrint className="h-5 w-5 sm:h-6 sm:w-6" style={{ color: 'black' }} />
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold" style={{ color: 'black' }}>
                 Join Our Pet Community
               </h3>
             </div>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-4">
+            <p className="text-xs sm:text-sm max-w-2xl mx-auto mb-2" style={{ color: 'black' }}>
               Connect with thousands of happy pet parents and share your pet's journey with us!
             </p>
-            <div className="flex items-center justify-center gap-2 text-primary font-medium">
+            <div className="flex items-center justify-center gap-2 font-medium text-sm" style={{ color: 'black' }}>
               <span>Explore Community</span>
               <ArrowRight className="h-4 w-4" />
             </div>

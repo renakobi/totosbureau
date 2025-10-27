@@ -7,8 +7,11 @@ import { Heart, ShoppingCart, Search, Menu, X, User, ChevronRight, PawPrint } fr
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useUser } from "@/contexts/UserContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
 import logoImage from "@/assets/logo.jpg";
+import logoWhite from "@/assets/The assets/TB Logotype white - aligned left.png";
+import logoBlack from "@/assets/The assets/TB Logotype black - aligned left.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,6 +21,7 @@ const Header = () => {
   const { getTotalItems } = useCart();
   const { favorites } = useFavorites();
   const { currentUser } = useUser();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -29,45 +33,50 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md border-b border-border/50 shadow-soft bg-background/70">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-md border-b border-border/50 shadow-soft" style={{ backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)' }}>
       <div className="container mx-auto px-4">
         {/* Mobile Layout - Two Rows */}
         <div className="block lg:hidden">
           {/* Top Row - Mobile */}
           <div className="flex h-12 sm:h-14 items-center justify-between">
-            {/* Hamburger Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative z-50 hover:bg-primary/10 transition-smooth"
-            >
-              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}   
-            </Button>
+            {/* Left: Menu Button + Logo */}
+            <div className="flex items-center space-x-2">
+              {/* Hamburger Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="relative z-50 hover:bg-primary/10 transition-smooth"
+              >
+                {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}   
+              </Button>
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 group">
-              <div className="relative">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                  <img
-                    src={logoImage}
-                    alt="Toto's Bureau Logo"
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      console.log('Logo failed, using fallback...');
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="text-sm sm:text-lg font-bold" style={{ color: '#9aedb6' }}>
-                Toto's Bureau
-              </div>
-            </Link>
+              {/* Logo - 40% smaller on mobile */}
+                  <Link to="/" className="flex items-center space-x-1 group">
+                    <div className="relative">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
+                        <img
+                          src={logoImage}
+                          alt="Toto's Bureau Logo"
+                          className="w-full h-full object-cover rounded-full"
+                          onError={(e) => {
+                            console.log('Logo failed, using fallback...');
+                            e.currentTarget.style.display = 'none';
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <img
+                      src={isDarkMode ? logoWhite : logoBlack}
+                      alt="Toto's Bureau"
+                      className="h-12 sm:h-14 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+                    />
+                  </Link>
+            </div>
 
             {/* Right: Theme, Profile, Cart */}
             <div className="flex items-center space-x-1">
@@ -129,7 +138,7 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="relative">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
+                <div className="w-12 h-12 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
                   <img
                     src={logoImage}
                     alt="Toto's Bureau Logo"
@@ -145,9 +154,11 @@ const Header = () => {
                   />
                 </div>
               </div>
-              <div className="text-sm sm:text-lg font-bold" style={{ color: '#9aedb6' }}>
-                Toto's Bureau
-              </div>
+              <img
+                src={isDarkMode ? logoWhite : logoBlack}
+                alt="Toto's Bureau"
+                className="h-12 sm:h-14 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+              />
             </Link>
 
             {/* Search Bar - Double width and 50% transparent */}
