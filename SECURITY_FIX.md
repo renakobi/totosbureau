@@ -168,3 +168,4 @@ Make sure:
 
 **Remember:** The old password in git history can still be used until you rotate it! Please follow Option 1 above. 🔐
 
+
