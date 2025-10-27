@@ -19,6 +19,20 @@ build/
 working-*.cjs
 !working-email-server.cjs
 
+# Documentation and test files
+*.md
+!README.md
+*.pdf
+*-example.csv
+email-test.html
+deploy-trigger.txt
+package-simple.json
+sendgrid-package.json
+server-package.json
+test-*.js
+test-*.cjs
+*.timestamp-*.mjs
+
 # Security - never commit these
 *.pem
 *.key
