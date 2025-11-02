@@ -6,17 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Plus, Edit, Trash2, Package, Users, DollarSign, TrendingUp, Tag, Save, ArrowLeft, Upload, Check, X, Eye, MessageCircle } from "lucide-react";
+import { LogOut, Plus, Edit, Trash2, Package, Users, DollarSign, TrendingUp, Tag, Save, ArrowLeft, Upload, Check, X, Eye, MessageCircle, Settings, Truck } from "lucide-react";
 import { validateForm, validationRules, ValidationErrors } from "@/utils/validation";
 import { useOrders } from "@/contexts/OrderContext";
 import { useUser } from "@/contexts/UserContext";
 import { useProducts, Product } from "@/contexts/ProductContext";
 import { useCommunity } from "@/contexts/CommunityContext";
 import { useToast } from "@/hooks/use-toast";
+import { getShippingSettings, saveShippingSettings, ShippingSettings } from "@/utils/shippingSettings";
 
 // Types
 
@@ -258,6 +260,9 @@ const Admin = () => {
   const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editingDiscount, setEditingDiscount] = useState<Discount | null>(null);
+  
+  // Shipping settings state
+  const [shippingSettings, setShippingSettings] = useState<ShippingSettings>(getShippingSettings());
 
   // Product form state
   const [productForm, setProductForm] = useState<ProductForm>({
@@ -473,7 +478,7 @@ const Admin = () => {
     deleteProduct(id);
   };
 
-  // CSV Upload handler
+  // CSV Upload handler with improved parsing
   const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -481,60 +486,154 @@ const Admin = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      const lines = text.split('\n');
-      const headers = lines[0].split(',').map(h => h.trim());
+      
+      // Improved CSV parsing that handles quoted fields and commas within values
+      const parseCSVLine = (line: string): string[] => {
+        const result: string[] = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          const nextChar = line[i + 1];
+          
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              // Escaped quote
+              current += '"';
+              i++; // Skip next quote
+            } else {
+              // Toggle quote state
+              inQuotes = !inQuotes;
+            }
+          } else if (char === ',' && !inQuotes) {
+            // Field separator
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        // Add last field
+        result.push(current.trim());
+        return result;
+      };
+
+      const lines = text.split(/\r?\n/).filter(line => line.trim());
+      if (lines.length === 0) {
+        toast({
+          title: "CSV Upload Error",
+          description: "CSV file is empty.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const headers = parseCSVLine(lines[0]);
+      
+      // Validate required headers
+      const requiredHeaders = ['name', 'description', 'price', 'category', 'subcategory', 'type', 'image', 'stockQuantity'];
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+      
+      if (missingHeaders.length > 0) {
+        toast({
+          title: "CSV Upload Error",
+          description: `Missing required columns: ${missingHeaders.join(', ')}`,
+          variant: "destructive"
+        });
+        return;
+      }
       
       let successCount = 0;
       let errorCount = 0;
+      const errors: string[] = [];
 
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         
-        const values = lines[i].split(',').map(v => v.trim());
-        const product: any = {};
-        
-        headers.forEach((header, index) => {
-          product[header] = values[index] || '';
-        });
-
         try {
-          // Parse flavors if they exist
-          const flavors = product.flavors ? product.flavors.split(';').filter((f: string) => f.trim()) : [];
+          const values = parseCSVLine(lines[i]);
           
+          // Ensure we have enough values for all headers
+          while (values.length < headers.length) {
+            values.push('');
+          }
+          
+          const product: any = {};
+          
+          headers.forEach((header, index) => {
+            product[header] = values[index] || '';
+          });
+
+          // Validate required fields
+          if (!product.name || !product.description || !product.price || !product.category || !product.subcategory || !product.type || !product.image) {
+            errors.push(`Line ${i + 1}: Missing required fields`);
+            errorCount++;
+            continue;
+          }
+
+          // Parse flavors if they exist (separated by semicolons)
+          const flavors = product.flavors ? product.flavors.split(';').map((f: string) => f.trim()).filter((f: string) => f) : [];
+          
+          // Validate price is a valid number
+          const price = parseFloat(product.price);
+          if (isNaN(price) || price <= 0) {
+            errors.push(`Line ${i + 1}: Invalid price "${product.price}"`);
+            errorCount++;
+            continue;
+          }
+
+          // Validate stock quantity
+          const stockQty = parseInt(product.stockQuantity) || 0;
+          if (isNaN(stockQty) || stockQty < 0) {
+            errors.push(`Line ${i + 1}: Invalid stock quantity "${product.stockQuantity}"`);
+            errorCount++;
+            continue;
+          }
+
           addProduct({
             name: product.name,
             description: product.description,
-            price: parseFloat(product.price),
+            price: price,
             originalPrice: product.originalPrice ? parseFloat(product.originalPrice) : undefined,
             category: product.category.toLowerCase(),
             subcategory: product.subcategory.toLowerCase(),
             type: product.type.toLowerCase(),
             image: product.image,
-            badge: product.badge,
-            stockQuantity: parseInt(product.stockQuantity) || 0,
-            flavors: flavors,
-            ingredients: product.ingredients,
-            aboutProduct: product.aboutProduct,
+            badge: product.badge || undefined,
+            stockQuantity: stockQty,
+            flavors: flavors.length > 0 ? flavors : undefined,
+            ingredients: product.ingredients || undefined,
+            aboutProduct: product.aboutProduct || undefined,
             rating: 0,
             reviews: 0,
-            inStock: true
+            inStock: stockQty > 0
           });
           successCount++;
         } catch (error) {
           errorCount++;
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          errors.push(`Line ${i + 1}: ${errorMsg}`);
           console.error(`Error adding product from line ${i + 1}:`, error);
         }
       }
 
+      const description = errorCount > 0 
+        ? `Successfully added ${successCount} products. ${errorCount} errors. ${errors.length > 0 ? `First few errors: ${errors.slice(0, 3).join('; ')}` : ''}`
+        : `Successfully added ${successCount} products!`;
+
       toast({
         title: "CSV Upload Complete",
-        description: `Successfully added ${successCount} products. ${errorCount} errors.`,
+        description: description,
+        variant: errorCount > 0 ? "destructive" : "default"
       });
+
+      // Reset file input
+      event.target.value = '';
     };
 
     reader.readAsText(file);
-    // Reset the input
-    event.target.value = '';
   };
 
   // User CRUD operations
@@ -798,7 +897,7 @@ const Admin = () => {
           </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-7 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-8 bg-muted/50">
             <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Dashboard
             </TabsTrigger>
@@ -819,6 +918,9 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="discounts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Discounts
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -2124,6 +2226,108 @@ const Admin = () => {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                Settings
+              </h2>
+            </div>
+
+            {/* Shipping Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  Shipping Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="shipping-enabled"
+                      checked={shippingSettings.enabled}
+                      onChange={(e) => setShippingSettings({ ...shippingSettings, enabled: e.target.checked })}
+                      className="w-4 h-4"
+                    />
+                    <Label htmlFor="shipping-enabled" className="text-base font-medium">
+                      Enable Shipping Charges
+                    </Label>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    When disabled, all orders will have free shipping regardless of order total.
+                  </p>
+                </div>
+
+                <Separator />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="standard-cost">Standard Shipping Cost ($)</Label>
+                    <Input
+                      id="standard-cost"
+                      name="standard-cost"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={shippingSettings.standardCost}
+                      onChange={(e) => setShippingSettings({ ...shippingSettings, standardCost: parseFloat(e.target.value) || 0 })}
+                      placeholder="9.99"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      The standard shipping cost charged when free shipping threshold is not met.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="free-threshold">Free Shipping Threshold ($)</Label>
+                    <Input
+                      id="free-threshold"
+                      name="free-threshold"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={shippingSettings.freeShippingThreshold}
+                      onChange={(e) => setShippingSettings({ ...shippingSettings, freeShippingThreshold: parseFloat(e.target.value) || 0 })}
+                      placeholder="50.00"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Orders at or above this amount will qualify for free shipping.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 p-4 rounded-lg">
+                  <p className="text-sm font-medium mb-2">Current Behavior:</p>
+                  <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                    <li>Standard shipping: ${shippingSettings.standardCost.toFixed(2)}</li>
+                    <li>Free shipping threshold: ${shippingSettings.freeShippingThreshold.toFixed(2)}</li>
+                    <li>Orders under ${shippingSettings.freeShippingThreshold.toFixed(2)} will be charged ${shippingSettings.standardCost.toFixed(2)} shipping</li>
+                    <li>Orders at or above ${shippingSettings.freeShippingThreshold.toFixed(2)} will have free shipping</li>
+                    {!shippingSettings.enabled && <li className="text-primary font-medium">⚠️ Shipping is currently disabled - all orders will have free shipping</li>}
+                  </ul>
+                </div>
+
+                <Button
+                  onClick={() => {
+                    saveShippingSettings(shippingSettings);
+                    toast({
+                      title: "Settings Saved",
+                      description: "Shipping configuration has been updated successfully.",
+                    });
+                  }}
+                  className="w-full md:w-auto"
+                  style={{ backgroundColor: '#9aedb6' }}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Shipping Settings
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

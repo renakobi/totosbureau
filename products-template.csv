@@ -1,0 +1,7 @@
+name,description,price,originalPrice,category,subcategory,type,image,badge,stockQuantity,flavors,ingredients,aboutProduct
+Premium Dog Food,High-quality nutrition for adult dogs with real chicken and vegetables,45.99,59.99,dogs,food,dry food,https://example.com/images/dog-food.jpg,Best Seller,100,Chicken;Beef;Turkey,Chicken meal;brown rice;vegetables;vitamins,Complete and balanced nutrition for your furry friend
+Interactive Cat Toy,Engaging feather wand toy that keeps cats active and entertained,12.99,,cats,toys,interactive toy,https://example.com/images/cat-toy.jpg,New,50,,,High-quality materials for hours of play
+Dog Leash,Sturdy nylon leash with comfortable padded handle,19.99,24.99,dogs,accessories,leash,https://example.com/images/dog-leash.jpg,,75,,Strong nylon material,6 feet long with adjustable clip
+Cat Litter Box,Odor-control litter box with high sides,34.99,,cats,litter,litter box,https://example.com/images/litter-box.jpg,,30,,,Easy to clean with removable lid
+Dog Treats,Natural training treats made with real meat,8.99,12.99,dogs,food,treats,https://example.com/images/dog-treats.jpg,On Sale,200,Chicken;Salmon;Beef,Real meat;natural preservatives,Perfect for training and rewards
+
