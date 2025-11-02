@@ -12,7 +12,7 @@ import { useOrders } from "@/contexts/OrderContext";
 import { useUser } from "@/contexts/UserContext";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "@/services/realEmailService";
+import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "@/services/emailService";
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
@@ -29,18 +29,7 @@ const Cart = () => {
   const total = subtotal + shipping;
 
   const handleProceedToCheckout = () => {
-    // Check if user is logged in using UserContext
-    if (!currentUser) {
-      toast({
-        title: "Login Required",
-        description: "Please log in to your account to proceed with checkout.",
-        variant: "destructive"
-      });
-      navigate("/login");
-      return;
-    }
-    
-    // Navigate to the new Stripe checkout page
+    // Navigate to checkout - GUEST CHECKOUT ALLOWED - NO LOGIN REQUIRED
     navigate("/checkout");
   };
 

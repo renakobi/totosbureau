@@ -1,4 +1,5 @@
 import { Order } from '@/contexts/OrderContext';
+import emailjs from '@emailjs/browser';
 
 export interface EmailData {
   to: string;
@@ -11,65 +12,259 @@ export interface OrderEmailData {
   order: Order;
   customerName: string;
   customerEmail: string;
+  customerFirstName?: string;
+  customerLastName?: string;
+  customerPhone?: string;
 }
 
-// Mock email service - in a real app, this would integrate with an email service like SendGrid, AWS SES, etc.
+// EmailJS configuration
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+const EMAILJS_TEMPLATE_ID_CUSTOMER = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CUSTOMER || '';
+// Support both OWNER and ADMIN variable names for backward compatibility
+const EMAILJS_TEMPLATE_ID_ADMIN = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_ADMIN || import.meta.env.VITE_EMAILJS_TEMPLATE_ID_OWNER || '';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+
+console.log('📧 EmailJS Config:', {
+  serviceId: EMAILJS_SERVICE_ID ? '✅ SET' : '❌ MISSING',
+  templateCustomer: EMAILJS_TEMPLATE_ID_CUSTOMER ? `✅ SET (${EMAILJS_TEMPLATE_ID_CUSTOMER})` : '❌ MISSING',
+  templateAdmin: EMAILJS_TEMPLATE_ID_ADMIN ? `✅ SET (${EMAILJS_TEMPLATE_ID_ADMIN})` : '⚠️ Using Customer Template',
+  publicKey: EMAILJS_PUBLIC_KEY ? `✅ SET (${EMAILJS_PUBLIC_KEY.length} chars)` : '❌ MISSING'
+});
+
+// Initialize EmailJS if public key is available
+if (EMAILJS_PUBLIC_KEY) {
+  try {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    console.log('✅ EmailJS initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize EmailJS:', error);
+  }
+}
+
+// Send email using EmailJS
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Check if EmailJS is configured
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID_CUSTOMER || !EMAILJS_PUBLIC_KEY) {
+      console.warn('📧 EmailJS not configured, email would be sent to:', emailData.to);
+      console.log('Email content:', {
+        subject: emailData.subject,
+        html: emailData.html.substring(0, 100) + '...'
+      });
+      return false;
+    }
+
+    // Determine which template to use (customer or admin)
+    // Use admin template for totosbureau@gmail.com, customer template otherwise
+    const isAdminEmail = emailData.to === 'totosbureau@gmail.com' || emailData.to.includes('totosbureau@gmail.com');
     
-    // In a real application, this would make an actual API call to your email service
-    console.log('📧 Email would be sent:', {
+    // FORCE admin template for totosbureau emails - throw error if not configured
+    let templateId: string;
+    if (isAdminEmail) {
+      if (!EMAILJS_TEMPLATE_ID_ADMIN) {
+        console.error('❌ ADMIN TEMPLATE NOT CONFIGURED! Admin emails will fail.');
+        console.error('❌ Set VITE_EMAILJS_TEMPLATE_ID_ADMIN in your .env file');
+        // Fall back to customer template but log warning
+        templateId = EMAILJS_TEMPLATE_ID_CUSTOMER;
+        console.warn('⚠️ Using customer template for admin email - THIS IS WRONG!');
+      } else {
+        templateId = EMAILJS_TEMPLATE_ID_ADMIN;
+      }
+    } else {
+      templateId = EMAILJS_TEMPLATE_ID_CUSTOMER;
+    }
+    
+    console.log('📧 Template Selection:', {
+      recipient: emailData.to,
+      isAdmin: isAdminEmail,
+      usingTemplate: isAdminEmail ? 'Admin' : 'Customer',
+      templateId: templateId,
+      adminTemplateConfigured: !!EMAILJS_TEMPLATE_ID_ADMIN
+    });
+
+    // Prepare EmailJS template parameters
+    // If emailData has order data, extract individual fields for template variables
+    const templateParams: Record<string, string> = {
+      // Recipient (EmailJS standard variable)
+      to_email: emailData.to,
+      email: emailData.to,
+      user_email: emailData.to,
+      recipient_email: emailData.to,
+      
+      // Subject (EmailJS standard variable)
+      subject: emailData.subject,
+      
+      // HTML content - PRIMARY variable name EmailJS expects
+      message: emailData.html,
+      // Also send with other common names for compatibility
+      message_html: emailData.html,
+      html: emailData.html,
+      content: emailData.html,
+      body_html: emailData.html,
+      body: emailData.html,
+      
+      // Plain text fallback
+      message_text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
+      text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
+      body_text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
+      
+      // Reply to
+      reply_to: 'totosbureau@gmail.com',
+    };
+
+    // If this email has order data attached (from OrderEmailData), extract individual fields
+    // This allows templates to use {{order_number}}, {{customer_name}}, etc.
+    if ((emailData as any).orderData) {
+      const orderData = (emailData as any).orderData;
+      const { order, customerName, customerEmail, customerFirstName, customerLastName, customerPhone } = orderData;
+      
+      if (order) {
+        // Extract order fields for template variables
+        templateParams.order_number = order.orderNumber || 'N/A';
+        templateParams.order_date = order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : 'N/A';
+        templateParams.order_status = order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending';
+        
+        templateParams.customer_name = customerName || 'N/A';
+        templateParams.customer_email = customerEmail || 'N/A';
+        templateParams.customer_phone = customerPhone || order.shippingAddress?.phone || 'N/A';
+        
+        // Payment method information
+        const paymentType = order.paymentMethod?.type || 'Not specified';
+        const paymentLast4 = order.paymentMethod?.last4;
+        const isCashOnDelivery = paymentType === 'Cash on Delivery' || paymentType === 'cash_on_delivery';
+        
+        templateParams.payment_method = paymentType;
+        templateParams.payment_status = isCashOnDelivery ? '⚠️ Payment Pending - Cash on Delivery' : '✓ Payment Processed Successfully';
+        templateParams.payment_status_icon = isCashOnDelivery ? '⚠️' : '✓';
+        templateParams.payment_status_text = isCashOnDelivery ? 'Payment Pending - Cash on Delivery' : 'Payment Processed Successfully';
+        templateParams.payment_status_color = isCashOnDelivery ? '#dc2626' : '#059669';
+        templateParams.payment_background = isCashOnDelivery ? '#fef2f2' : '#f0fdf4';
+        templateParams.card_last4 = paymentLast4 && paymentLast4 !== 'CASH' ? `****${paymentLast4}` : '';
+        
+        // Order summary
+        templateParams.subtotal = `$${(order.subtotal || 0).toFixed(2)}`;
+        templateParams.shipping = (order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`;
+        templateParams.tax = `$${(order.tax || 0).toFixed(2)}`;
+        templateParams.total = `$${(order.total || 0).toFixed(2)}`;
+        
+        // Order items
+        templateParams.items_list = order.items?.map(item => 
+          `${item.name || 'Unnamed Item'} (Qty: ${item.quantity || 1}) - $${((item.price || 0) * (item.quantity || 1)).toFixed(2)}`
+        ).join('\n') || 'No items';
+        
+        // Shipping address
+        if (order.shippingAddress) {
+          templateParams.shipping_address = `${order.shippingAddress.name || 'N/A'}\n${order.shippingAddress.street || 'N/A'}\n${order.shippingAddress.city || 'N/A'}, ${order.shippingAddress.state || 'N/A'} ${order.shippingAddress.zipCode || 'N/A'}\n${order.shippingAddress.country || 'N/A'}`;
+        } else {
+          templateParams.shipping_address = 'N/A';
+        }
+      }
+    }
+
+    console.log('📧 Sending email via EmailJS:', {
       to: emailData.to,
       subject: emailData.subject,
-      html: emailData.html
+      serviceId: EMAILJS_SERVICE_ID,
+      templateId: templateId,
+      isAdmin: emailData.to === 'totosbureau@gmail.com',
+      htmlLength: emailData.html.length,
+      htmlPreview: emailData.html.substring(0, 200) + '...',
+      paramKeys: Object.keys(templateParams)
     });
     
-    // For demo purposes, we'll always return true
-    // In production, you'd handle actual success/failure responses
+    // Log full HTML for debugging (first 500 chars)
+    console.log('📧 HTML Content Preview:', emailData.html.substring(0, 500));
+
+    // Send email via EmailJS
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      templateId,
+      templateParams
+    );
+
+    console.log('✅ Email sent successfully:', response);
     return true;
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('❌ Email sending failed:', error);
     return false;
   }
 };
 
 export const generateOrderConfirmationEmail = (orderData: OrderEmailData): EmailData => {
-  const { order, customerName, customerEmail } = orderData;
+  console.log('🔍 [generateOrderConfirmationEmail] Input data:', {
+    hasOrder: !!orderData.order,
+    orderNumber: orderData.order?.orderNumber,
+    customerName: orderData.customerName,
+    customerEmail: orderData.customerEmail,
+    orderItems: orderData.order?.items?.length || 0,
+    fullOrder: orderData.order
+  });
+
+  // Validate required data
+  if (!orderData.order) {
+    console.error('❌ [generateOrderConfirmationEmail] Missing order data!');
+    throw new Error('Order data is required');
+  }
   
-  const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
+  if (!orderData.customerEmail) {
+    console.error('❌ [generateOrderConfirmationEmail] Missing customer email!');
+    throw new Error('Customer email is required');
+  }
+
+  const { order, customerName = 'Customer', customerEmail } = orderData;
+  
+  // Safe date parsing with fallbacks
+  const orderDateStr = order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
-  });
+  }) : 'N/A';
 
-  const estimatedDelivery = new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
+  const estimatedDeliveryStr = order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
-  });
+  }) : 'N/A';
 
-  const itemsHtml = order.items.map(item => `
+  // Validate items exist
+  if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+    console.error('❌ [generateOrderConfirmationEmail] No items in order!', order);
+    throw new Error('Order must contain items');
+  }
+
+  const itemsHtml = order.items.map(item => {
+    const itemName = item.name || 'Unnamed Item';
+    const itemPrice = item.price || 0;
+    const itemQuantity = item.quantity || 1;
+    const itemImage = item.image || '🐾';
+    
+    return `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
         <div style="display: flex; align-items: center; gap: 12px;">
           <div style="width: 60px; height: 60px; background: #f3f4f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-            ${item.image}
+            ${itemImage}
           </div>
           <div>
-            <div style="font-weight: 600; color: #111827;">${item.name}</div>
-            <div style="color: #6b7280; font-size: 14px;">Qty: ${item.quantity}</div>
+            <div style="font-weight: 600; color: #111827;">${itemName}</div>
+            <div style="color: #6b7280; font-size: 14px;">Qty: ${itemQuantity}</div>
           </div>
         </div>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">
-        $${(item.price * item.quantity).toFixed(2)}
+        $${(itemPrice * itemQuantity).toFixed(2)}
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   const html = `
     <!DOCTYPE html>
@@ -101,13 +296,13 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
         
         <div class="content">
           <h2 style="color: #111827; margin-bottom: 16px;">Order Confirmation</h2>
-          <p>Hi ${customerName},</p>
+          <p>Hi ${customerName || 'Customer'},</p>
           <p>Thank you for your order! We're excited to help you care for your furry friends. Your order has been confirmed and is being prepared.</p>
           
           <div class="order-summary">
-            <h3 style="margin-top: 0; color: #111827;">Order #${order.orderNumber}</h3>
-            <p style="margin: 8px 0; color: #6b7280;">Placed on ${orderDate}</p>
-            <span class="status-badge">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+            <h3 style="margin-top: 0; color: #111827;">Order #${order.orderNumber || 'N/A'}</h3>
+            <p style="margin: 8px 0; color: #6b7280;">Placed on ${orderDateStr}</p>
+            <span class="status-badge">${order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending'}</span>
           </div>
           
           <div class="order-details">
@@ -120,34 +315,43 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
           <div class="total-section">
             <h3 style="margin-top: 0; color: #111827;">Order Summary</h3>
             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
-              <span>Subtotal (${order.items.length} items)</span>
-              <span>$${order.subtotal.toFixed(2)}</span>
+              <span>Subtotal (${order.items?.length || 0} items)</span>
+              <span>$${(order.subtotal || 0).toFixed(2)}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
               <span>Shipping</span>
-              <span>${order.shipping === 0 ? 'FREE' : `$${order.shipping.toFixed(2)}`}</span>
+              <span>${(order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
               <span>Tax</span>
-              <span>$${order.tax.toFixed(2)}</span>
+              <span>$${(order.tax || 0).toFixed(2)}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin: 16px 0 8px 0; font-size: 18px; font-weight: 700; color: #111827;">
               <span>Total</span>
-              <span>$${order.total.toFixed(2)}</span>
+              <span>$${(order.total || 0).toFixed(2)}</span>
             </div>
+          </div>
+          
+          <div class="order-details">
+            <h3 style="margin-top: 0; color: #111827;">Payment Method</h3>
+            <p style="margin: 8px 0; font-size: 16px; font-weight: 600; color: #059669;">
+              ${order.paymentMethod?.type || 'Not specified'}
+              ${order.paymentMethod?.last4 && order.paymentMethod.last4 !== 'CASH' ? ` • ****${order.paymentMethod.last4}` : ''}
+            </p>
+            ${order.paymentMethod?.type === 'Cash on Delivery' ? '<p style="margin: 8px 0; color: #dc2626; font-weight: 600;">Payment will be collected upon delivery</p>' : '<p style="margin: 8px 0; color: #059669; font-weight: 600;">✓ Payment processed successfully</p>'}
           </div>
           
           <div class="order-details">
             <h3 style="margin-top: 0; color: #111827;">Shipping Information</h3>
             <p style="margin: 8px 0;">
-              <strong>${order.shippingAddress.name}</strong><br>
-              ${order.shippingAddress.street}<br>
-              ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}<br>
-              ${order.shippingAddress.country}<br>
-              Phone: ${order.shippingAddress.phone}
+              <strong>${order.shippingAddress?.name || 'N/A'}</strong><br>
+              ${order.shippingAddress?.street || 'N/A'}<br>
+              ${order.shippingAddress?.city || 'N/A'}, ${order.shippingAddress?.state || 'N/A'} ${order.shippingAddress?.zipCode || 'N/A'}<br>
+              ${order.shippingAddress?.country || 'N/A'}<br>
+              Phone: ${order.shippingAddress?.phone || 'N/A'}
             </p>
             <p style="margin: 16px 0 8px 0; color: #6b7280;">
-              <strong>Estimated Delivery:</strong> ${estimatedDelivery}
+              <strong>Estimated Delivery:</strong> ${estimatedDeliveryStr}
             </p>
           </div>
           
@@ -173,31 +377,34 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
   const text = `
 Order Confirmation - Toto's Bureau
 
-Hi ${customerName},
+Hi ${customerName || 'Customer'},
 
 Thank you for your order! Your order has been confirmed and is being prepared.
 
-Order #${order.orderNumber}
-Placed on ${orderDate}
-Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+Order #${order.orderNumber || 'N/A'}
+Placed on ${orderDateStr}
+Status: ${order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending'}
 
 Order Items:
-${order.items.map(item => `- ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+${order.items?.map(item => `- ${item.name || 'Unnamed Item'} (Qty: ${item.quantity || 1}) - $${((item.price || 0) * (item.quantity || 1)).toFixed(2)}`).join('\n') || 'No items'}
 
 Order Summary:
-Subtotal (${order.items.length} items): $${order.subtotal.toFixed(2)}
-Shipping: ${order.shipping === 0 ? 'FREE' : `$${order.shipping.toFixed(2)}`}
-Tax: $${order.tax.toFixed(2)}
-Total: $${order.total.toFixed(2)}
+Subtotal (${order.items?.length || 0} items): $${(order.subtotal || 0).toFixed(2)}
+Shipping: ${(order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`}
+Tax: $${(order.tax || 0).toFixed(2)}
+Total: $${(order.total || 0).toFixed(2)}
+
+Payment Method: ${order.paymentMethod?.type || 'Not specified'}${order.paymentMethod?.last4 && order.paymentMethod.last4 !== 'CASH' ? ` (****${order.paymentMethod.last4})` : ''}
+${order.paymentMethod?.type === 'Cash on Delivery' ? '⚠️ Payment will be collected upon delivery' : '✓ Payment processed successfully'}
 
 Shipping Information:
-${order.shippingAddress.name}
-${order.shippingAddress.street}
-${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}
-${order.shippingAddress.country}
-Phone: ${order.shippingAddress.phone}
+${order.shippingAddress?.name || 'N/A'}
+${order.shippingAddress?.street || 'N/A'}
+${order.shippingAddress?.city || 'N/A'}, ${order.shippingAddress?.state || 'N/A'} ${order.shippingAddress?.zipCode || 'N/A'}
+${order.shippingAddress?.country || 'N/A'}
+Phone: ${order.shippingAddress?.phone || 'N/A'}
 
-Estimated Delivery: ${estimatedDelivery}
+Estimated Delivery: ${estimatedDeliveryStr}
 
 If you have any questions, contact us at totosbureau@gmail.com.
 
@@ -206,15 +413,20 @@ The Toto's Bureau Team
   `;
 
   return {
-    to: 'totosbureau@gmail.com',
-    subject: `New Order #${order.orderNumber} - ${customerName}`,
+    to: customerEmail, // Fixed: Send confirmation to customer, not admin
+    subject: `Order Confirmation #${order.orderNumber} - Toto's Bureau`,
     html,
     text
   };
 };
 
 export const generateOrderNotificationEmail = (orderData: OrderEmailData): EmailData => {
-  const { order, customerName, customerEmail } = orderData;
+  const { order, customerName, customerEmail, customerFirstName, customerLastName, customerPhone } = orderData;
+  
+  // Extract first and last name if not provided separately
+  const firstName = customerFirstName || (customerName ? customerName.split(' ')[0] : '');
+  const lastName = customerLastName || (customerName ? customerName.split(' ').slice(1).join(' ') : '');
+  const phone = customerPhone || order.shippingAddress.phone || 'Not provided';
   
   const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -223,6 +435,18 @@ export const generateOrderNotificationEmail = (orderData: OrderEmailData): Email
     hour: '2-digit',
     minute: '2-digit'
   });
+
+  const itemsHtml = order.items.map(item => `
+    <tr>
+      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+        <div style="font-weight: 600;">${item.name}</div>
+        <div style="color: #6b7280; font-size: 14px;">Qty: ${item.quantity} × $${item.price.toFixed(2)}</div>
+      </td>
+      <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">
+        $${(item.price * item.quantity).toFixed(2)}
+      </td>
+    </tr>
+  `).join('');
 
   const itemsText = order.items.map(item => 
     `• ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
@@ -260,14 +484,29 @@ export const generateOrderNotificationEmail = (orderData: OrderEmailData): Email
           
           <div class="customer-info">
             <h3 style="margin-top: 0; color: #111827;">Customer Information</h3>
-            <p><strong>Name:</strong> ${customerName}</p>
-            <p><strong>Email:</strong> ${customerEmail}</p>
-            <p><strong>Phone:</strong> ${order.shippingAddress.phone}</p>
+            ${firstName ? `<p><strong>First Name:</strong> ${firstName}</p>` : ''}
+            ${lastName ? `<p><strong>Last Name:</strong> ${lastName}</p>` : ''}
+            <p><strong>Full Name:</strong> ${customerName}</p>
+            <p><strong>Email:</strong> <a href="mailto:${customerEmail}" style="color: #059669;">${customerEmail}</a></p>
+            <p><strong>Phone:</strong> <a href="tel:${phone}" style="color: #059669;">${phone}</a></p>
+            <p><strong>Payment Method:</strong> <span style="color: #059669; font-weight: 600; font-size: 16px;">${order.paymentMethod?.type || 'Not specified'}</span></p>
+            ${order.paymentMethod?.type === 'Cash on Delivery' ? '<p style="color: #dc2626; font-weight: 600; background: #fef2f2; padding: 8px; border-radius: 4px; margin-top: 8px;">⚠️ Payment Pending - Cash on Delivery</p>' : ''}
+            ${order.paymentMethod?.last4 && order.paymentMethod.last4 !== 'CASH' ? `<p><strong>Card Last 4 Digits:</strong> ****${order.paymentMethod.last4}</p>` : ''}
           </div>
           
           <div class="items-list">
             <h3 style="margin-top: 0; color: #111827;">Order Items</h3>
-            <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${itemsText}</pre>
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e5e7eb;">
+                  <th style="padding: 8px; text-align: left;">Item</th>
+                  <th style="padding: 8px; text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
           </div>
           
           <div class="order-info">
@@ -275,16 +514,17 @@ export const generateOrderNotificationEmail = (orderData: OrderEmailData): Email
             <p><strong>Subtotal:</strong> $${order.subtotal.toFixed(2)}</p>
             <p><strong>Shipping:</strong> ${order.shipping === 0 ? 'FREE' : `$${order.shipping.toFixed(2)}`}</p>
             <p><strong>Tax:</strong> $${order.tax.toFixed(2)}</p>
-            <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+            <p style="font-size: 18px; font-weight: 700; color: #111827; margin-top: 12px;"><strong>Total:</strong> $${order.total.toFixed(2)}</p>
           </div>
           
           <div class="customer-info">
             <h3 style="margin-top: 0; color: #111827;">Shipping Address</h3>
-            <p>
-              ${order.shippingAddress.name}<br>
+            <p style="line-height: 1.8; margin: 0;">
+              <strong>${order.shippingAddress.name}</strong><br>
               ${order.shippingAddress.street}<br>
               ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}<br>
-              ${order.shippingAddress.country}
+              ${order.shippingAddress.country}<br>
+              <strong>Phone:</strong> ${phone}
             </p>
           </div>
         </div>
@@ -305,9 +545,14 @@ Order Date: ${orderDate}
 Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
 
 Customer Information:
-Name: ${customerName}
+${firstName ? `First Name: ${firstName}` : ''}
+${lastName ? `Last Name: ${lastName}` : ''}
+Full Name: ${customerName}
 Email: ${customerEmail}
-Phone: ${order.shippingAddress.phone}
+Phone: ${phone}
+Payment Method: ${order.paymentMethod?.type || 'Not specified'}
+${order.paymentMethod?.type === 'Cash on Delivery' ? '⚠️ Payment Pending - Cash on Delivery' : ''}
+${order.paymentMethod?.last4 && order.paymentMethod.last4 !== 'CASH' ? `Card Last 4: ****${order.paymentMethod.last4}` : ''}
 
 Order Items:
 ${itemsText}
@@ -333,4 +578,87 @@ This is an automated notification from Toto's Bureau.
     html,
     text
   };
+};
+
+// Wrapper functions for sending order emails
+export const sendOrderConfirmationEmail = async (orderData: OrderEmailData): Promise<boolean> => {
+  console.log('📧 [sendOrderConfirmationEmail] Called with:', {
+    orderNumber: orderData.order?.orderNumber,
+    customerEmail: orderData.customerEmail,
+    customerName: orderData.customerName,
+    hasOrder: !!orderData.order,
+    itemCount: orderData.order?.items?.length || 0
+  });
+  
+  try {
+    const emailData = generateOrderConfirmationEmail(orderData);
+    // Update the 'to' field to use the customer's email
+    emailData.to = orderData.customerEmail;
+    emailData.subject = `Order Confirmation #${orderData.order.orderNumber} - Toto's Bureau`;
+    
+    // Attach orderData so sendEmail can extract individual template variables
+    (emailData as any).orderData = orderData;
+    
+    console.log('📧 [sendOrderConfirmationEmail] Generated email data:', {
+      to: emailData.to,
+      subject: emailData.subject,
+      htmlLength: emailData.html?.length || 0
+    });
+    
+    const result = await sendEmail(emailData);
+    console.log('📧 [sendOrderConfirmationEmail] Result:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ [sendOrderConfirmationEmail] Failed:', error);
+    console.error('❌ [sendOrderConfirmationEmail] Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return false;
+  }
+};
+
+export const sendOrderNotificationEmail = async (orderData: OrderEmailData): Promise<boolean> => {
+  console.log('📧 [sendOrderNotificationEmail] Called with:', {
+    orderNumber: orderData.order?.orderNumber,
+    customerEmail: orderData.customerEmail,
+    customerName: orderData.customerName,
+    hasOrder: !!orderData.order,
+    itemCount: orderData.order?.items?.length || 0,
+    adminTemplateConfigured: !!EMAILJS_TEMPLATE_ID_ADMIN
+  });
+  
+  try {
+    const emailData = generateOrderNotificationEmail(orderData);
+    // Notification email ALWAYS goes to admin
+    emailData.to = 'totosbureau@gmail.com';
+    
+    // Attach orderData so sendEmail can extract individual template variables
+    (emailData as any).orderData = orderData;
+    
+    console.log('📧 [sendOrderNotificationEmail] Generated email data:', {
+      to: emailData.to,
+      subject: emailData.subject,
+      htmlLength: emailData.html?.length || 0,
+      isAdminEmail: true,
+      willUseAdminTemplate: !!EMAILJS_TEMPLATE_ID_ADMIN
+    });
+    
+    // Verify we're using admin template
+    if (!EMAILJS_TEMPLATE_ID_ADMIN) {
+      console.error('❌ CRITICAL: VITE_EMAILJS_TEMPLATE_ID_ADMIN is not set!');
+      console.error('❌ Admin notification emails will use the wrong template!');
+    }
+    
+    const result = await sendEmail(emailData);
+    console.log('📧 [sendOrderNotificationEmail] Result:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ [sendOrderNotificationEmail] Failed:', error);
+    console.error('❌ [sendOrderNotificationEmail] Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return false;
+  }
 };

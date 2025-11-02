@@ -119,6 +119,7 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
               <Label htmlFor="card-expiry" className="text-xs">Expiry</Label>
               <Input 
                 id="card-expiry"
+                name="card-expiry"
                 placeholder="12/25"
                 className="text-sm"
                 readOnly
@@ -128,6 +129,7 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
               <Label htmlFor="card-cvc" className="text-xs">CVC</Label>
               <Input 
                 id="card-cvc"
+                name="card-cvc"
                 placeholder="123"
                 className="text-sm"
                 readOnly
@@ -137,6 +139,7 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
               <Label htmlFor="card-name" className="text-xs">Name on Card</Label>
               <Input 
                 id="card-name"
+                name="card-name"
                 placeholder="John Doe"
                 className="text-sm"
                 readOnly
@@ -153,8 +156,10 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="test@example.com"
+          autoComplete="email"
           required
         />
       </div>

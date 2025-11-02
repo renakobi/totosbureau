@@ -28,17 +28,25 @@ const cardElementOptions = {
 };
 
 // Payment form component
-const PaymentForm = ({ amount, onSuccess, onError }: {
+const PaymentForm = ({ amount, onSuccess, onError, initialEmail = '' }: {
   amount: number;
   onSuccess: (paymentIntent: any) => void;
   onError: (error: any) => void;
+  initialEmail?: string;
 }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState<string | null>(null);
   const [cardElementReady, setCardElementReady] = useState(false);
+
+  // Update email when initialEmail changes
+  useEffect(() => {
+    if (initialEmail) {
+      setEmail(initialEmail);
+    }
+  }, [initialEmail]);
 
   console.log('🔍 PaymentForm Status:', { 
     stripe: !!stripe, 
@@ -228,11 +236,13 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
 const SimpleStripeCheckout = ({ 
   totalAmount, 
   onPaymentSuccess, 
-  onPaymentError 
+  onPaymentError,
+  initialEmail = ''
 }: { 
   totalAmount?: number; 
   onPaymentSuccess?: (paymentIntent: any) => void; 
   onPaymentError?: (error: any) => void; 
+  initialEmail?: string;
 }) => {
   const [amount] = useState(totalAmount || 25.99);
 
@@ -267,6 +277,7 @@ const SimpleStripeCheckout = ({
             amount={amount}
             onSuccess={handlePaymentSuccess}
             onError={handlePaymentError}
+            initialEmail={initialEmail}
           />
           
           {/* Test Card Info */}

@@ -1036,6 +1036,7 @@ const Admin = () => {
                         <Label htmlFor="name">Product Name</Label>
                         <Input
                           id="name"
+                          name="name"
                           value={productForm.name}
                           onChange={(e) => setProductForm({...productForm, name: e.target.value})}
                           placeholder="Enter product name"
@@ -1049,6 +1050,7 @@ const Admin = () => {
                         <Label htmlFor="price">Price ($)</Label>
                         <Input
                           id="price"
+                          name="price"
                           type="number"
                           value={productForm.price}
                           onChange={(e) => setProductForm({...productForm, price: e.target.value})}
@@ -1109,6 +1111,7 @@ const Admin = () => {
                         <Label htmlFor="description">Description</Label>
                         <Textarea
                           id="description"
+                          name="description"
                           value={productForm.description}
                           onChange={(e) => setProductForm({...productForm, description: e.target.value})}
                           placeholder="Enter product description"
@@ -1119,6 +1122,7 @@ const Admin = () => {
                         <Label htmlFor="type">Product Type</Label>
                         <Input
                           id="type"
+                          name="type"
                           value={productForm.type}
                           onChange={(e) => setProductForm({...productForm, type: e.target.value})}
                           placeholder="e.g., treats, toys, clothes, subscription"
@@ -1129,6 +1133,7 @@ const Admin = () => {
                         <div className="space-y-2">
                           <Input
                             id="image"
+                            name="image"
                             value={productForm.image}
                             onChange={(e) => setProductForm({...productForm, image: e.target.value})}
                             placeholder="Enter image URL or upload file"

@@ -17,7 +17,6 @@ export default {
         sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
-        'bobby-jones': ['Bobby Jones', 'cursive'],
         neue: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {

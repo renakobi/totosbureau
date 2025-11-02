@@ -154,6 +154,7 @@ const ProfileSettings = () => {
                     name="firstName"
                     value={profileData.firstName}
                     onChange={handleProfileChange}
+                    autoComplete="given-name"
                   />
                 </div>
                 <div>
@@ -163,6 +164,7 @@ const ProfileSettings = () => {
                     name="lastName"
                     value={profileData.lastName}
                     onChange={handleProfileChange}
+                    autoComplete="family-name"
                   />
                 </div>
               </div>
@@ -175,9 +177,11 @@ const ProfileSettings = () => {
                     <Input 
                       id="email" 
                       name="email"
+                      type="email"
                       value={profileData.email}
                       onChange={handleProfileChange}
-                      className="pl-10" 
+                      className="pl-10"
+                      autoComplete="email"
                     />
                   </div>
                 </div>
@@ -191,9 +195,11 @@ const ProfileSettings = () => {
                     <Input 
                       id="phone" 
                       name="phone"
+                      type="tel"
                       value={profileData.phone}
                       onChange={handleProfileChange}
-                      className="pl-10" 
+                      className="pl-10"
+                      autoComplete="tel"
                     />
                   </div>
                 </div>
@@ -219,7 +225,8 @@ const ProfileSettings = () => {
                       name="address"
                       value={profileData.address}
                       onChange={handleProfileChange}
-                      className="pl-10" 
+                      className="pl-10"
+                      autoComplete="street-address"
                     />
                   </div>
                 </div>
@@ -233,6 +240,7 @@ const ProfileSettings = () => {
                     name="city"
                     value={profileData.city}
                     onChange={handleProfileChange}
+                    autoComplete="address-level2"
                   />
                 </div>
                 <div>
@@ -242,6 +250,7 @@ const ProfileSettings = () => {
                     name="state"
                     value={profileData.state}
                     onChange={handleProfileChange}
+                    autoComplete="address-level1"
                   />
                 </div>
                 <div>
@@ -251,6 +260,7 @@ const ProfileSettings = () => {
                     name="zip"
                     value={profileData.zip}
                     onChange={handleProfileChange}
+                    autoComplete="postal-code"
                   />
                 </div>
               </div>

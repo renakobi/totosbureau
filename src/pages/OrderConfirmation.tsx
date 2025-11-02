@@ -150,25 +150,47 @@ const OrderConfirmation = () => {
                 <div className="space-y-3">
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Payment Method</label>
-                    <p className="text-lg font-semibold">Card ending in ****</p>
+                    <p className="text-lg font-semibold">
+                      {orderDetails.paymentMethod === 'cash_on_delivery' 
+                        ? 'Cash on Delivery' 
+                        : 'Card Payment'}
+                    </p>
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Payment ID</label>
+                    <label className="text-sm font-medium text-muted-foreground">Order ID</label>
                     <p className="font-mono text-sm">{orderDetails.paymentIntent.id}</p>
                   </div>
                   
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Status</label>
                     <Badge className="bg-green-100 text-green-800 border-green-200">
-                      {orderDetails.paymentIntent.status}
+                      {orderDetails.paymentMethod === 'cash_on_delivery' 
+                        ? 'Pending Payment' 
+                        : orderDetails.paymentIntent.status}
                     </Badge>
                   </div>
                   
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Date</label>
-                    <p>{formatDate(new Date().toISOString())}</p>
+                    <p>{formatDate(orderDetails.date || new Date().toISOString())}</p>
                   </div>
+
+                  {orderDetails.shippingInfo && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Shipping Address</label>
+                      <p className="text-sm">
+                        {orderDetails.shippingInfo.street}
+                        {orderDetails.shippingInfo.apartment && `, ${orderDetails.shippingInfo.apartment}`}
+                        <br />
+                        {orderDetails.shippingInfo.city}, {orderDetails.shippingInfo.postalCode}
+                        <br />
+                        {orderDetails.shippingInfo.email}
+                        <br />
+                        {orderDetails.shippingInfo.phone}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

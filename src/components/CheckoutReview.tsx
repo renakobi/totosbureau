@@ -3,11 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Trash2, Edit, CreditCard, MapPin, User, AlertCircle } from "lucide-react";
+import { Trash2, Edit, CreditCard, MapPin } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useUser } from "@/contexts/UserContext";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 
 interface CheckoutReviewProps {
   onProceedToPayment: () => void;
@@ -23,9 +20,6 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
   onEditBilling
 }) => {
   const { cartItems, getTotalPrice, getTotalItems, removeFromCart, updateQuantity } = useCart();
-  const { currentUser } = useUser();
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   const subtotal = getTotalPrice();
   const shipping = subtotal > 50 ? 0 : 9.99;
@@ -33,15 +27,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
   const total = subtotal + shipping + tax;
 
   const handleProceedToPayment = () => {
-    if (!currentUser) {
-      toast({
-        title: "Login Required",
-        description: "Please log in to your account to proceed with payment.",
-        variant: "destructive"
-      });
-      navigate("/login");
-      return;
-    }
+    // Guest checkout is allowed - proceed directly
     onProceedToPayment();
   };
 
@@ -229,38 +215,17 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
 
           {/* Proceed to Payment */}
           <div className="space-y-4">
-            {!isLoggedIn ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <AlertCircle className="h-5 w-5 text-yellow-600" />
-                  <div>
-                    <p className="font-medium text-yellow-800">Login Required</p>
-                    <p className="text-sm text-yellow-700">You need to be logged in to complete your purchase.</p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => navigate("/login")}
-                  className="w-full bg-gradient-to-r from-teal to-forest hover:from-teal/90 hover:to-forest/90 text-white py-3 text-lg"
-                >
-                  <User className="h-5 w-5 mr-2" />
-                  Login to Continue
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Button 
-                  onClick={handleProceedToPayment}
-                  className="w-full bg-gradient-to-r from-teal to-forest hover:from-teal/90 hover:to-forest/90 text-white py-3 text-lg"
-                >
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  Proceed to Payment
-                </Button>
-                
-                <p className="text-xs text-muted-foreground text-center">
-                  By proceeding, you agree to our Terms of Service and Privacy Policy
-                </p>
-              </>
-            )}
+            <Button 
+              onClick={handleProceedToPayment}
+              className="w-full bg-gradient-to-r from-teal to-forest hover:from-teal/90 hover:to-forest/90 text-white py-3 text-lg"
+            >
+              <CreditCard className="h-5 w-5 mr-2" />
+              Proceed to Payment
+            </Button>
+            
+            <p className="text-xs text-muted-foreground text-center">
+              By proceeding, you agree to our Terms of Service and Privacy Policy
+            </p>
           </div>
         </div>
       </div>

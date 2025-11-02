@@ -239,6 +239,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.firstName ? 'border-destructive' : ''}
                         placeholder="Enter your first name"
+                        autoComplete="given-name"
                       />
                       {errors.firstName && (
                         <p className="text-sm text-destructive flex items-center gap-1">
@@ -257,6 +258,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.lastName ? 'border-destructive' : ''}
                         placeholder="Enter your last name"
+                        autoComplete="family-name"
                       />
                       {errors.lastName && (
                         <p className="text-sm text-destructive flex items-center gap-1">
@@ -277,6 +279,7 @@ const SignUp = () => {
                       onChange={handleInputChange}
                       className={errors.email ? 'border-destructive' : ''}
                       placeholder="Enter your email address"
+                      autoComplete="email"
                     />
                     {errors.email && (
                       <p className="text-sm text-destructive flex items-center gap-1">
@@ -291,10 +294,12 @@ const SignUp = () => {
                     <Input
                       id="phone"
                       name="phone"
+                      type="tel"
                       value={formData.phone}
                       onChange={handleInputChange}
                       className={errors.phone ? 'border-destructive' : ''}
                       placeholder="Enter your phone number"
+                      autoComplete="tel"
                     />
                     {errors.phone && (
                       <p className="text-sm text-destructive flex items-center gap-1">
@@ -323,6 +328,7 @@ const SignUp = () => {
                       onChange={handleInputChange}
                       className={errors.username ? 'border-destructive' : ''}
                       placeholder="Choose a username"
+                      autoComplete="username"
                     />
                     {errors.username && (
                       <p className="text-sm text-destructive flex items-center gap-1">
@@ -343,6 +349,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.password ? 'border-destructive' : ''}
                         placeholder="Create a strong password"
+                        autoComplete="new-password"
                       />
                       <Button
                         type="button"
@@ -373,6 +380,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.confirmPassword ? 'border-destructive' : ''}
                         placeholder="Confirm your password"
+                        autoComplete="new-password"
                       />
                       <Button
                         type="button"
@@ -411,6 +419,7 @@ const SignUp = () => {
                       onChange={handleInputChange}
                       className={errors.street ? 'border-destructive' : ''}
                       placeholder="Enter your street address"
+                      autoComplete="street-address"
                     />
                     {errors.street && (
                       <p className="text-sm text-destructive flex items-center gap-1">
@@ -430,6 +439,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.city ? 'border-destructive' : ''}
                         placeholder="City"
+                        autoComplete="address-level2"
                       />
                       {errors.city && (
                         <p className="text-sm text-destructive flex items-center gap-1">
@@ -448,6 +458,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.state ? 'border-destructive' : ''}
                         placeholder="State"
+                        autoComplete="address-level1"
                       />
                       {errors.state && (
                         <p className="text-sm text-destructive flex items-center gap-1">
@@ -466,6 +477,7 @@ const SignUp = () => {
                         onChange={handleInputChange}
                         className={errors.zipCode ? 'border-destructive' : ''}
                         placeholder="12345"
+                        autoComplete="postal-code"
                       />
                       {errors.zipCode && (
                         <p className="text-sm text-destructive flex items-center gap-1">
@@ -484,6 +496,7 @@ const SignUp = () => {
                       value={formData.country}
                       onChange={handleInputChange}
                       placeholder="Country"
+                      autoComplete="country"
                     />
                   </div>
                 </div>
