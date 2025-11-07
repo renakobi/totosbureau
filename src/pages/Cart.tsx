@@ -13,6 +13,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "@/services/emailService";
+import { calculateShipping, getShippingSettings } from "@/utils/shippingSettings";
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
@@ -25,7 +26,7 @@ const Cart = () => {
   const { toast } = useToast();
 
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 50 ? 0 : 9.99;
+  const shipping = calculateShipping(subtotal);
   const total = subtotal + shipping;
 
   const handleProceedToCheckout = () => {
@@ -43,7 +44,7 @@ const Cart = () => {
     
     try {
       const subtotal = getTotalPrice();
-      const shipping = subtotal > 50 ? 0 : 9.99;
+      const shipping = calculateShipping(subtotal);
       
       // Create order from cart items
       const orderItems = cartItems.map(item => ({
@@ -347,7 +348,7 @@ const Cart = () => {
                       <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
                     </div>
                     {shipping === 0 && (
-                      <p className="text-sm text-primary">🎉 Free shipping on orders over $50!</p>
+                      <p className="text-sm text-primary">🎉 Free shipping on orders over ${getShippingSettings().freeShippingThreshold.toFixed(2)}!</p>
                     )}
                     
                     <Separator />

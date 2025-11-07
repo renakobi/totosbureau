@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, Edit, CreditCard, MapPin } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { calculateShipping } from "@/utils/shippingSettings";
 
 interface CheckoutReviewProps {
   onProceedToPayment: () => void;
@@ -22,7 +23,7 @@ const CheckoutReview: React.FC<CheckoutReviewProps> = ({
   const { cartItems, getTotalPrice, getTotalItems, removeFromCart, updateQuantity } = useCart();
 
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 50 ? 0 : 9.99;
+  const shipping = calculateShipping(subtotal);
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
 

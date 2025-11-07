@@ -14,6 +14,7 @@ import SimpleStripeCheckout from '@/components/SimpleStripeCheckout';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from '@/services/emailService';
+import { calculateShipping, getFreeShippingRemaining } from '@/utils/shippingSettings';
 
 interface ShippingInfo {
   firstName: string;
@@ -75,7 +76,7 @@ const Checkout = () => {
   }, [cartItems.length, navigate]);
 
   const totalPrice = getTotalPrice();
-  const shipping = totalPrice > 50 ? 0 : 9.99;
+  const shipping = calculateShipping(totalPrice);
   const tax = totalPrice * 0.08;
   const finalTotal = totalPrice + shipping + tax;
 
@@ -758,7 +759,7 @@ const Checkout = () => {
 
                 {shipping > 0 && (
                   <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
-                    Add ${(50 - totalPrice).toFixed(2)} more for free shipping!
+                    Add ${getFreeShippingRemaining(totalPrice).toFixed(2)} more for free shipping!
                   </div>
                 )}
               </div>

@@ -14,27 +14,6 @@ export const verifyPassword = (password: string, hashedPassword: string): boolea
   return hashPassword(password) === hashedPassword;
 };
 
-// Default admin credentials (should be changed in production)
-export const DEFAULT_ADMIN = {
-  id: 'admin-001',
-  username: 'admin',
-  email: 'admin@totosbureau.com',
-  password: hashPassword('admin123'), // Changed from 'admin' to 'admin123'
-  firstName: 'Admin',
-  lastName: 'User',
-  phone: '+1-555-0123',
-  address: {
-    street: '123 Admin St',
-    city: 'Admin City',
-    state: 'AC',
-    zipCode: '12345',
-    country: 'USA'
-  },
-  createdAt: new Date().toISOString(),
-  isAdmin: true,
-  isActive: true
-};
-
 // Password validation rules - simplified
 export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
   // Ensure password is a string and not empty

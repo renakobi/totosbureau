@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { hashPassword, verifyPassword, DEFAULT_ADMIN, validatePassword } from '../utils/auth';
+import { hashPassword, verifyPassword, validatePassword } from '../utils/auth';
 
 export interface User {
   id: string;
@@ -43,16 +43,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const storedUsers = localStorage.getItem('totos-bureau-users');
       if (storedUsers) {
         const parsed = JSON.parse(storedUsers);
-        // Initialize with default admin if no users exist
-        if (!parsed || parsed.length === 0) {
-          return [DEFAULT_ADMIN];
-        }
-        return parsed;
+        // Return stored users or empty array if invalid
+        return Array.isArray(parsed) ? parsed : [];
       }
-      return [DEFAULT_ADMIN];
+      // Start with empty array - no default admin
+      return [];
     } catch (error) {
       console.error('Error loading users from localStorage:', error);
-      return [DEFAULT_ADMIN];
+      // Return empty array on error - no default admin
+      return [];
     }
   });
 

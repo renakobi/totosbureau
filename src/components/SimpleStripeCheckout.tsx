@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CreditCard, CheckCircle, XCircle, Lock } from 'lucide-react';
 
-// Stripe publishable key
-const stripePromise = loadStripe('pk_test_51SHrFb2NGWfNNG3Ew7nstxKwavxmLHdTJN1d9PZPeJeqtENqvw5GSflqLM5nW3O3WQMJKpkiZVeR5nJ3bxgtAHP800jUcTLcCN');
+// Stripe publishable key from environment variables
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 // Card Element styling
 const cardElementOptions = {

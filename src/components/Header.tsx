@@ -73,7 +73,7 @@ const Header = () => {
                     <img
                       src={isDarkMode ? logoWhite : logoBlack}
                       alt="Toto's Bureau"
-                      className="h-12 sm:h-14 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+                      className="h-[3.6rem] sm:h-14 w-auto object-contain transition-all duration-300 group-hover:scale-105"
                     />
                   </Link>
             </div>

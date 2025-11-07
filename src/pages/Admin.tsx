@@ -867,62 +867,67 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50/30 via-background to-amber-50/20">
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex h-20 items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        {/* Mobile-responsive header */}
+        <div className="flex flex-col sm:flex-row sm:h-20 sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
             <Button
               variant="ghost"
               onClick={() => activeTab === "dashboard" ? navigate("/") : setActiveTab("dashboard")}
-              className="hover:bg-primary/10 transition-smooth"
+              className="hover:bg-primary/10 transition-smooth flex-shrink-0"
+              size="sm"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {activeTab === "dashboard" ? "Back to Site" : "Back to Dashboard"}
+              <ArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{activeTab === "dashboard" ? "Back to Site" : "Back to Dashboard"}</span>
             </Button>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-forest rounded-xl flex items-center justify-center shadow-medium">
-                <Package className="h-6 w-6 text-white" />
-            </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-forest rounded-xl flex items-center justify-center shadow-medium flex-shrink-0">
+                <Package className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-forest to-primary bg-clip-text text-transparent truncate">
                   Toto's Bureau
                 </h1>
-                <p className="text-sm text-muted-foreground">Admin Panel</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Admin Panel</p>
               </div>
             </div>
           </div>
-          <Button onClick={handleLogout} variant="outline" className="hover:bg-primary/10">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+          <Button onClick={handleLogout} variant="outline" className="hover:bg-primary/10 w-full sm:w-auto flex-shrink-0" size="sm">
+            <LogOut className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Logout</span>
+          </Button>
+        </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-8 bg-muted/50">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="products" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Products
-            </TabsTrigger>
-            <TabsTrigger value="categories" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Categories
-            </TabsTrigger>
-            <TabsTrigger value="subcategories" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Subcategories
-            </TabsTrigger>
-            <TabsTrigger value="users" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="community" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Community
-            </TabsTrigger>
-            <TabsTrigger value="discounts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Discounts
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Settings
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-8">
+          {/* Scrollable tabs for mobile */}
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:w-full bg-muted/50 h-auto p-1 sm:grid sm:grid-cols-8 gap-1 sm:gap-0">
+              <TabsTrigger value="dashboard" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="products" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Products
+              </TabsTrigger>
+              <TabsTrigger value="categories" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Categories
+              </TabsTrigger>
+              <TabsTrigger value="subcategories" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Subcategories
+              </TabsTrigger>
+              <TabsTrigger value="users" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Users
+              </TabsTrigger>
+              <TabsTrigger value="community" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Community
+              </TabsTrigger>
+              <TabsTrigger value="discounts" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Discounts
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="whitespace-nowrap text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0">
+                Settings
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-8">
@@ -1109,15 +1114,15 @@ const Admin = () => {
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                 Product Management
               </h2>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
-                      className="bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white"
+                      className="bg-gradient-to-r from-primary to-forest hover:from-primary/90 hover:to-forest/90 text-white w-full sm:w-auto"
                       onClick={() => {
                         resetProductForm();
                         setEditingProduct(null);
@@ -1127,14 +1132,14 @@ const Admin = () => {
                       Add Product
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto mx-2 sm:mx-auto">
                     <DialogHeader>
                       <DialogTitle className="text-2xl font-bold">
                         {editingProduct ? "Edit Product" : "Add New Product"}
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor="name">Product Name</Label>
                         <Input
                           id="name"
@@ -1377,65 +1382,119 @@ const Admin = () => {
 
             <Card className="bg-gradient-to-br from-card to-primary/5 border-border/50">
               <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                      <TableHead>Image</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Stock</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                    {products.map((product) => (
-                      <TableRow key={product.id}>
-                    <TableCell>
-                          <div className="text-2xl">{product.image}</div>
-                    </TableCell>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.category}</TableCell>
-                        <TableCell>${product.price.toFixed(2)}</TableCell>
-                        <TableCell>{product.stockQuantity}</TableCell>
-                    <TableCell>
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEditProduct(product)}
-                              className="h-8 w-8 hover:bg-primary/10"
-                            >
-                              <Edit className="h-3 w-3" />
-                        </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="h-8 w-8 hover:bg-destructive/10"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                        </Button>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Stock</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {products.map((product) => (
+                        <TableRow key={product.id}>
+                          <TableCell>
+                            <div className="text-2xl">{product.image}</div>
+                          </TableCell>
+                          <TableCell className="font-medium">{product.name}</TableCell>
+                          <TableCell>{product.category}</TableCell>
+                          <TableCell>${product.price.toFixed(2)}</TableCell>
+                          <TableCell>{product.stockQuantity}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditProduct(product)}
+                                className="h-8 w-8 hover:bg-primary/10"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteProduct(product.id)}
+                                className="h-8 w-8 hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4 p-4">
+                  {products.map((product) => (
+                    <div key={product.id} className="border rounded-lg p-4 bg-background/50 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="text-3xl flex-shrink-0">{product.image}</div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-base truncate">{product.name}</h3>
+                            <p className="text-sm text-muted-foreground">{product.category}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditProduct(product)}
+                            className="h-8 w-8 hover:bg-primary/10"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="h-8 w-8 hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      <div className="flex items-center justify-between pt-2 border-t">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Price</p>
+                          <p className="font-semibold">${product.price.toFixed(2)}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">Stock</p>
+                          <p className="font-semibold">{product.stockQuantity}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {products.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No products found</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Categories Tab */}
           <TabsContent value="categories" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-secondary bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-secondary bg-clip-text text-transparent">
                 Category Management
               </h2>
               <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white"
+                    className="bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white w-full sm:w-auto"
                     onClick={() => {
                       setCategoryForm({ name: "", description: "" });
                       setEditingCategory(null);
@@ -1445,7 +1504,7 @@ const Admin = () => {
                     Add Category
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg bg-gradient-to-br from-card to-secondary/5">
+                <DialogContent className="max-w-[95vw] sm:max-w-lg bg-gradient-to-br from-card to-secondary/5 mx-2 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">
                       {editingCategory ? "Edit Category" : "Add New Category"}
@@ -1490,52 +1549,104 @@ const Admin = () => {
 
             <Card className="bg-gradient-to-br from-card to-secondary/5 border-border/50">
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Subcategories</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {categories.map((category) => (
-                      <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
-                        <TableCell>{category.description}</TableCell>
-                        <TableCell>{category.subcategories.length}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-secondary/10"
-                              onClick={() => {
-                                setEditingCategory(category);
-                                setCategoryForm({
-                                  name: category.name,
-                                  description: category.description
-                                });
-                                setIsCategoryDialogOpen(true);
-                              }}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-destructive/10"
-                              onClick={() => handleDeleteCategory(category.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Subcategories</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {categories.map((category) => (
+                        <TableRow key={category.id}>
+                          <TableCell className="font-medium">{category.name}</TableCell>
+                          <TableCell>{category.description}</TableCell>
+                          <TableCell>{category.subcategories.length}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-secondary/10"
+                                onClick={() => {
+                                  setEditingCategory(category);
+                                  setCategoryForm({
+                                    name: category.name,
+                                    description: category.description
+                                  });
+                                  setIsCategoryDialogOpen(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-destructive/10"
+                                onClick={() => handleDeleteCategory(category.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4 p-4">
+                  {categories.map((category) => (
+                    <div key={category.id} className="border rounded-lg p-4 bg-background/50 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base">{category.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{category.description}</p>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingCategory(category);
+                              setCategoryForm({
+                                name: category.name,
+                                description: category.description
+                              });
+                              setIsCategoryDialogOpen(true);
+                            }}
+                            className="h-8 w-8 hover:bg-secondary/10"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="h-8 w-8 hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground">Subcategories</p>
+                        <p className="font-semibold">{category.subcategories.length}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {categories.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Tag className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No categories found</p>
+                    </div>
+                  )}
+                </div>
             </CardContent>
           </Card>
           </TabsContent>
@@ -1657,14 +1768,14 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
                 User Management
               </h2>
               <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
+                    className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white w-full sm:w-auto"
                     onClick={() => {
                       setUserForm({ name: "", email: "", password: "", role: "user", status: "active" });
                       setEditingUser(null);
@@ -1674,7 +1785,7 @@ const Admin = () => {
                     Add User
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg bg-gradient-to-br from-card to-accent/5">
+                <DialogContent className="max-w-[95vw] sm:max-w-lg bg-gradient-to-br from-card to-accent/5 mx-2 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">
                       {editingUser ? "Edit User" : "Add New User"}
@@ -1754,82 +1865,155 @@ const Admin = () => {
 
             <Card className="bg-gradient-to-br from-card to-accent/5 border-border/50">
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Orders</TableHead>
-                      <TableHead>Total Spent</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Orders</TableHead>
+                        <TableHead>Total Spent</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                              {user.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.status === 'active' ? 'default' : user.status === 'inactive' ? 'secondary' : 'destructive'}>
+                              {user.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{user.totalOrders}</TableCell>
+                          <TableCell>${user.totalSpent.toFixed(2)}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setEditingUser(user);
+                                  setUserForm({
+                                    name: user.name,
+                                    email: user.email,
+                                    password: "",
+                                    role: user.role,
+                                    status: user.status
+                                  });
+                                  setIsUserDialogOpen(true);
+                                }}
+                                className="h-8 w-8 hover:bg-accent/10"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteUser(user.id)}
+                                className="h-8 w-8 hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4 p-4">
+                  {users.map((user) => (
+                    <div key={user.id} className="border rounded-lg p-4 bg-background/50 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base">{user.name}</h3>
+                          <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingUser(user);
+                              setUserForm({
+                                name: user.name,
+                                email: user.email,
+                                password: "",
+                                role: user.role,
+                                status: user.status
+                              });
+                              setIsUserDialogOpen(true);
+                            }}
+                            className="h-8 w-8 hover:bg-accent/10"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="h-8 w-8 hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-3 pt-2 border-t">
+                        <div>
+                          <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="text-xs">
                             {user.role}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={user.status === 'active' ? 'default' : user.status === 'inactive' ? 'secondary' : 'destructive'}>
+                        </div>
+                        <div>
+                          <Badge variant={user.status === 'active' ? 'default' : user.status === 'inactive' ? 'secondary' : 'destructive'} className="text-xs">
                             {user.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell>{user.totalOrders}</TableCell>
-                        <TableCell>${user.totalSpent.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setEditingUser(user);
-                                setUserForm({
-                                  name: user.name,
-                                  email: user.email,
-                                  password: "",
-                                  role: user.role,
-                                  status: user.status
-                                });
-                                setIsUserDialogOpen(true);
-                              }}
-                              className="h-8 w-8 hover:bg-accent/10"
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="h-8 w-8 hover:bg-destructive/10"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Orders</p>
+                          <p className="font-semibold">{user.totalOrders}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Total Spent</p>
+                          <p className="font-semibold">${user.totalSpent.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {users.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No users found</p>
+                    </div>
+                  )}
+                </div>
             </CardContent>
           </Card>
           </TabsContent>
 
           <TabsContent value="discounts" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
                 Discount Management
               </h2>
               <Dialog open={isDiscountDialogOpen} onOpenChange={setIsDiscountDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white"
+                    className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white w-full sm:w-auto"
                     onClick={() => {
                       setDiscountForm({
                         code: "",
@@ -1850,7 +2034,7 @@ const Admin = () => {
                     Add Discount
                   </Button>
                 </DialogTrigger>
-                  <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto bg-gradient-to-br from-card to-accent/5">
+                  <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-card to-accent/5 mx-2 sm:mx-auto">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold">
                       {editingDiscount ? "Edit Discount" : "Add New Discount"}
@@ -1930,7 +2114,7 @@ const Admin = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="discountValue">Value</Label>
                         <Input
@@ -1962,7 +2146,7 @@ const Admin = () => {
                         placeholder="Enter maximum uses"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="startDate">Start Date</Label>
                         <Input

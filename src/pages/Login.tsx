@@ -35,7 +35,7 @@ const Login = () => {
       if (user) {
         toast({
           title: "Login Successful",
-          description: `Welcome back, ${user.firstName}!`,
+          description: `Welcome, ${user.firstName}!`,
         });
         
         // Redirect based on user type
@@ -72,7 +72,7 @@ const Login = () => {
               <div className="w-16 h-16 mx-auto bg-gradient-to-br from-primary to-forest rounded-2xl flex items-center justify-center shadow-medium">
                 <User className="h-8 w-8 text-white" />
               </div>
-              <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
+              <CardTitle className="text-3xl font-bold">Welcome</CardTitle>
               <p className="text-muted-foreground">Sign in to your account</p>
             </CardHeader>
             
@@ -159,10 +159,6 @@ const Login = () => {
                     Create one now
                   </Link>
                 </p>
-                
-                <div className="text-xs text-muted-foreground">
-                  <p>Admin access: username: admin, password: admin</p>
-                </div>
               </div>
             </CardContent>
           </Card>

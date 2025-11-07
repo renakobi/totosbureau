@@ -58,13 +58,13 @@ const Hero = () => {
               {/* CTA Buttons Block */}
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-lg">
                 <Link to="/products" className="flex-1">
-                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-[#50957d] hover:bg-[#50957d]/90 sm:bg-primary sm:hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
                     Start shopping
                     <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </Link>
                 <Link to="/products?category=subscription" className="flex-1">
-                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-primary hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
+                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 bg-[#50957d] hover:bg-[#50957d]/90 sm:bg-primary sm:hover:bg-primary/90 text-white shadow-strong hover:shadow-strong/80 transition-all duration-300 hover:scale-105 w-full">
                     <Gift className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Subscription Boxes
                 </Button>

@@ -147,7 +147,7 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         templateParams.payment_background = isCashOnDelivery ? '#fef2f2' : '#f0fdf4';
         templateParams.card_last4 = paymentLast4 && paymentLast4 !== 'CASH' ? `****${paymentLast4}` : '';
         
-        // Order summary
+        // Order summary (without $ prefix since EmailJS templates should add it)
         templateParams.subtotal = `$${(order.subtotal || 0).toFixed(2)}`;
         templateParams.shipping = (order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`;
         templateParams.tax = `$${(order.tax || 0).toFixed(2)}`;
@@ -320,7 +320,7 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
             </div>
             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
               <span>Shipping</span>
-              <span>${(order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`}</span>
+              <span>${(order.shipping || 0) === 0 ? 'FREE' : '$' + (order.shipping || 0).toFixed(2)}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
               <span>Tax</span>

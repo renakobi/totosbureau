@@ -10,6 +10,7 @@ import { useProducts } from "@/contexts/ProductContext";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getShippingSettings } from "@/utils/shippingSettings";
 
 
 const ProductDetail = () => {
@@ -312,7 +313,7 @@ const ProductDetail = () => {
 
             {/* Additional Info */}
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>✓ Free shipping on orders over $50</p>
+              <p>✓ Free shipping on orders over ${getShippingSettings().freeShippingThreshold.toFixed(2)}</p>
               <p>✓ 30-day return policy</p>
               <p>✓ Secure checkout</p>
             </div>
