@@ -17,7 +17,13 @@ build/
 # Server files with potential credentials
 *-server.cjs
 working-*.cjs
-!working-email-server.cjs
+
+# Development/utility scripts (not needed in repo)
+fix-comspec-*.ps1
+fix-comspec-*.bat
+reinstall-deps.ps1
+start-dev-fixed.ps1
+start.bat
 
 # Documentation and test files
 *.md

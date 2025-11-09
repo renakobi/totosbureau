@@ -30,9 +30,11 @@ const Login = () => {
 
     try {
       // Try user login (includes admin)
-      const user = loginUser(formData.username, formData.password);
+      console.log('Attempting login with:', formData.username);
+      const user = await loginUser(formData.username, formData.password);
       
       if (user) {
+        console.log('Login successful for user:', user.email);
         toast({
           title: "Login Successful",
           description: `Welcome, ${user.firstName}!`,
@@ -45,9 +47,11 @@ const Login = () => {
           navigate("/");
         }
       } else {
+        console.log('Login failed: Invalid credentials');
         setError("Invalid credentials. Please check your username/email and password.");
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       setError(error.message || "An error occurred during login.");
     } finally {
       setIsLoading(false);

@@ -95,7 +95,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { orders } = useOrders();
-  const { getAllUsers } = useUser();
+  const { getAllUsers, currentUser, isAdmin } = useUser();
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const { posts, pendingPosts, approvePost, rejectPost, deletePost } = useCommunity();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -319,13 +319,19 @@ const Admin = () => {
   });
 
   useEffect(() => {
-    const adminStatus = localStorage.getItem("totos-bureau-admin");
-    if (adminStatus === "true") {
+    // Check if user is authenticated and is admin
+    if (currentUser && isAdmin()) {
       setIsAuthenticated(true);
     } else {
-      navigate("/login");
+      // Also check localStorage as fallback for backward compatibility
+      const adminStatus = localStorage.getItem("totos-bureau-admin");
+      if (adminStatus === "true" && currentUser?.isAdmin) {
+        setIsAuthenticated(true);
+      } else {
+        navigate("/login");
+      }
     }
-  }, [navigate]);
+  }, [navigate, currentUser, isAdmin]);
 
   // Load users from UserContext
   useEffect(() => {

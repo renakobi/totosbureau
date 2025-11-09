@@ -169,7 +169,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const newUser = addUser({
+      const newUser = await addUser({
         username: formData.username,
         email: formData.email,
         password: formData.password,

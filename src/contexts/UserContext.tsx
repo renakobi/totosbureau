@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { hashPassword, verifyPassword, validatePassword } from '../utils/auth';
+import { supabase } from '../integrations/supabase/client';
 
 export interface User {
   id: string;
@@ -24,10 +25,10 @@ export interface User {
 interface UserContextType {
   users: User[];
   currentUser: User | null;
-  addUser: (userData: Omit<User, 'id' | 'createdAt' | 'isActive'>) => User;
-  updateUser: (userId: string, updates: Partial<User>) => void;
-  deleteUser: (userId: string) => void;
-  loginUser: (username: string, password: string) => User | null;
+  addUser: (userData: Omit<User, 'id' | 'createdAt' | 'isActive'>) => Promise<User>;
+  updateUser: (userId: string, updates: Partial<User>) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
+  loginUser: (username: string, password: string) => Promise<User | null>;
   logoutUser: () => void;
   getCurrentUser: () => User | null;
   getAllUsers: () => User[];
@@ -38,22 +39,8 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [users, setUsers] = useState<User[]>(() => {
-    try {
-      const storedUsers = localStorage.getItem('totos-bureau-users');
-      if (storedUsers) {
-        const parsed = JSON.parse(storedUsers);
-        // Return stored users or empty array if invalid
-        return Array.isArray(parsed) ? parsed : [];
-      }
-      // Start with empty array - no default admin
-      return [];
-    } catch (error) {
-      console.error('Error loading users from localStorage:', error);
-      // Return empty array on error - no default admin
-      return [];
-    }
-  });
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
@@ -65,9 +52,95 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   });
 
+  // Load users from Supabase on mount
   useEffect(() => {
-    localStorage.setItem('totos-bureau-users', JSON.stringify(users));
-  }, [users]);
+    loadUsersFromSupabase();
+  }, []);
+
+  const loadUsersFromSupabase = async () => {
+    try {
+      setIsLoadingUsers(true);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('createdAt', { ascending: false });
+
+      if (error) {
+        console.error('Error loading users from Supabase:', error);
+        // Fallback to localStorage if Supabase fails
+        try {
+          const storedUsers = localStorage.getItem('totos-bureau-users');
+          if (storedUsers) {
+            const parsed = JSON.parse(storedUsers);
+            setUsers(Array.isArray(parsed) ? parsed : []);
+          }
+        } catch (e) {
+          console.error('Error loading users from localStorage fallback:', e);
+        }
+      } else {
+        // Transform Supabase data to match User interface
+        const transformedUsers = (data || []).map((user: any) => ({
+          ...user,
+          address: typeof user.address === 'string' ? JSON.parse(user.address) : user.address
+        }));
+        setUsers(transformedUsers);
+        
+        // Auto-create admin account if it doesn't exist
+        const adminExists = transformedUsers.some((u: User) => u.username === 'admin');
+        if (!adminExists) {
+          try {
+            const adminUser: User = {
+              id: generateUserId(),
+              username: 'admin',
+              email: 'admin@totosbureau.com',
+              password: hashPassword('admin123'),
+              firstName: 'Admin',
+              lastName: 'User',
+              phone: '0000000000',
+              address: {
+                street: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: 'United States'
+              },
+              createdAt: new Date().toISOString(),
+              isAdmin: true,
+              isActive: true
+            };
+
+            const { data: insertedAdmin, error: insertError } = await supabase
+              .from('users')
+              .insert([{
+                ...adminUser,
+                address: JSON.stringify(adminUser.address)
+              }])
+              .select()
+              .single();
+
+            if (!insertError && insertedAdmin) {
+              const newAdmin = {
+                ...insertedAdmin,
+                address: typeof insertedAdmin.address === 'string' ? JSON.parse(insertedAdmin.address) : insertedAdmin.address
+              };
+              transformedUsers.push(newAdmin);
+              console.log('Default admin account created successfully');
+            }
+          } catch (createError) {
+            console.error('Error creating default admin account:', createError);
+          }
+        }
+        
+        // Sync to localStorage as backup
+        localStorage.setItem('totos-bureau-users', JSON.stringify(transformedUsers));
+        setUsers(transformedUsers);
+      }
+    } catch (error) {
+      console.error('Error in loadUsersFromSupabase:', error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
@@ -87,13 +160,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const addUser = (userData: Omit<User, 'id' | 'createdAt' | 'isActive'>) => {
-    // Check if username or email already exists
-    const existingUser = users.find(
-      user => user.username === userData.username || user.email === userData.email
-    );
+  const addUser = async (userData: Omit<User, 'id' | 'createdAt' | 'isActive'>) => {
+    // Check if username or email already exists in Supabase
+    const { data: existingUsers } = await supabase
+      .from('users')
+      .select('*')
+      .or(`username.eq.${userData.username},email.eq.${userData.email}`);
 
-    if (existingUser) {
+    if (existingUsers && existingUsers.length > 0) {
       throw new Error('Username or email already exists');
     }
 
@@ -108,11 +182,60 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isActive: true
     };
 
-    setUsers(prevUsers => [...prevUsers, newUser]);
-    return newUser;
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{
+        ...newUser,
+        address: JSON.stringify(newUser.address) // Store address as JSON string in Supabase
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding user to Supabase:', error);
+      throw new Error('Failed to create user account');
+    }
+
+    // Update local state
+    const transformedUser = {
+      ...data,
+      address: typeof data.address === 'string' ? JSON.parse(data.address) : data.address
+    };
+    setUsers(prevUsers => [...prevUsers, transformedUser]);
+    
+    // Sync to localStorage as backup
+    const updatedUsers = [...users, transformedUser];
+    localStorage.setItem('totos-bureau-users', JSON.stringify(updatedUsers));
+
+    return transformedUser;
   };
 
-  const updateUser = (userId: string, updates: Partial<User>) => {
+  const updateUser = async (userId: string, updates: Partial<User>) => {
+    // Prepare updates for Supabase (convert address to JSON string if present)
+    const supabaseUpdates: any = { ...updates };
+    if (updates.address) {
+      supabaseUpdates.address = JSON.stringify(updates.address);
+    }
+    // Don't update password if it's not provided
+    if (!updates.password) {
+      delete supabaseUpdates.password;
+    } else {
+      supabaseUpdates.password = hashPassword(updates.password);
+    }
+
+    // Update in Supabase
+    const { error } = await supabase
+      .from('users')
+      .update(supabaseUpdates)
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating user in Supabase:', error);
+      throw new Error('Failed to update user');
+    }
+
+    // Update local state
     setUsers(prevUsers =>
       prevUsers.map(user =>
         user.id === userId ? { ...user, ...updates } : user
@@ -123,29 +246,188 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (currentUser && currentUser.id === userId) {
       setCurrentUser(prevUser => prevUser ? { ...prevUser, ...updates } : null);
     }
+
+    // Sync to localStorage as backup
+    const updatedUsers = users.map(user =>
+      user.id === userId ? { ...user, ...updates } : user
+    );
+    localStorage.setItem('totos-bureau-users', JSON.stringify(updatedUsers));
   };
 
-  const deleteUser = (userId: string) => {
+  const deleteUser = async (userId: string) => {
+    // Delete from Supabase
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error deleting user from Supabase:', error);
+      throw new Error('Failed to delete user');
+    }
+
+    // Update local state
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
     
     // Logout if current user is deleted
     if (currentUser && currentUser.id === userId) {
       setCurrentUser(null);
     }
+
+    // Sync to localStorage as backup
+    const updatedUsers = users.filter(user => user.id !== userId);
+    localStorage.setItem('totos-bureau-users', JSON.stringify(updatedUsers));
   };
 
-  const loginUser = (username: string, password: string) => {
-    const user = users.find(u => 
-      (u.username === username || u.email === username) && 
-      u.isActive
-    );
+  const loginUser = async (username: string, password: string): Promise<User | null> => {
+    try {
+      // Query Supabase for user by username or email
+      // Try username first, then email separately to avoid OR query issues
+      let data = null;
+      let error = null;
 
-    if (user && verifyPassword(password, user.password)) {
-      setCurrentUser(user);
-      return user;
+      // First try to find by username
+      const { data: usernameData, error: usernameError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', username)
+        .eq('isActive', true)
+        .maybeSingle();
+
+      if (usernameError) {
+        console.error('Error querying Supabase by username:', usernameError);
+      } else if (usernameData) {
+        data = usernameData;
+      } else {
+        // If not found by username, try email
+        const { data: emailData, error: emailError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', username)
+          .eq('isActive', true)
+          .maybeSingle();
+
+        if (emailError) {
+          console.error('Error querying Supabase by email:', emailError);
+          error = emailError;
+        } else if (emailData) {
+          data = emailData;
+        }
+      }
+
+      if (error || !data) {
+        // Fallback to localStorage directly
+        console.log('User not found in Supabase, checking localStorage...');
+        return checkLocalStorageForUser(username, password);
+      }
+
+      // Transform Supabase data
+      const user = {
+        ...data,
+        address: typeof data.address === 'string' ? JSON.parse(data.address) : (data.address || {})
+      };
+
+      // Verify password
+      if (verifyPassword(password, user.password)) {
+        setCurrentUser(user);
+        // If user was found in Supabase, sync to localStorage
+        try {
+          const storedUsers = localStorage.getItem('totos-bureau-users');
+          const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
+          const userExists = localUsers.some((u: User) => u.id === user.id);
+          if (!userExists) {
+            localUsers.push(user);
+            localStorage.setItem('totos-bureau-users', JSON.stringify(localUsers));
+          }
+        } catch (e) {
+          console.error('Error syncing user to localStorage:', e);
+        }
+        return user;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error in loginUser:', error);
+      // Fallback to localStorage
+      return checkLocalStorageForUser(username, password);
     }
+  };
 
+  // Helper function to check localStorage for user
+  const checkLocalStorageForUser = (username: string, password: string): User | null => {
+    try {
+      const storedUsers = localStorage.getItem('totos-bureau-users');
+      if (storedUsers) {
+        const localUsers: User[] = JSON.parse(storedUsers);
+        const localUser = localUsers.find(u => 
+          (u.username === username || u.email === username) && 
+          u.isActive
+        );
+        
+        if (localUser && verifyPassword(password, localUser.password)) {
+          setCurrentUser(localUser);
+          // Try to sync this user to Supabase if it doesn't exist there
+          syncUserToSupabase(localUser).catch(err => {
+            console.error('Error syncing user to Supabase:', err);
+          });
+          return localUser;
+        }
+      }
+    } catch (e) {
+      console.error('Error checking localStorage:', e);
+    }
     return null;
+  };
+
+  // Helper function to sync a user from localStorage to Supabase
+  const syncUserToSupabase = async (user: User): Promise<void> => {
+    try {
+      // Check if user already exists in Supabase by username first
+      const { data: existingByUsername } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', user.username)
+        .maybeSingle();
+
+      if (existingByUsername) {
+        console.log('User already exists in Supabase (by username)');
+        return;
+      }
+
+      // Check by email
+      const { data: existingByEmail } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (existingByEmail) {
+        console.log('User already exists in Supabase (by email)');
+        return;
+      }
+
+      // User doesn't exist in Supabase, insert it
+      console.log('Syncing user to Supabase:', user.email);
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{
+          ...user,
+          address: JSON.stringify(user.address)
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error syncing user to Supabase:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+      } else {
+        console.log('User synced to Supabase successfully:', data);
+        // Reload users from Supabase
+        await loadUsersFromSupabase();
+      }
+    } catch (error) {
+      console.error('Error in syncUserToSupabase:', error);
+    }
   };
 
   const logoutUser = () => {

@@ -15,7 +15,7 @@ import { useUser } from "@/contexts/UserContext";
 const ProfileSettings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { currentUser, updateUser, logoutUser } = useUser();
+  const { currentUser, updateUser, deleteUser, logoutUser } = useUser();
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -57,11 +57,11 @@ const ProfileSettings = () => {
     });
   };
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     if (!currentUser) return;
     
     try {
-      updateUser(currentUser.id, {
+      await updateUser(currentUser.id, {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         email: profileData.email,
@@ -81,11 +81,11 @@ const ProfileSettings = () => {
     }
   };
 
-  const handleUpdateAddress = () => {
+  const handleUpdateAddress = async () => {
     if (!currentUser) return;
     
     try {
-      updateUser(currentUser.id, {
+      await updateUser(currentUser.id, {
         address: {
           street: profileData.address,
           city: profileData.city,
@@ -108,15 +108,24 @@ const ProfileSettings = () => {
     }
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (!currentUser) return;
     
-    logoutUser();
-    toast({
-      title: "Account Deleted",
-      description: "Your account has been deleted successfully.",
-    });
-    navigate("/");
+    try {
+      await deleteUser(currentUser.id);
+      logoutUser();
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been deleted successfully.",
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete account. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
