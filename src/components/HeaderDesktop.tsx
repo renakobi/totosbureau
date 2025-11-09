@@ -19,6 +19,8 @@ const HeaderDesktop = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  // SECURITY FIX: State for safe fallback rendering instead of innerHTML
+  const [logoError, setLogoError] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,19 +46,22 @@ const HeaderDesktop = () => {
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
             <div className="relative">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                <img
-                  src={logoImage}
-                  alt="Toto's Bureau Logo"
-                  className="w-full h-full object-cover rounded-full"
-                  onError={(e) => {
-                    console.log('Logo failed, using fallback...');
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
-                    }
-                  }}
-                />
+                {logoError ? (
+                  // SECURITY FIX: Safe React rendering instead of innerHTML
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                    <span className="text-white font-bold text-lg">TB</span>
+                  </div>
+                ) : (
+                  <img
+                    src={logoImage}
+                    alt="Toto's Bureau Logo"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => {
+                      console.log('Logo failed, using fallback...');
+                      setLogoError(true);
+                    }}
+                  />
+                )}
               </div>
             </div>
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
@@ -72,6 +77,8 @@ const HeaderDesktop = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
+                  id="header-desktop-search"
+                  name="header-desktop-search"
                   type="text"
                   placeholder="Search products..."
                   value={searchQuery}

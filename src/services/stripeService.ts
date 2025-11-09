@@ -1,5 +1,6 @@
 // Stripe service for handling payment processing
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { logApiError, logPaymentError } from '@/utils/errorLogger';
 
 // Initialize Stripe with publishable key
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -34,7 +35,9 @@ export const createPaymentIntent = async (amount: number, currency: string = 'us
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP ${response.status}: Failed to create payment intent`);
+      const error = new Error(errorData.error || `HTTP ${response.status}: Failed to create payment intent`);
+      logApiError(error, '/api/create-payment-intent', 'POST', { amount, currency }, response);
+      throw error;
     }
 
     const { clientSecret } = await response.json();
@@ -45,10 +48,11 @@ export const createPaymentIntent = async (amount: number, currency: string = 'us
 
     return clientSecret;
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    
-    // Provide user-friendly error messages
+    // Log payment error with context
     if (error instanceof Error) {
+      logPaymentError(error, undefined, amount);
+      
+      // Provide user-friendly error messages
       if (error.message.includes('network') || error.message.includes('fetch')) {
         throw new Error('Network error. Please check your connection and try again.');
       }
@@ -79,13 +83,19 @@ export const confirmPayment = async (clientSecret: string, paymentMethodId: stri
     });
 
     if (!response.ok) {
-      throw new Error('Failed to confirm payment');
+      const errorData = await response.json().catch(() => ({}));
+      const error = new Error(errorData.error || `HTTP ${response.status}: Failed to confirm payment`);
+      logApiError(error, '/api/confirm-payment', 'POST', { clientSecret: '[REDACTED]', paymentMethodId }, response);
+      logPaymentError(error);
+      throw error;
     }
 
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error('Error confirming payment:', error);
+    if (error instanceof Error) {
+      logPaymentError(error);
+    }
     throw error;
   }
 };

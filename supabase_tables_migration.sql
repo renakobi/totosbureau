@@ -1,5 +1,4 @@
 -- Migration script to create all necessary tables in Supabase
--- Run this in your Supabase SQL Editor after running supabase_migration.sql
 
 -- ============================================
 -- 1. PRODUCTS TABLE
@@ -68,7 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_orderDate ON orders("orderDate");
 CREATE TABLE IF NOT EXISTS community_posts (
   id SERIAL PRIMARY KEY,
   "userId" TEXT REFERENCES users(id) ON DELETE CASCADE,
-  user TEXT NOT NULL,
+  "user" TEXT NOT NULL,
   avatar TEXT,
   content TEXT NOT NULL,
   image TEXT,
@@ -92,7 +91,7 @@ CREATE TABLE IF NOT EXISTS comments (
   id SERIAL PRIMARY KEY,
   "postId" INTEGER REFERENCES community_posts(id) ON DELETE CASCADE,
   "userId" TEXT REFERENCES users(id) ON DELETE SET NULL,
-  user TEXT NOT NULL,
+  "user" TEXT NOT NULL,
   avatar TEXT,
   content TEXT NOT NULL,
   "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()

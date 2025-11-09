@@ -319,17 +319,16 @@ const Admin = () => {
   });
 
   useEffect(() => {
-    // Check if user is authenticated and is admin
+    // SECURITY FIX: Admin authentication - never trust client-side storage
+    // Always verify admin status from currentUser object (from Supabase/context)
+    // Never check localStorage for admin status as it can be manipulated
     if (currentUser && isAdmin()) {
+      // Verify admin status from authenticated user object
       setIsAuthenticated(true);
     } else {
-      // Also check localStorage as fallback for backward compatibility
-      const adminStatus = localStorage.getItem("totos-bureau-admin");
-      if (adminStatus === "true" && currentUser?.isAdmin) {
-        setIsAuthenticated(true);
-      } else {
-        navigate("/login");
-      }
+      // SECURITY FIX: Removed localStorage admin check - it's a security risk
+      // Admin status must come from authenticated user context, not client storage
+      navigate("/login");
     }
   }, [navigate, currentUser, isAdmin]);
 
@@ -354,9 +353,12 @@ const Admin = () => {
   }, [getAllUsers]);
 
   const handleLogout = () => {
+    // SECURITY FIX: Clean up all localStorage on logout
+    // Note: Admin status is no longer stored in localStorage (security fix)
     localStorage.removeItem("totos-bureau-admin");
     localStorage.removeItem("totos-bureau-user");
     localStorage.removeItem("totos-bureau-username");
+    localStorage.removeItem("totos-bureau-current-user");
     navigate("/");
   };
 
@@ -381,7 +383,7 @@ const Admin = () => {
     setFormErrors({});
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     const formData = {
       name: productForm.name,
       price: productForm.price,
@@ -398,7 +400,8 @@ const Admin = () => {
       return;
     }
 
-    const newProduct = addProduct({
+    try {
+      const newProduct = await addProduct({
       name: productForm.name,
       description: productForm.description,
       price: parseFloat(productForm.price),
@@ -416,8 +419,12 @@ const Admin = () => {
       ingredients: productForm.ingredients || undefined,
       aboutProduct: productForm.aboutProduct || undefined
     });
-    resetProductForm();
-    setIsProductDialogOpen(false);
+      resetProductForm();
+      setIsProductDialogOpen(false);
+    } catch (error) {
+      console.error('Error adding product:', error);
+      setFormErrors({ general: 'Failed to add product. Please try again.' });
+    }
   };
 
   const handleEditProduct = (product: Product) => {
@@ -440,7 +447,7 @@ const Admin = () => {
     setIsProductDialogOpen(true);
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (!editingProduct) return;
 
     const formData = {
@@ -459,38 +466,48 @@ const Admin = () => {
       return;
     }
 
-    updateProduct(editingProduct.id, {
-      name: productForm.name,
-      description: productForm.description,
-      price: parseFloat(productForm.price),
-      originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
-      category: productForm.category.toLowerCase(),
-      subcategory: productForm.subcategory.toLowerCase(),
-      type: productForm.type.toLowerCase(),
-      image: productForm.image,
-      badge: productForm.badge || undefined,
-      inStock: parseInt(productForm.stockQuantity) > 0,
-      stockQuantity: parseInt(productForm.stockQuantity),
-      flavors: productForm.flavors,
-      ingredients: productForm.ingredients || undefined,
-      aboutProduct: productForm.aboutProduct || undefined
-    });
-    resetProductForm();
-    setEditingProduct(null);
-    setIsProductDialogOpen(false);
+    try {
+      await updateProduct(editingProduct.id, {
+        name: productForm.name,
+        description: productForm.description,
+        price: parseFloat(productForm.price),
+        originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
+        category: productForm.category.toLowerCase(),
+        subcategory: productForm.subcategory.toLowerCase(),
+        type: productForm.type.toLowerCase(),
+        image: productForm.image,
+        badge: productForm.badge || undefined,
+        inStock: parseInt(productForm.stockQuantity) > 0,
+        stockQuantity: parseInt(productForm.stockQuantity),
+        flavors: productForm.flavors,
+        ingredients: productForm.ingredients || undefined,
+        aboutProduct: productForm.aboutProduct || undefined
+      });
+      resetProductForm();
+      setEditingProduct(null);
+      setIsProductDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      setFormErrors({ general: 'Failed to update product. Please try again.' });
+    }
   };
 
-  const handleDeleteProduct = (id: number) => {
-    deleteProduct(id);
+  const handleDeleteProduct = async (id: number) => {
+    try {
+      await deleteProduct(id);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      // You might want to show a toast notification here
+    }
   };
 
   // CSV Upload handler with improved parsing
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       
       // Improved CSV parsing that handles quoted fields and commas within values
@@ -598,7 +615,7 @@ const Admin = () => {
             continue;
           }
 
-          addProduct({
+          await addProduct({
             name: product.name,
             description: product.description,
             price: price,
@@ -859,17 +876,66 @@ const Admin = () => {
     }
   };
 
+  // Calculate growth percentage dynamically - memoized to ensure consistency
+  // MUST be before early return to follow Rules of Hooks
+  const stats = useMemo(() => {
+    // Ensure we have valid analytics data
+    const totalUsers = analytics.totalUsers || 0;
+    const totalOrders = analytics.totalOrders || 0;
+    const totalRevenue = analytics.totalRevenue || 0;
+
+    const calculateGrowth = () => {
+      if (analytics.userGrowth.length < 2) return 0;
+      const currentMonth = analytics.userGrowth[analytics.userGrowth.length - 1]?.count || 0;
+      const previousMonth = analytics.userGrowth[analytics.userGrowth.length - 2]?.count || 0;
+      if (previousMonth === 0) return currentMonth > 0 ? 100 : 0;
+      return Math.round(((currentMonth - previousMonth) / previousMonth) * 100);
+    };
+
+    // Calculate order growth
+    const calculateOrderGrowth = () => {
+      if (analytics.monthlyRevenue.length < 2) return 0;
+      const currentMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 1] || 0;
+      const previousMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2] || 0;
+      if (previousMonth === 0) return currentMonth > 0 ? 100 : 0;
+      return Math.round(((currentMonth - previousMonth) / previousMonth) * 100);
+    };
+
+    // Calculate revenue growth
+    const calculateRevenueGrowth = () => {
+      if (analytics.monthlyRevenue.length < 2) return 0;
+      const currentMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 1] || 0;
+      const previousMonth = analytics.monthlyRevenue[analytics.monthlyRevenue.length - 2] || 0;
+      if (previousMonth === 0) return currentMonth > 0 ? 100 : 0;
+      return Math.round(((currentMonth - previousMonth) / previousMonth) * 100);
+    };
+
+    const growthPercentage = calculateGrowth();
+    const orderGrowth = calculateOrderGrowth();
+    const revenueGrowth = calculateRevenueGrowth();
+
+    // Create stats array with consistent values
+    const statsArray = [
+      { title: "Total Users", value: totalUsers.toString(), icon: Users, change: `${growthPercentage >= 0 ? '+' : ''}${growthPercentage}%` },
+      { title: "Total Orders", value: totalOrders.toString(), icon: Package, change: `${orderGrowth >= 0 ? '+' : ''}${orderGrowth}%` },
+      { title: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, change: `${revenueGrowth >= 0 ? '+' : ''}${revenueGrowth}%` },
+      { title: "Growth", value: `${growthPercentage}%`, icon: TrendingUp, change: `${orderGrowth >= 0 ? '+' : ''}${orderGrowth}%` }
+    ];
+
+    // Debug log to verify consistency
+    console.log('📊 Stats calculated:', {
+      totalUsers,
+      totalOrders,
+      totalRevenue,
+      statsArray
+    });
+
+    return statsArray;
+  }, [analytics]);
+
   if (!isAuthenticated) {
     return null;
   }
-
-  // Dashboard stats
-  const stats = [
-    { title: "Total Users", value: analytics.totalUsers.toString(), icon: Users, change: "+12%" },
-    { title: "Total Orders", value: analytics.totalOrders.toString(), icon: Package, change: "+8%" },
-    { title: "Total Revenue", value: `$${analytics.totalRevenue.toLocaleString()}`, icon: DollarSign, change: "+22%" },
-    { title: "Growth", value: "34%", icon: TrendingUp, change: "+8%" }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50/30 via-background to-amber-50/20">
@@ -937,8 +1003,8 @@ const Admin = () => {
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-8">
-        {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Stats Cards - Desktop View */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
                 <Card key={index} className="bg-gradient-to-br from-card to-primary/5 border-border/50 hover:shadow-medium transition-all duration-300">
               <CardContent className="p-6">
@@ -955,6 +1021,44 @@ const Admin = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Stats Table - Mobile View */}
+        <div className="md:hidden">
+          <Card className="bg-gradient-to-br from-card to-primary/5 border-border/50">
+            <CardHeader>
+              <CardTitle>Dashboard Statistics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Metric</TableHead>
+                    <TableHead className="text-right">Value</TableHead>
+                    <TableHead className="text-right">Change</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.map((stat, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <stat.icon className="h-4 w-4 text-primary" />
+                          </div>
+                          <span className="font-medium">{stat.title}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right font-bold">{stat.value}</TableCell>
+                      <TableCell className="text-right">
+                        <span className="text-xs text-primary">{stat.change}</span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
 
             {/* Quick Actions */}
@@ -1174,6 +1278,7 @@ const Admin = () => {
                         <Label htmlFor="originalPrice">Original Price ($)</Label>
                         <Input
                           id="originalPrice"
+                          name="originalPrice"
                           type="number"
                           value={productForm.originalPrice}
                           onChange={(e) => setProductForm({...productForm, originalPrice: e.target.value})}
@@ -1184,6 +1289,7 @@ const Admin = () => {
                         <Label htmlFor="stockQuantity">Stock Quantity</Label>
                         <Input
                           id="stockQuantity"
+                          name="stockQuantity"
                           type="number"
                           value={productForm.stockQuantity}
                           onChange={(e) => setProductForm({...productForm, stockQuantity: e.target.value})}
@@ -1193,7 +1299,7 @@ const Admin = () => {
                       <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
                         <Select value={productForm.category} onValueChange={(value) => setProductForm({...productForm, category: value})}>
-                          <SelectTrigger>
+                          <SelectTrigger id="category" name="category">
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1208,7 +1314,7 @@ const Admin = () => {
                       <div className="space-y-2">
                         <Label htmlFor="subcategory">Subcategory</Label>
                         <Select value={productForm.subcategory} onValueChange={(value) => setProductForm({...productForm, subcategory: value})}>
-                          <SelectTrigger>
+                          <SelectTrigger id="subcategory" name="subcategory">
                             <SelectValue placeholder="Select subcategory" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1254,6 +1360,7 @@ const Admin = () => {
                           <div className="flex items-center space-x-2">
                             <input
                               type="file"
+                              name="image-upload"
                               accept="image/*"
                               onChange={handleImageUpload}
                               className="hidden"
@@ -1315,6 +1422,7 @@ const Admin = () => {
                         <Label htmlFor="ingredients">Ingredients</Label>
                         <Textarea
                           id="ingredients"
+                          name="ingredients"
                           value={productForm.ingredients}
                           onChange={(e) => setProductForm({...productForm, ingredients: e.target.value})}
                           placeholder="Enter ingredients (one per line or comma separated)"
@@ -1325,6 +1433,7 @@ const Admin = () => {
                         <Label htmlFor="aboutProduct">About This Product</Label>
                         <Textarea
                           id="aboutProduct"
+                          name="aboutProduct"
                           value={productForm.aboutProduct}
                           onChange={(e) => setProductForm({...productForm, aboutProduct: e.target.value})}
                           placeholder="Enter detailed product information, care instructions, etc."
@@ -1335,6 +1444,7 @@ const Admin = () => {
                         <Label htmlFor="badge">Badge (e.g., New, Sale, Best Seller)</Label>
                         <Input
                           id="badge"
+                          name="badge"
                           value={productForm.badge}
                           onChange={(e) => setProductForm({...productForm, badge: e.target.value})}
                           placeholder="Enter badge text"
@@ -1368,6 +1478,7 @@ const Admin = () => {
                 <div className="relative">
                   <input
                     type="file"
+                    name="csv-upload"
                     accept=".csv"
                     onChange={handleCSVUpload}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -1521,6 +1632,7 @@ const Admin = () => {
                       <Label htmlFor="categoryName">Category Name</Label>
                       <Input
                         id="categoryName"
+                        name="categoryName"
                         value={categoryForm.name}
                         onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
                         placeholder="Enter category name"
@@ -1530,6 +1642,7 @@ const Admin = () => {
                       <Label htmlFor="categoryDescription">Description</Label>
                       <Textarea
                         id="categoryDescription"
+                        name="categoryDescription"
                         value={categoryForm.description}
                         onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
                         placeholder="Enter category description"
@@ -1686,7 +1799,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="subcategoryCategory">Parent Category</Label>
                       <Select value={subcategoryForm.categoryId} onValueChange={(value) => setSubcategoryForm({...subcategoryForm, categoryId: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger id="subcategoryCategory" name="subcategoryCategory">
                           <SelectValue placeholder="Select parent category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1702,6 +1815,7 @@ const Admin = () => {
                       <Label htmlFor="subcategoryName">Subcategory Name</Label>
                       <Input
                         id="subcategoryName"
+                        name="subcategoryName"
                         value={subcategoryForm.name}
                         onChange={(e) => setSubcategoryForm({...subcategoryForm, name: e.target.value})}
                         placeholder="Enter subcategory name"
@@ -1711,6 +1825,7 @@ const Admin = () => {
                       <Label htmlFor="subcategoryDescription">Description</Label>
                       <Textarea
                         id="subcategoryDescription"
+                        name="subcategoryDescription"
                         value={subcategoryForm.description}
                         onChange={(e) => setSubcategoryForm({...subcategoryForm, description: e.target.value})}
                         placeholder="Enter subcategory description"
@@ -1802,6 +1917,7 @@ const Admin = () => {
                       <Label htmlFor="userName">Name</Label>
                       <Input
                         id="userName"
+                        name="userName"
                         value={userForm.name}
                         onChange={(e) => setUserForm({...userForm, name: e.target.value})}
                         placeholder="Enter user name"
@@ -1811,6 +1927,7 @@ const Admin = () => {
                       <Label htmlFor="userEmail">Email</Label>
                       <Input
                         id="userEmail"
+                        name="userEmail"
                         type="email"
                         value={userForm.email}
                         onChange={(e) => setUserForm({...userForm, email: e.target.value})}
@@ -1821,6 +1938,7 @@ const Admin = () => {
                       <Label htmlFor="userPassword">Password</Label>
                       <Input
                         id="userPassword"
+                        name="userPassword"
                         type="password"
                         value={userForm.password}
                         onChange={(e) => setUserForm({...userForm, password: e.target.value})}
@@ -1830,7 +1948,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="userRole">Role</Label>
                       <Select value={userForm.role} onValueChange={(value: "admin" | "user") => setUserForm({...userForm, role: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger id="userRole" name="userRole">
                           <SelectValue placeholder="Select role" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1842,7 +1960,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="userStatus">Status</Label>
                       <Select value={userForm.status} onValueChange={(value: "active" | "inactive" | "banned") => setUserForm({...userForm, status: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger id="userStatus" name="userStatus">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2051,6 +2169,7 @@ const Admin = () => {
                       <Label htmlFor="discountCode">Discount Code</Label>
                       <Input
                         id="discountCode"
+                        name="discountCode"
                         value={discountForm.code}
                         onChange={(e) => setDiscountForm({...discountForm, code: e.target.value})}
                         placeholder="Enter discount code"
@@ -2060,6 +2179,7 @@ const Admin = () => {
                       <Label htmlFor="discountDescription">Description</Label>
                       <Input
                         id="discountDescription"
+                        name="discountDescription"
                         value={discountForm.description}
                         onChange={(e) => setDiscountForm({...discountForm, description: e.target.value})}
                         placeholder="Enter discount description"
@@ -2073,7 +2193,7 @@ const Admin = () => {
                           setDiscountForm({...discountForm, targetType: value, targetId: ""})
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger id="targetType" name="targetType">
                           <SelectValue placeholder="Select target type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2095,7 +2215,7 @@ const Admin = () => {
                           value={discountForm.targetId} 
                           onValueChange={(value) => setDiscountForm({...discountForm, targetId: value})}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="targetId" name="targetId">
                             <SelectValue placeholder={`Select ${discountForm.targetType}`} />
                           </SelectTrigger>
                           <SelectContent>
@@ -2111,7 +2231,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="discountType">Type</Label>
                       <Select value={discountForm.type} onValueChange={(value: "percentage" | "fixed") => setDiscountForm({...discountForm, type: value})}>
-                        <SelectTrigger>
+                        <SelectTrigger id="discountType" name="discountType">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -2125,6 +2245,7 @@ const Admin = () => {
                         <Label htmlFor="discountValue">Value</Label>
                         <Input
                           id="discountValue"
+                          name="discountValue"
                           type="number"
                           value={discountForm.value}
                           onChange={(e) => setDiscountForm({...discountForm, value: e.target.value})}
@@ -2135,6 +2256,7 @@ const Admin = () => {
                         <Label htmlFor="minOrderAmount">Min Order (Optional)</Label>
                         <Input
                           id="minOrderAmount"
+                          name="minOrderAmount"
                           type="number"
                           value={discountForm.minOrderAmount}
                           onChange={(e) => setDiscountForm({...discountForm, minOrderAmount: e.target.value})}
@@ -2146,6 +2268,7 @@ const Admin = () => {
                       <Label htmlFor="maxUses">Maximum Uses (Optional)</Label>
                       <Input
                         id="maxUses"
+                        name="maxUses"
                         type="number"
                         value={discountForm.maxUses}
                         onChange={(e) => setDiscountForm({...discountForm, maxUses: e.target.value})}
@@ -2157,6 +2280,7 @@ const Admin = () => {
                         <Label htmlFor="startDate">Start Date</Label>
                         <Input
                           id="startDate"
+                          name="startDate"
                           type="date"
                           value={discountForm.startDate}
                           onChange={(e) => setDiscountForm({...discountForm, startDate: e.target.value})}
@@ -2166,6 +2290,7 @@ const Admin = () => {
                         <Label htmlFor="endDate">End Date</Label>
                         <Input
                           id="endDate"
+                          name="endDate"
                           type="date"
                           value={discountForm.endDate}
                           onChange={(e) => setDiscountForm({...discountForm, endDate: e.target.value})}
@@ -2442,6 +2567,7 @@ const Admin = () => {
                     <input
                       type="checkbox"
                       id="shipping-enabled"
+                      name="shipping-enabled"
                       checked={shippingSettings.enabled}
                       onChange={(e) => setShippingSettings({ ...shippingSettings, enabled: e.target.checked })}
                       className="w-4 h-4"

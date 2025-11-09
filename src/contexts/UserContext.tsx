@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { hashPassword, verifyPassword, validatePassword } from '../utils/auth';
+import { hashPassword, verifyPassword, validatePassword, hashPasswordSync } from '../utils/auth';
 import { supabase } from '../integrations/supabase/client';
+import type { TablesInsert, TablesUpdate } from '../integrations/supabase/types';
 
 export interface User {
   id: string;
@@ -104,11 +105,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const adminExists = transformedUsers.some((u: User) => u.username === 'admin');
         if (!adminExists) {
           try {
+            // SECURITY FIX: Use async password hashing for admin account
+            const adminPasswordHash = await hashPassword('admin123');
             const adminUser: User = {
               id: generateUserId(),
               username: 'admin',
               email: 'admin@totosbureau.com',
-              password: hashPassword('admin123'),
+              password: adminPasswordHash,
               firstName: 'Admin',
               lastName: 'User',
               phone: '0000000000',
@@ -124,20 +127,31 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               isActive: true
             };
 
+            const adminInsert = {
+              id: adminUser.id,
+              username: adminUser.username,
+              email: adminUser.email,
+              password: adminUser.password,
+              "firstName": adminUser.firstName,
+              "lastName": adminUser.lastName,
+              phone: adminUser.phone,
+              address: JSON.stringify(adminUser.address),
+              "createdAt": adminUser.createdAt,
+              "isAdmin": adminUser.isAdmin,
+              "isActive": adminUser.isActive
+            } as TablesInsert<'users'>;
             const { data: insertedAdmin, error: insertError } = await supabase
               .from('users')
-              .insert([{
-                ...adminUser,
-                address: JSON.stringify(adminUser.address)
-              }])
+              .insert([adminInsert] as any)
               .select()
               .single();
 
             if (!insertError && insertedAdmin) {
+              const insertedAdminTyped = insertedAdmin as any;
               const newAdmin = {
-                ...insertedAdmin,
-                address: typeof insertedAdmin.address === 'string' ? JSON.parse(insertedAdmin.address) : insertedAdmin.address
-              };
+                ...insertedAdminTyped,
+                address: typeof insertedAdminTyped.address === 'string' ? JSON.parse(insertedAdminTyped.address) : (insertedAdminTyped.address || {})
+              } as User;
               transformedUsers.push(newAdmin);
               console.log('Default admin account created successfully');
             }
@@ -157,17 +171,28 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // SECURITY FIX: Store minimal non-sensitive data in localStorage
+  // Never store admin status or passwords in client storage
+  // Admin status should be verified server-side on each request
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('totos-bureau-current-user', JSON.stringify(currentUser));
+      // Store only non-sensitive user data (no password, no admin status)
+      const safeUserData = {
+        id: currentUser.id,
+        username: currentUser.username,
+        email: currentUser.email,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        // Explicitly exclude: password, isAdmin, isActive
+      };
+      localStorage.setItem('totos-bureau-current-user', JSON.stringify(safeUserData));
       localStorage.setItem('totos-bureau-user', 'true');
-      if (currentUser.isAdmin) {
-        localStorage.setItem('totos-bureau-admin', 'true');
-      }
+      // SECURITY FIX: Remove admin status from localStorage - verify server-side instead
+      // localStorage.setItem('totos-bureau-admin', 'true'); // REMOVED - security risk
     } else {
       localStorage.removeItem('totos-bureau-current-user');
       localStorage.removeItem('totos-bureau-user');
-      localStorage.removeItem('totos-bureau-admin');
+      localStorage.removeItem('totos-bureau-admin'); // Clean up if exists
     }
   }, [currentUser]);
 
@@ -189,21 +214,33 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Password validation is handled in the form validation
     // No need to validate again here
 
+    // SECURITY FIX: Use async bcrypt password hashing
+    const passwordHash = await hashPassword(userData.password);
     const newUser: User = {
       ...userData,
-      password: hashPassword(userData.password), // Hash the password
+      password: passwordHash, // Securely hashed password
       id: generateUserId(),
       createdAt: new Date().toISOString(),
       isActive: true
     };
 
     // Insert into Supabase
+    const userInsert = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      password: newUser.password,
+      "firstName": newUser.firstName,
+      "lastName": newUser.lastName,
+      phone: newUser.phone,
+      address: JSON.stringify(newUser.address), // Store address as JSON string in Supabase
+      "createdAt": newUser.createdAt,
+      "isAdmin": newUser.isAdmin,
+      "isActive": newUser.isActive
+    } as TablesInsert<'users'>;
     const { data, error } = await supabase
       .from('users')
-      .insert([{
-        ...newUser,
-        address: JSON.stringify(newUser.address) // Store address as JSON string in Supabase
-      }])
+      .insert([userInsert] as any)
       .select()
       .single();
 
@@ -212,11 +249,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       throw new Error('Failed to create user account');
     }
 
+    if (!data) {
+      throw new Error('No data returned from Supabase');
+    }
+
     // Update local state
+    const dataTyped = data as any;
     const transformedUser = {
-      ...data,
-      address: typeof data.address === 'string' ? JSON.parse(data.address) : data.address
-    };
+      ...dataTyped,
+      address: typeof dataTyped.address === 'string' ? JSON.parse(dataTyped.address) : (dataTyped.address || {})
+    } as User;
     setUsers(prevUsers => [...prevUsers, transformedUser]);
     
     // Sync to localStorage as backup
@@ -228,22 +270,26 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateUser = async (userId: string, updates: Partial<User>) => {
     // Prepare updates for Supabase (convert address to JSON string if present)
-    const supabaseUpdates: any = { ...updates };
+    const supabaseUpdates: Record<string, any> = {};
+    if (updates.username !== undefined) supabaseUpdates.username = updates.username;
+    if (updates.email !== undefined) supabaseUpdates.email = updates.email;
+    if (updates.firstName !== undefined) supabaseUpdates["firstName"] = updates.firstName;
+    if (updates.lastName !== undefined) supabaseUpdates["lastName"] = updates.lastName;
+    if (updates.phone !== undefined) supabaseUpdates.phone = updates.phone;
     if (updates.address) {
       supabaseUpdates.address = JSON.stringify(updates.address);
     }
-    // Don't update password if it's not provided
-    if (!updates.password) {
-      delete supabaseUpdates.password;
-    } else {
-      supabaseUpdates.password = hashPassword(updates.password);
+    // SECURITY FIX: Use async bcrypt password hashing for password updates
+    if (updates.password) {
+      supabaseUpdates.password = await hashPassword(updates.password);
     }
+    if (updates.isAdmin !== undefined) supabaseUpdates["isAdmin"] = updates.isAdmin;
+    if (updates.isActive !== undefined) supabaseUpdates["isActive"] = updates.isActive;
 
     // Update in Supabase
-    const { error } = await supabase
-      .from('users')
-      .update(supabaseUpdates)
-      .eq('id', userId);
+    // Type assertion needed due to Supabase type limitations with dynamic updates
+    const updateQuery: any = supabase.from('users');
+    const { error } = await updateQuery.update(supabaseUpdates).eq('id', userId);
 
     if (error) {
       console.error('Error updating user in Supabase:', error);
@@ -361,16 +407,38 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         address: typeof data.address === 'string' ? JSON.parse(data.address) : (data.address || {})
       };
 
-      // Verify password
-      if (verifyPassword(password, user.password)) {
+      // SECURITY FIX: Support both bcrypt and legacy password hashes
+      // Check if password hash looks like bcrypt (starts with $2a$, $2b$, or $2y$)
+      let passwordValid = false;
+      if (user.password && user.password.startsWith('$2')) {
+        // It's a bcrypt hash - use async verification
+        try {
+          passwordValid = await verifyPassword(password, user.password);
+        } catch (e) {
+          console.error('Error verifying bcrypt password:', e);
+          passwordValid = false;
+        }
+      } else {
+        // Legacy hash format - use sync verification for backward compatibility
+        // This handles old passwords that haven't been migrated yet
+        console.warn('Using legacy password verification - password will be migrated to bcrypt on next change');
+        passwordValid = hashPasswordSync(password) === user.password;
+      }
+      
+      if (passwordValid) {
+        // SECURITY FIX: Don't store full user object with password in localStorage
+        // Store only safe, non-sensitive data
         setCurrentUser(user);
-        // If user was found in Supabase, sync to localStorage
+        // If user was found in Supabase, sync minimal data to localStorage
         try {
           const storedUsers = localStorage.getItem('totos-bureau-users');
           const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
           const userExists = localUsers.some((u: User) => u.id === user.id);
           if (!userExists) {
-            localUsers.push(user);
+            // Store user without password
+            const safeUser = { ...user };
+            delete (safeUser as any).password;
+            localUsers.push(safeUser);
             localStorage.setItem('totos-bureau-users', JSON.stringify(localUsers));
           }
         } catch (e) {
@@ -383,12 +451,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Error in loginUser:', error);
       // Fallback to localStorage
-      return checkLocalStorageForUser(username, password);
+      return await checkLocalStorageForUser(username, password);
     }
   };
 
   // Helper function to check localStorage for user
-  const checkLocalStorageForUser = (username: string, password: string): User | null => {
+  // SECURITY FIX: Made async to support bcrypt password verification
+  const checkLocalStorageForUser = async (username: string, password: string): Promise<User | null> => {
     try {
       const storedUsers = localStorage.getItem('totos-bureau-users');
       if (storedUsers) {
@@ -398,13 +467,33 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           u.isActive
         );
         
-        if (localUser && verifyPassword(password, localUser.password)) {
-          setCurrentUser(localUser);
-          // Try to sync this user to Supabase if it doesn't exist there
-          syncUserToSupabase(localUser).catch(err => {
-            console.error('Error syncing user to Supabase:', err);
-          });
-          return localUser;
+        if (localUser) {
+          // SECURITY FIX: Support both old (sync) and new (async bcrypt) password hashes
+          // Check if password hash looks like bcrypt (starts with $2a$, $2b$, or $2y$)
+          let passwordValid = false;
+          if (localUser.password.startsWith('$2')) {
+            // It's a bcrypt hash - use async verification
+            try {
+              passwordValid = await verifyPassword(password, localUser.password);
+            } catch (e) {
+              console.error('Error verifying bcrypt password:', e);
+              passwordValid = false;
+            }
+          } else {
+            // Legacy hash format - use sync verification for backward compatibility
+            // These will be migrated to bcrypt on next password change
+            console.warn('Using legacy password verification - password will be migrated to bcrypt on next change');
+            passwordValid = hashPasswordSync(password) === localUser.password;
+          }
+          
+          if (passwordValid) {
+            setCurrentUser(localUser);
+            // Try to sync this user to Supabase if it doesn't exist there
+            syncUserToSupabase(localUser).catch(err => {
+              console.error('Error syncing user to Supabase:', err);
+            });
+            return localUser;
+          }
         }
       }
     } catch (e) {
@@ -442,12 +531,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // User doesn't exist in Supabase, insert it
       console.log('Syncing user to Supabase:', user.email);
+      const syncInsert = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        phone: user.phone,
+        address: JSON.stringify(user.address),
+        "createdAt": user.createdAt,
+        "isAdmin": user.isAdmin,
+        "isActive": user.isActive
+      } as TablesInsert<'users'>;
       const { data, error } = await supabase
         .from('users')
-        .insert([{
-          ...user,
-          address: JSON.stringify(user.address)
-        }])
+        .insert([syncInsert] as any)
         .select()
         .single();
 

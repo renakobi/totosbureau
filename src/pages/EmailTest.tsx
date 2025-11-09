@@ -297,6 +297,7 @@ const EmailTest = () => {
             <Label htmlFor="testEmail">Test Email Address</Label>
             <Input
               id="testEmail"
+              name="testEmail"
               type="email"
               placeholder="your-email@example.com"
               value={testEmail}

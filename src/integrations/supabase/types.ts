@@ -14,7 +14,115 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      users: {
+        Row: {
+          id: string;
+          username: string;
+          email: string;
+          password: string;
+          "firstName": string;
+          "lastName": string;
+          phone: string;
+          address: Json;
+          "createdAt": string;
+          "isAdmin": boolean;
+          "isActive": boolean;
+        };
+        Insert: {
+          id: string;
+          username: string;
+          email: string;
+          password: string;
+          "firstName": string;
+          "lastName": string;
+          phone: string;
+          address: Json;
+          "createdAt"?: string;
+          "isAdmin"?: boolean;
+          "isActive"?: boolean;
+        };
+        Update: {
+          id?: string;
+          username?: string;
+          email?: string;
+          password?: string;
+          "firstName"?: string;
+          "lastName"?: string;
+          phone?: string;
+          address?: Json;
+          "createdAt"?: string;
+          "isAdmin"?: boolean;
+          "isActive"?: boolean;
+        };
+      };
+      products: {
+        Row: {
+          id: number;
+          name: string;
+          description: string;
+          price: number;
+          "originalPrice": number | null;
+          category: string;
+          subcategory: string;
+          image: string;
+          badge: string | null;
+          rating: number;
+          reviews: number;
+          "inStock": boolean;
+          "stockQuantity": number;
+          flavors: Json | null;
+          type: string;
+          "onSale": boolean;
+          ingredients: string | null;
+          "aboutProduct": string | null;
+          "createdAt": string;
+          "updatedAt": string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          description: string;
+          price: number;
+          "originalPrice"?: number | null;
+          category: string;
+          subcategory: string;
+          image: string;
+          badge?: string | null;
+          rating?: number;
+          reviews?: number;
+          "inStock"?: boolean;
+          "stockQuantity"?: number;
+          flavors?: Json | null;
+          type: string;
+          "onSale"?: boolean;
+          ingredients?: string | null;
+          "aboutProduct"?: string | null;
+          "createdAt"?: string;
+          "updatedAt"?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          description?: string;
+          price?: number;
+          "originalPrice"?: number | null;
+          category?: string;
+          subcategory?: string;
+          image?: string;
+          badge?: string | null;
+          rating?: number;
+          reviews?: number;
+          "inStock"?: boolean;
+          "stockQuantity"?: number;
+          flavors?: Json | null;
+          type?: string;
+          "onSale"?: boolean;
+          ingredients?: string | null;
+          "aboutProduct"?: string | null;
+          "createdAt"?: string;
+          "updatedAt"?: string;
+        };
+      };
     }
     Views: {
       [_ in never]: never

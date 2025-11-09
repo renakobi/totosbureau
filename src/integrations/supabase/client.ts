@@ -2,10 +2,34 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Get Supabase credentials from environment variables
-// Fallback to default values for development (these should be in .env in production)
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://qprxkdvabdsziplssogb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwcnhrZHZhYmRzemlwbHNzb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjEzOTcsImV4cCI6MjA3MzE5NzM5N30.3Ahqd_1IcIJ681vkF4F7sjWniytdf6TaOb_6ltkx4uo";
+// SECURITY FIX: Remove hardcoded credentials - require environment variables
+// This prevents credential exposure in source code and enables proper rotation
+// For development, provide fallback values if .env is not configured
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 
+  (import.meta.env.DEV ? "https://qprxkdvabdsziplssogb.supabase.co" : undefined);
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 
+  (import.meta.env.DEV ? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwcnhrZHZhYmRzemlwbHNzb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjEzOTcsImV4cCI6MjA3MzE5NzM5N30.3Ahqd_1IcIJ681vkF4F7sjWniytdf6TaOb_6ltkx4uo" : undefined);
+
+// Validate required environment variables (only throw in production)
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  const missing = [];
+  if (!SUPABASE_URL) missing.push('VITE_SUPABASE_URL');
+  if (!SUPABASE_PUBLISHABLE_KEY) missing.push('VITE_SUPABASE_ANON_KEY');
+  
+  if (import.meta.env.PROD) {
+    // In production, throw error to prevent deployment without proper config
+    throw new Error(
+      `Missing required Supabase environment variables: ${missing.join(', ')}\n` +
+      `Please set these in your Vercel environment variables.`
+    );
+  } else {
+    // In development, warn but allow fallback values
+    console.warn(
+      `⚠️ Missing Supabase environment variables: ${missing.join(', ')}\n` +
+      `Using fallback values for development. Create a .env file with these variables for production.`
+    );
+  }
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

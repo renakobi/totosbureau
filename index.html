@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.emailjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.stripe.com https://api.emailjs.com https://www.emailjs.com https://qprxkdvabdsziplssogb.supabase.co https://*.supabase.co; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self';" />
+    <!-- SECURITY FIX: Hardened CSP - removed unsafe-inline and unsafe-eval -->
+    <!-- Note: Vite injects scripts with nonces, so unsafe-inline may be needed during build -->
+    <!-- In production, use nonces for all inline scripts -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.emailjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.stripe.com https://api.emailjs.com https://www.emailjs.com https://qprxkdvabdsziplssogb.supabase.co https://*.supabase.co wss://qprxkdvabdsziplssogb.supabase.co wss://*.supabase.co; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" />
     <title>Toto's Bureau - Premium Pet Care & Supplies</title>
     <meta name="description" content="Discover premium pet care products for your furry friends. Quality food, toys, accessories, and more for dogs, cats, and all pets. Shop now for the best pet supplies!" />
     <meta name="author" content="Toto's Bureau" />

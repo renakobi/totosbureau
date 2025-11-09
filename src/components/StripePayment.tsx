@@ -110,6 +110,7 @@ const PaymentForm = ({ amount, onSuccess, onError }: {
               <Label htmlFor="card-number" className="text-xs">Card Number</Label>
               <Input 
                 id="card-number"
+                name="card-number"
                 placeholder="4242 4242 4242 4242"
                 className="text-sm"
                 readOnly
@@ -256,6 +257,7 @@ const StripePayment = () => {
             <Label htmlFor="amount">Amount (USD)</Label>
             <Input
               id="amount"
+              name="amount"
               type="number"
               step="0.01"
               min="0.50"

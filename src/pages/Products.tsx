@@ -87,6 +87,8 @@ const Products = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
+              id="product-search"
+              name="product-search"
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -95,7 +97,7 @@ const Products = () => {
           </div>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-48">
+            <SelectTrigger id="sortBy" name="sortBy" className="w-full md:w-48">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>

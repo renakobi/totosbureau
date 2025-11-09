@@ -18,6 +18,9 @@ const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  // SECURITY FIX: State for safe fallback rendering instead of innerHTML
+  const [logoError, setLogoError] = useState(false);
+  const [desktopLogoError, setDesktopLogoError] = useState(false);
   const { getTotalItems } = useCart();
   const { favorites } = useFavorites();
   const { currentUser } = useUser();
@@ -55,19 +58,22 @@ const Header = () => {
                   <Link to="/" className="flex items-center space-x-1 group">
                     <div className="relative">
                       <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                        <img
-                          src={logoImage}
-                          alt="Toto's Bureau Logo"
-                          className="w-full h-full object-cover rounded-full"
-                          onError={(e) => {
-                            console.log('Logo failed, using fallback...');
-                            e.currentTarget.style.display = 'none';
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
-                            }
-                          }}
-                        />
+                        {logoError ? (
+                          // SECURITY FIX: Safe React rendering instead of innerHTML
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                            <span className="text-white font-bold text-sm">TB</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={logoImage}
+                            alt="Toto's Bureau Logo"
+                            className="w-full h-full object-cover rounded-full"
+                            onError={() => {
+                              console.log('Logo failed, using fallback...');
+                              setLogoError(true);
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
                     <img
@@ -139,19 +145,22 @@ const Header = () => {
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="relative">
                 <div className="w-12 h-12 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105 overflow-hidden">
-                  <img
-                    src={logoImage}
-                    alt="Toto's Bureau Logo"
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      console.log('Logo failed, using fallback...');
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-sm">TB</span></div>';
-                      }
-                    }}
-                  />
+                  {desktopLogoError ? (
+                    // SECURITY FIX: Safe React rendering instead of innerHTML
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                      <span className="text-white font-bold text-sm">TB</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={logoImage}
+                      alt="Toto's Bureau Logo"
+                      className="w-full h-full object-cover rounded-full"
+                      onError={() => {
+                        console.log('Logo failed, using fallback...');
+                        setDesktopLogoError(true);
+                      }}
+                    />
+                  )}
                 </div>
               </div>
               <img
@@ -165,6 +174,8 @@ const Header = () => {
             <div className="relative w-[640px] ml-8">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
+                id="header-search"
+                name="header-search"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

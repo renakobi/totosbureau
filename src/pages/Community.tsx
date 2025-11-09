@@ -211,6 +211,8 @@ const Community = () => {
                 <h3 className="text-lg font-semibold mb-4">Share Your Pet's Story</h3>
                 <div className="space-y-4">
                   <Textarea
+                    id="new-post"
+                    name="new-post"
                     placeholder={isLoggedIn ? "What's your pet up to today?" : "Sign in to share your pet's story"}
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
@@ -239,6 +241,7 @@ const Community = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="file"
+                      name="photo-upload"
                       accept="image/*"
                       onChange={handlePhotoUpload}
                       className="hidden"

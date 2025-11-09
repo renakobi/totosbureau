@@ -86,11 +86,22 @@ const FormControl = React.forwardRef<React.ElementRef<typeof Slot>, React.Compon
   ({ ...props }, ref) => {
     const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
+    // Build aria-describedby only with IDs that we know will exist
+    // Only include formMessageId if there's an error (when FormMessage would be rendered)
+    // Note: We don't include formDescriptionId by default since FormDescription is optional
+    // Individual form implementations should ensure FormDescription is rendered if they want it referenced
+    const ariaDescribedByParts: string[] = [];
+    
+    // Only include formMessageId if there's an error (when FormMessage would be rendered)
+    if (error && formMessageId) {
+      ariaDescribedByParts.push(formMessageId);
+    }
+    
     return (
       <Slot
         ref={ref}
         id={formItemId}
-        aria-describedby={!error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`}
+        aria-describedby={ariaDescribedByParts.length > 0 ? ariaDescribedByParts.join(' ') : undefined}
         aria-invalid={!!error}
         {...props}
       />

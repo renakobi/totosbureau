@@ -1,17 +1,46 @@
-// Simple password hashing utility (in production, use bcrypt or similar)
-export const hashPassword = (password: string): string => {
-  // Simple hash function - in production, use proper hashing like bcrypt
+// SECURITY FIX: Replace weak password hashing with bcrypt
+// Using bcryptjs (pure JS implementation) for client-side compatibility
+// NOTE: In production, password hashing should ideally be done server-side
+import bcrypt from 'bcryptjs';
+
+// Hash password with bcrypt (12 salt rounds for security vs performance balance)
+// This provides cryptographically secure hashing with salt to prevent rainbow table attacks
+export const hashPassword = async (password: string): Promise<string> => {
+  if (!password || typeof password !== 'string') {
+    throw new Error('Password must be a non-empty string');
+  }
+  
+  const saltRounds = 12; // OWASP recommends 10-12 rounds
+  return await bcrypt.hash(password, saltRounds);
+};
+
+// Verify password against bcrypt hash
+// Uses constant-time comparison to prevent timing attacks
+export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+  if (!password || !hashedPassword) {
+    return false;
+  }
+  
+  try {
+    return await bcrypt.compare(password, hashedPassword);
+  } catch (error) {
+    console.error('Error verifying password:', error);
+    return false;
+  }
+};
+
+// Legacy support: Synchronous version for backward compatibility during migration
+// This will be removed after all passwords are migrated to bcrypt
+export const hashPasswordSync = (password: string): string => {
+  // This is a temporary migration helper - do not use for new passwords
+  console.warn('Using legacy password hashing - migrate to async hashPassword');
   let hash = 0;
   for (let i = 0; i < password.length; i++) {
     const char = password.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
   return hash.toString();
-};
-
-export const verifyPassword = (password: string, hashedPassword: string): boolean => {
-  return hashPassword(password) === hashedPassword;
 };
 
 // Password validation rules - simplified

@@ -10,6 +10,9 @@ import logoImage from "@/assets/logo.jpg";
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [activeDropdown, setActiveDropdown] = useState(null);
+  // SECURITY FIX: State for safe fallback rendering instead of innerHTML
+  const [logoError, setLogoError] = useState(false);
+  const [desktopLogoError, setDesktopLogoError] = useState(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,19 +59,22 @@ const Footer = () => {
           <div className="sm:hidden mb-6">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
-                <img 
-                  src={logoImage} 
-                  alt="Toto's Bureau Logo" 
-                  className="w-full h-full object-cover rounded-full"
-                  onError={(e) => {
-                    console.log('Logo failed, using fallback...');
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
-                    }
-                  }}
-                />
+                {logoError ? (
+                  // SECURITY FIX: Safe React rendering instead of innerHTML
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                    <span className="text-white font-bold text-lg">TB</span>
+                  </div>
+                ) : (
+                  <img 
+                    src={logoImage} 
+                    alt="Toto's Bureau Logo" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => {
+                      console.log('Logo failed, using fallback...');
+                      setLogoError(true);
+                    }}
+                  />
+                )}
               </div>
         <div className="text-lg font-bold" style={{ color: '#9aedb6' }}>
           Toto's Bureau
@@ -95,19 +101,22 @@ const Footer = () => {
           <div className="hidden sm:block lg:col-span-1 text-center">
             <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-medium overflow-hidden">
-                <img 
-                  src={logoImage} 
-                  alt="Toto's Bureau Logo" 
-                  className="w-full h-full object-cover rounded-full"
-                  onError={(e) => {
-                    console.log('Logo failed, using fallback...');
-                    e.currentTarget.style.display = 'none';
-                    const parent = e.currentTarget.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full"><span class="text-white font-bold text-lg">TB</span></div>';
-                    }
-                  }}
-                />
+                {desktopLogoError ? (
+                  // SECURITY FIX: Safe React rendering instead of innerHTML
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-forest rounded-full">
+                    <span className="text-white font-bold text-lg">TB</span>
+                  </div>
+                ) : (
+                  <img 
+                    src={logoImage} 
+                    alt="Toto's Bureau Logo" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => {
+                      console.log('Logo failed, using fallback...');
+                      setDesktopLogoError(true);
+                    }}
+                  />
+                )}
               </div>
               <div className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
                 Toto's Bureau

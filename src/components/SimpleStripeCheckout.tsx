@@ -168,6 +168,7 @@ const PaymentForm = ({ amount, onSuccess, onError, initialEmail = '' }: {
         <Label htmlFor="email">Email Address *</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

@@ -1,6 +1,27 @@
 import { Order } from '@/contexts/OrderContext';
 import emailjs from '@emailjs/browser';
 
+// SECURITY FIX: HTML sanitization to prevent XSS in email templates
+// Escapes HTML special characters to prevent injection attacks in email clients
+function escapeHtml(text: string | number | undefined | null): string {
+  if (text === null || text === undefined) return '';
+  const str = String(text);
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return str.replace(/[&<>"']/g, m => map[m]);
+}
+
+// SECURITY FIX: Sanitize all user-provided strings before inserting into email templates
+function sanitizeForEmail(value: any): string {
+  if (value === null || value === undefined) return '';
+  return escapeHtml(String(value));
+}
+
 export interface EmailData {
   to: string;
   subject: string;
@@ -119,48 +140,58 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       const { order, customerName, customerEmail, customerFirstName, customerLastName, customerPhone } = orderData;
       
       if (order) {
-        // Extract order fields for template variables
-        templateParams.order_number = order.orderNumber || 'N/A';
-        templateParams.order_date = order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', {
+        // SECURITY FIX: Sanitize all user input before inserting into email templates
+        // This prevents XSS attacks in email clients that render HTML
+        templateParams.order_number = sanitizeForEmail(order.orderNumber || 'N/A');
+        templateParams.order_date = order.orderDate ? sanitizeForEmail(new Date(order.orderDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
-        }) : 'N/A';
-        templateParams.order_status = order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending';
+        })) : 'N/A';
+        templateParams.order_status = order.status ? sanitizeForEmail(order.status.charAt(0).toUpperCase() + order.status.slice(1)) : 'Pending';
         
-        templateParams.customer_name = customerName || 'N/A';
-        templateParams.customer_email = customerEmail || 'N/A';
-        templateParams.customer_phone = customerPhone || order.shippingAddress?.phone || 'N/A';
+        templateParams.customer_name = sanitizeForEmail(customerName || 'N/A');
+        templateParams.customer_email = sanitizeForEmail(customerEmail || 'N/A');
+        templateParams.customer_phone = sanitizeForEmail(customerPhone || order.shippingAddress?.phone || 'N/A');
         
         // Payment method information
         const paymentType = order.paymentMethod?.type || 'Not specified';
         const paymentLast4 = order.paymentMethod?.last4;
         const isCashOnDelivery = paymentType === 'Cash on Delivery' || paymentType === 'cash_on_delivery';
         
-        templateParams.payment_method = paymentType;
-        templateParams.payment_status = isCashOnDelivery ? '⚠️ Payment Pending - Cash on Delivery' : '✓ Payment Processed Successfully';
-        templateParams.payment_status_icon = isCashOnDelivery ? '⚠️' : '✓';
-        templateParams.payment_status_text = isCashOnDelivery ? 'Payment Pending - Cash on Delivery' : 'Payment Processed Successfully';
-        templateParams.payment_status_color = isCashOnDelivery ? '#dc2626' : '#059669';
-        templateParams.payment_background = isCashOnDelivery ? '#fef2f2' : '#f0fdf4';
-        templateParams.card_last4 = paymentLast4 && paymentLast4 !== 'CASH' ? `****${paymentLast4}` : '';
+        templateParams.payment_method = sanitizeForEmail(paymentType);
+        templateParams.payment_status = sanitizeForEmail(isCashOnDelivery ? '⚠️ Payment Pending - Cash on Delivery' : '✓ Payment Processed Successfully');
+        templateParams.payment_status_icon = sanitizeForEmail(isCashOnDelivery ? '⚠️' : '✓');
+        templateParams.payment_status_text = sanitizeForEmail(isCashOnDelivery ? 'Payment Pending - Cash on Delivery' : 'Payment Processed Successfully');
+        templateParams.payment_status_color = sanitizeForEmail(isCashOnDelivery ? '#dc2626' : '#059669');
+        templateParams.payment_background = sanitizeForEmail(isCashOnDelivery ? '#fef2f2' : '#f0fdf4');
+        templateParams.card_last4 = sanitizeForEmail(paymentLast4 && paymentLast4 !== 'CASH' ? `****${paymentLast4}` : '');
         
-        // Order summary (without $ prefix since EmailJS templates should add it)
-        templateParams.subtotal = `$${(order.subtotal || 0).toFixed(2)}`;
-        templateParams.shipping = (order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`;
-        templateParams.tax = `$${(order.tax || 0).toFixed(2)}`;
-        templateParams.total = `$${(order.total || 0).toFixed(2)}`;
+        // Order summary (sanitized)
+        templateParams.subtotal = sanitizeForEmail(`$${(order.subtotal || 0).toFixed(2)}`);
+        templateParams.shipping = sanitizeForEmail((order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`);
+        templateParams.tax = sanitizeForEmail(`$${(order.tax || 0).toFixed(2)}`);
+        templateParams.total = sanitizeForEmail(`$${(order.total || 0).toFixed(2)}`);
         
-        // Order items
-        templateParams.items_list = order.items?.map(item => 
-          `${item.name || 'Unnamed Item'} (Qty: ${item.quantity || 1}) - $${((item.price || 0) * (item.quantity || 1)).toFixed(2)}`
-        ).join('\n') || 'No items';
+        // Order items (sanitized)
+        templateParams.items_list = order.items?.map(item => {
+          const itemName = sanitizeForEmail(item.name || 'Unnamed Item');
+          const quantity = item.quantity || 1;
+          const price = sanitizeForEmail(((item.price || 0) * quantity).toFixed(2));
+          return `${itemName} (Qty: ${quantity}) - $${price}`;
+        }).join('\n') || 'No items';
         
-        // Shipping address
+        // Shipping address (sanitized)
         if (order.shippingAddress) {
-          templateParams.shipping_address = `${order.shippingAddress.name || 'N/A'}\n${order.shippingAddress.street || 'N/A'}\n${order.shippingAddress.city || 'N/A'}, ${order.shippingAddress.state || 'N/A'} ${order.shippingAddress.zipCode || 'N/A'}\n${order.shippingAddress.country || 'N/A'}`;
+          const addressParts = [
+            sanitizeForEmail(order.shippingAddress.name || 'N/A'),
+            sanitizeForEmail(order.shippingAddress.street || 'N/A'),
+            `${sanitizeForEmail(order.shippingAddress.city || 'N/A')}, ${sanitizeForEmail(order.shippingAddress.state || 'N/A')} ${sanitizeForEmail(order.shippingAddress.zipCode || 'N/A')}`,
+            sanitizeForEmail(order.shippingAddress.country || 'N/A')
+          ];
+          templateParams.shipping_address = addressParts.join('\n');
         } else {
           templateParams.shipping_address = 'N/A';
         }
