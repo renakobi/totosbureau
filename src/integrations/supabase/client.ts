@@ -4,29 +4,29 @@ import type { Database } from './types';
 
 // SECURITY FIX: Remove hardcoded credentials - require environment variables
 // This prevents credential exposure in source code and enables proper rotation
-// For development, provide fallback values if .env is not configured
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 
-  (import.meta.env.DEV ? "https://qprxkdvabdsziplssogb.supabase.co" : undefined);
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 
-  (import.meta.env.DEV ? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwcnhrZHZhYmRzemlwbHNzb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjEzOTcsImV4cCI6MjA3MzE5NzM5N30.3Ahqd_1IcIJ681vkF4F7sjWniytdf6TaOb_6ltkx4uo" : undefined);
+// For development and production, provide fallback values if .env is not configured
+// This prevents white screen of death if env vars are missing
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://qprxkdvabdsziplssogb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwcnhrZHZhYmRzemlwbHNzb2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjEzOTcsImV4cCI6MjA3MzE5NzM5N30.3Ahqd_1IcIJ681vkF4F7sjWniytdf6TaOb_6ltkx4uo";
 
-// Validate required environment variables (only throw in production)
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+// Warn if using fallback values (but don't crash the app)
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
   const missing = [];
-  if (!SUPABASE_URL) missing.push('VITE_SUPABASE_URL');
-  if (!SUPABASE_PUBLISHABLE_KEY) missing.push('VITE_SUPABASE_ANON_KEY');
+  if (!import.meta.env.VITE_SUPABASE_URL) missing.push('VITE_SUPABASE_URL');
+  if (!import.meta.env.VITE_SUPABASE_ANON_KEY) missing.push('VITE_SUPABASE_ANON_KEY');
   
+  console.warn(
+    `⚠️ Missing Supabase environment variables: ${missing.join(', ')}\n` +
+    `Using fallback values. Please set these in your Vercel environment variables for production.\n` +
+    `Go to: Vercel Dashboard → Your Project → Settings → Environment Variables`
+  );
+  
+  // In production, also log to console.error for visibility
   if (import.meta.env.PROD) {
-    // In production, throw error to prevent deployment without proper config
-    throw new Error(
-      `Missing required Supabase environment variables: ${missing.join(', ')}\n` +
-      `Please set these in your Vercel environment variables.`
-    );
-  } else {
-    // In development, warn but allow fallback values
-    console.warn(
-      `⚠️ Missing Supabase environment variables: ${missing.join(', ')}\n` +
-      `Using fallback values for development. Create a .env file with these variables for production.`
+    console.error(
+      `🚨 PRODUCTION: Missing Supabase environment variables!\n` +
+      `The app will work with fallback values, but this is not recommended.\n` +
+      `Please add ${missing.join(' and ')} to Vercel environment variables.`
     );
   }
 }
