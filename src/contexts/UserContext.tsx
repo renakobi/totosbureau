@@ -60,6 +60,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loadUsersFromSupabase = async () => {
     try {
       setIsLoadingUsers(true);
+      console.log('Loading users from Supabase...');
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -67,17 +68,31 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (error) {
         console.error('Error loading users from Supabase:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        console.error('Error details:', error.details);
+        console.error('Error hint:', error.hint);
+        
+        // If it's a permission/RLS error, log it clearly
+        if (error.code === 'PGRST301' || error.message?.includes('permission') || error.message?.includes('policy')) {
+          console.error('⚠️ RLS Policy Error: Check Supabase Row Level Security policies');
+        }
+        
         // Fallback to localStorage if Supabase fails
         try {
           const storedUsers = localStorage.getItem('totos-bureau-users');
           if (storedUsers) {
             const parsed = JSON.parse(storedUsers);
             setUsers(Array.isArray(parsed) ? parsed : []);
+            console.log('Loaded users from localStorage fallback:', parsed.length);
+          } else {
+            console.warn('No users in localStorage fallback');
           }
         } catch (e) {
           console.error('Error loading users from localStorage fallback:', e);
         }
       } else {
+        console.log('Successfully loaded users from Supabase:', data?.length || 0);
         // Transform Supabase data to match User interface
         const transformedUsers = (data || []).map((user: any) => ({
           ...user,
@@ -281,6 +296,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const loginUser = async (username: string, password: string): Promise<User | null> => {
     try {
+      console.log('Attempting login for:', username);
       // Query Supabase for user by username or email
       // Try username first, then email separately to avoid OR query issues
       let data = null;
@@ -296,7 +312,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (usernameError) {
         console.error('Error querying Supabase by username:', usernameError);
+        console.error('Error code:', usernameError.code);
+        console.error('Error message:', usernameError.message);
+        
+        // Check for RLS/permission errors
+        if (usernameError.code === 'PGRST301' || usernameError.message?.includes('permission') || usernameError.message?.includes('policy')) {
+          console.error('⚠️ RLS Policy Error: User query blocked by Row Level Security');
+        }
       } else if (usernameData) {
+        console.log('User found by username in Supabase');
         data = usernameData;
       } else {
         // If not found by username, try email
@@ -309,9 +333,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (emailError) {
           console.error('Error querying Supabase by email:', emailError);
+          console.error('Error code:', emailError.code);
+          console.error('Error message:', emailError.message);
           error = emailError;
+          
+          // Check for RLS/permission errors
+          if (emailError.code === 'PGRST301' || emailError.message?.includes('permission') || emailError.message?.includes('policy')) {
+            console.error('⚠️ RLS Policy Error: Email query blocked by Row Level Security');
+          }
         } else if (emailData) {
+          console.log('User found by email in Supabase');
           data = emailData;
+        } else {
+          console.log('User not found in Supabase (tried both username and email)');
         }
       }
 
