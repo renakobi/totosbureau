@@ -27,8 +27,3 @@ SELECT username,
 FROM users 
 WHERE username = 'admin';
 
--- After running this script:
--- - Admin username: admin
--- - Admin password: admin123 (now secured with bcrypt)
--- - The password will work with the new bcrypt hash
-
