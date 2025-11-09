@@ -15,5 +15,28 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  // Add headers for CORS
+  global: {
+    headers: {
+      'apikey': SUPABASE_PUBLISHABLE_KEY,
+    },
+  },
 });
+
+// Test connection on load (only log errors)
+if (typeof window !== 'undefined') {
+  console.log('🔧 Testing Supabase connection...');
+  supabase.from('users').select('count').limit(0).then(({ error }) => {
+    if (error) {
+      console.error('❌ Supabase connection failed:', error.code, error.message);
+      if (error.code === 'PGRST301' || error.message?.includes('permission')) {
+        console.error('⚠️ This is likely an RLS policy issue. Run fix_supabase_rls.sql in Supabase.');
+      }
+    } else {
+      console.log('✅ Supabase connection successful');
+    }
+  }).catch(err => {
+    console.error('❌ Supabase connection error:', err);
+  });
+}
