@@ -86,7 +86,7 @@ async function handleRequest(req, res) {
     });
 
     // Send email
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Toto's Bureau" <${process.env.EMAIL_USER}>`,
       to: to,
       subject: subject,
@@ -98,7 +98,8 @@ async function handleRequest(req, res) {
     console.log('✅ Email sent successfully:', {
       to,
       subject,
-      messageId: info.messageId
+      messageId: info.messageId,
+      response: info.response
     });
 
     res.status(200).json({

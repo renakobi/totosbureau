@@ -71,19 +71,34 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Email API error:', response.status, errorText);
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText };
+      }
+      console.error('❌ Email API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
       return false;
     }
 
     const result = await response.json();
     if (!result.success) {
-      console.error('Email API returned failure:', result);
+      console.error('❌ Email API returned failure:', result);
       return false;
     }
     
+    console.log('✅ Email sent successfully:', result);
     return true;
-  } catch (error) {
-    console.error('Email send exception:', error);
+  } catch (error: any) {
+    console.error('❌ Email send exception:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name
+    });
     return false;
   }
 };
