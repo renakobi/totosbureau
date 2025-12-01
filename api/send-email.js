@@ -17,6 +17,14 @@ function escapeHtml(text) {
 }
 
 export default async function handler(req, res) {
+  // Handle OPTIONS request for CORS preflight
+  if (req.method === 'OPTIONS') {
+    security.handleCORS(req, res, () => {
+      return res.status(200).end();
+    });
+    return;
+  }
+
   // SECURITY FIX: Apply security middleware
   security.handleCORS(req, res, () => {
     security.validateContentType(req, res, () => {
