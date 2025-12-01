@@ -23,7 +23,7 @@ const getAllowedOrigins = () => {
 };
 
 // SECURITY FIX: CORS handler - validate origin against whitelist
-exports.handleCORS = (req, res, next) => {
+export const handleCORS = (req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = getAllowedOrigins();
   
@@ -64,7 +64,7 @@ exports.handleCORS = (req, res, next) => {
 
 // SECURITY FIX: API Key authentication
 // Validates API key from header to prevent unauthorized access
-exports.authenticateAPI = (req, res, next) => {
+export const authenticateAPI = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   const validApiKey = process.env.API_SECRET_KEY;
   
@@ -82,7 +82,7 @@ exports.authenticateAPI = (req, res, next) => {
 
 // SECURITY FIX: CSRF protection using token validation
 // Validates CSRF token to prevent cross-site request forgery
-exports.validateCSRF = (req, res, next) => {
+export const validateCSRF = (req, res, next) => {
   // Skip CSRF for GET/OPTIONS requests
   if (req.method === 'GET' || req.method === 'OPTIONS') {
     return next();
@@ -104,7 +104,7 @@ exports.validateCSRF = (req, res, next) => {
 
 // SECURITY FIX: Input validation and sanitization
 // Validates and sanitizes all input to prevent injection attacks
-exports.validateInput = {
+export const validateInput = {
   // Validate amount (must be positive number, reasonable max)
   amount: (value) => {
     const num = typeof value === 'string' ? parseFloat(value) : value;
@@ -222,7 +222,7 @@ exports.validateInput = {
 // In production, use Redis or a proper rate limiting service
 const rateLimitStore = new Map();
 
-exports.rateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
+export const rateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
   return (req, res, next) => {
     const identifier = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
     const now = Date.now();
@@ -251,7 +251,7 @@ exports.rateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
 };
 
 // SECURITY FIX: Content-Type validation
-exports.validateContentType = (req, res, next) => {
+export const validateContentType = (req, res, next) => {
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
     const contentType = req.headers['content-type'];
     if (!contentType || !contentType.includes('application/json')) {
@@ -262,7 +262,7 @@ exports.validateContentType = (req, res, next) => {
 };
 
 // SECURITY FIX: Request size limit
-exports.limitRequestSize = (maxSize = 1024 * 1024) => { // 1MB default
+export const limitRequestSize = (maxSize = 1024 * 1024) => { // 1MB default
   return (req, res, next) => {
     const contentLength = parseInt(req.headers['content-length'] || '0');
     if (contentLength > maxSize) {

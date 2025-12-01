@@ -1,7 +1,7 @@
 // Vercel serverless function for sending emails via Nodemailer
 // Works from any domain - no restrictions like EmailJS
-const nodemailer = require('nodemailer');
-const security = require('./utils/security');
+import nodemailer from 'nodemailer';
+import * as security from './utils/security.js';
 
 // SECURITY FIX: HTML sanitization to prevent XSS in email templates
 function escapeHtml(text) {
@@ -16,7 +16,7 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // SECURITY FIX: Apply security middleware
   security.handleCORS(req, res, () => {
     security.validateContentType(req, res, () => {
