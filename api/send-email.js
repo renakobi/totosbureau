@@ -37,7 +37,14 @@ async function handleRequest(req, res) {
   try {
     // Check if email service is configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      return res.status(500).json({ error: 'Email service not configured' });
+      console.error('Email service not configured:', {
+        hasEmailUser: !!process.env.EMAIL_USER,
+        hasEmailPass: !!process.env.EMAIL_PASS
+      });
+      return res.status(500).json({ 
+        error: 'Email service not configured',
+        message: 'EMAIL_USER and EMAIL_PASS environment variables must be set'
+      });
     }
 
     // Validate required fields
@@ -77,9 +84,11 @@ async function handleRequest(req, res) {
       message: 'Email sent successfully',
     });
   } catch (error) {
+    console.error('Email send error:', error);
     res.status(500).json({ 
       error: 'Failed to send email',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: error.message || 'Unknown error',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 }

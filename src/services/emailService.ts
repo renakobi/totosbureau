@@ -43,11 +43,20 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
     // Validate required fields
     if (!emailData.to || !emailData.subject || !emailData.html) {
+      console.error('Email validation failed:', { to: emailData.to, subject: emailData.subject, hasHtml: !!emailData.html });
       return false;
     }
 
     // Send email via server-side API
-    const response = await fetch('/api/send-email', {
+    // In development, use local API server on port 3001 if available
+    const isLocalDev = import.meta.env.DEV && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const apiUrl = isLocalDev 
+      ? 'http://localhost:3001/api/send-email'
+      : '/api/send-email';
+    
+    console.log('📧 Sending email via:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,12 +70,20 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Email API error:', response.status, errorText);
       return false;
     }
 
     const result = await response.json();
-    return result.success === true;
+    if (!result.success) {
+      console.error('Email API returned failure:', result);
+      return false;
+    }
+    
+    return true;
   } catch (error) {
+    console.error('Email send exception:', error);
     return false;
   }
 };

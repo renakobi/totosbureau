@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getShippingSettings } from "@/utils/shippingSettings";
+import SimilarProducts from "@/components/SimilarProducts";
 
 
 const ProductDetail = () => {
@@ -319,6 +320,13 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Similar Products Section */}
+        <SimilarProducts 
+          productId={product.id} 
+          category={product.category}
+          subcategory={product.subcategory}
+        />
       </main>
       <Footer />
     </div>

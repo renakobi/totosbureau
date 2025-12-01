@@ -70,7 +70,7 @@ const Cart = () => {
         country: "United States"
       };
 
-      const newOrder = addOrder({
+      const newOrder = await addOrder({
         items: orderItems,
         subtotal,
         shipping,

@@ -11,7 +11,7 @@ const getAllowedOrigins = () => {
   
   // Add development origin if in development
   if (process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development') {
-    origins.push('http://localhost:8080', 'http://localhost:5173');
+    origins.push('http://localhost:3000', 'http://localhost:8080', 'http://localhost:5173');
   }
   
   return origins;

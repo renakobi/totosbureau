@@ -37,6 +37,7 @@ sendgrid-package.json
 server-package.json
 test-*.js
 test-*.cjs
+local-api-server.js
 *.timestamp-*.mjs
 
 # Security - never commit these
@@ -125,3 +126,5 @@ Thumbs.db
 
 # Vercel
 .vercel
+.vercel
+.env*.local

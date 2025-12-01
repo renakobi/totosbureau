@@ -16,7 +16,7 @@ const Favorites = () => {
   const { products } = useProducts();
 
   // Filter products to only show favorited ones
-  const favoriteProducts = products.filter(product => favorites.includes(product.id));
+  const favoriteProducts = products.filter(product => favorites.includes(product.id.toString()));
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -86,15 +86,15 @@ const Favorites = () => {
                         variant="ghost"
                         size="icon"
                         className={`absolute top-3 right-3 transition-all duration-200 bg-background/90 hover:bg-background shadow-medium hover:scale-105 ${
-                          isFavorite(product.id) ? 'text-red-500' : 'text-muted-foreground'
+                          isFavorite(product.id.toString()) ? 'text-red-500' : 'text-muted-foreground'
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          toggleFavorite(product.id);
+                          toggleFavorite(product.id.toString());
                         }}
                       >
-                        <Heart className={`h-4 w-4 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+                        <Heart className={`h-4 w-4 ${isFavorite(product.id.toString()) ? 'fill-current' : ''}`} />
                       </Button>
                       
                       {product.badge && (

@@ -152,7 +152,7 @@ const Checkout = () => {
         ? `${shippingInfo.street}, ${shippingInfo.apartment}`
         : shippingInfo.street;
 
-      const newOrder = addOrder({
+      const newOrder = await addOrder({
         items: orderItems,
         subtotal: totalPrice,
         shipping: shipping,
@@ -207,7 +207,6 @@ const Checkout = () => {
       localStorage.setItem('lastOrder', JSON.stringify(orderDetails));
 
       // Send email notifications
-      console.log('📧 [Checkout - Cash] Starting to send emails...');
       try {
         const orderEmailData = {
           order: newOrder,
@@ -218,26 +217,14 @@ const Checkout = () => {
           customerPhone: shippingInfo.phone
         };
 
-        console.log('📧 [Checkout - Cash] Order email data prepared:', {
-          orderNumber: newOrder.orderNumber,
-          customerEmail: shippingInfo.email,
-          customerName,
-          itemCount: newOrder.items.length
-        });
-
-        console.log('📧 [Checkout - Cash] Sending confirmation email...');
-        const confirmResult = await sendOrderConfirmationEmail(orderEmailData);
-        console.log('📧 [Checkout - Cash] Confirmation email result:', confirmResult);
-
-        console.log('📧 [Checkout - Cash] Sending notification email...');
-        const notifyResult = await sendOrderNotificationEmail(orderEmailData);
-        console.log('📧 [Checkout - Cash] Notification email result:', notifyResult);
+        const confirmationSent = await sendOrderConfirmationEmail(orderEmailData);
+        const notificationSent = await sendOrderNotificationEmail(orderEmailData);
+        
+        if (!confirmationSent || !notificationSent) {
+          console.warn('Email sending failed:', { confirmationSent, notificationSent });
+        }
       } catch (emailError) {
-        console.error('❌ [Checkout - Cash] Email sending failed:', emailError);
-        console.error('❌ [Checkout - Cash] Email error details:', {
-          message: emailError instanceof Error ? emailError.message : String(emailError),
-          stack: emailError instanceof Error ? emailError.stack : undefined
-        });
+        console.error('Email error:', emailError);
         // Don't block order completion if email fails
       }
 
@@ -280,7 +267,7 @@ const Checkout = () => {
         ? `${shippingInfo.street}, ${shippingInfo.apartment}`
         : shippingInfo.street;
 
-      const newOrder = addOrder({
+      const newOrder = await addOrder({
         items: orderItems,
         subtotal: totalPrice,
         shipping: shipping,
@@ -334,7 +321,6 @@ const Checkout = () => {
       localStorage.setItem('lastOrder', JSON.stringify(orderDetails));
 
       // Send email notifications
-      console.log('📧 [Checkout - Card] Starting to send emails...');
       try {
         const orderEmailData = {
           order: newOrder,
@@ -345,26 +331,14 @@ const Checkout = () => {
           customerPhone: shippingInfo.phone
         };
 
-        console.log('📧 [Checkout - Card] Order email data prepared:', {
-          orderNumber: newOrder.orderNumber,
-          customerEmail: shippingInfo.email,
-          customerName,
-          itemCount: newOrder.items.length
-        });
-
-        console.log('📧 [Checkout - Card] Sending confirmation email...');
-        const confirmResult = await sendOrderConfirmationEmail(orderEmailData);
-        console.log('📧 [Checkout - Card] Confirmation email result:', confirmResult);
-
-        console.log('📧 [Checkout - Card] Sending notification email...');
-        const notifyResult = await sendOrderNotificationEmail(orderEmailData);
-        console.log('📧 [Checkout - Card] Notification email result:', notifyResult);
+        const confirmationSent = await sendOrderConfirmationEmail(orderEmailData);
+        const notificationSent = await sendOrderNotificationEmail(orderEmailData);
+        
+        if (!confirmationSent || !notificationSent) {
+          console.warn('Email sending failed:', { confirmationSent, notificationSent });
+        }
       } catch (emailError) {
-        console.error('❌ [Checkout - Card] Email sending failed:', emailError);
-        console.error('❌ [Checkout - Card] Email error details:', {
-          message: emailError instanceof Error ? emailError.message : String(emailError),
-          stack: emailError instanceof Error ? emailError.stack : undefined
-        });
+        console.error('Email error:', emailError);
         // Don't block order completion if email fails
       }
 
@@ -379,7 +353,6 @@ const Checkout = () => {
         description: "Your order has been placed successfully.",
       });
     } catch (error: any) {
-      console.error('Order creation failed:', error);
       toast({
         title: "Order Failed",
         description: "Failed to create order. Please contact support.",

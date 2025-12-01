@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
-import type { TablesInsert } from '../integrations/supabase/types';
+import type { TablesInsert, TablesUpdate, Json } from '../integrations/supabase/types';
 
 export interface Product {
   id: number;
@@ -264,7 +264,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
               reviews: product.reviews,
               "inStock": product.inStock,
               "stockQuantity": product.stockQuantity,
-              flavors: product.flavors ? JSON.stringify(product.flavors) : null,
+              flavors: product.flavors ? (product.flavors as Json) : null,
               type: product.type,
               "onSale": product.onSale || false,
               ingredients: product.ingredients || null,
@@ -389,7 +389,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         reviews: productData.reviews || 0,
         "inStock": productData.inStock !== undefined ? productData.inStock : true,
         "stockQuantity": productData.stockQuantity || 0,
-        flavors: productData.flavors ? JSON.stringify(productData.flavors) : null,
+        flavors: productData.flavors ? (productData.flavors as Json) : null,
         type: productData.type,
         "onSale": productData.originalPrice ? true : (productData.onSale || false),
         ingredients: productData.ingredients || null,
@@ -399,7 +399,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       // Insert into Supabase
       const { data, error } = await supabase
         .from('products')
-        .insert([productInsert])
+        .insert([productInsert] as any)
         .select()
         .single();
 
@@ -412,26 +412,29 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
         throw new Error('No data returned from Supabase');
       }
 
+      // Type assertion for Supabase response
+      const supabaseData = data as any;
+
       // Transform Supabase response to Product interface
       const newProduct: Product = {
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        price: Number(data.price),
-        originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
-        category: data.category,
-        subcategory: data.subcategory,
-        image: data.image,
-        badge: data.badge || undefined,
-        rating: Number(data.rating),
-        reviews: data.reviews,
-        inStock: data.inStock,
-        stockQuantity: data.stockQuantity,
-        flavors: data.flavors ? (Array.isArray(data.flavors) ? data.flavors : JSON.parse(data.flavors as string)) : undefined,
-        type: data.type,
-        onSale: data.onSale,
-        ingredients: data.ingredients || undefined,
-        aboutProduct: data.aboutProduct || undefined
+        id: supabaseData.id,
+        name: supabaseData.name,
+        description: supabaseData.description,
+        price: Number(supabaseData.price),
+        originalPrice: supabaseData.originalPrice ? Number(supabaseData.originalPrice) : undefined,
+        category: supabaseData.category,
+        subcategory: supabaseData.subcategory,
+        image: supabaseData.image,
+        badge: supabaseData.badge || undefined,
+        rating: Number(supabaseData.rating),
+        reviews: supabaseData.reviews,
+        inStock: supabaseData.inStock,
+        stockQuantity: supabaseData.stockQuantity,
+        flavors: supabaseData.flavors ? (Array.isArray(supabaseData.flavors) ? supabaseData.flavors : JSON.parse(supabaseData.flavors as string)) : undefined,
+        type: supabaseData.type,
+        onSale: supabaseData.onSale,
+        ingredients: supabaseData.ingredients || undefined,
+        aboutProduct: supabaseData.aboutProduct || undefined
       };
 
       // Update local state
@@ -461,7 +464,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       }
 
       // Prepare updates for Supabase
-      const supabaseUpdates: any = {};
+      const supabaseUpdates: Partial<TablesUpdate<'products'>> = {};
       if (productData.name !== undefined) supabaseUpdates.name = productData.name;
       if (productData.description !== undefined) supabaseUpdates.description = productData.description;
       if (productData.price !== undefined) supabaseUpdates.price = productData.price;
@@ -474,7 +477,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       if (productData.reviews !== undefined) supabaseUpdates.reviews = productData.reviews;
       if (productData.inStock !== undefined) supabaseUpdates.inStock = productData.inStock;
       if (productData.stockQuantity !== undefined) supabaseUpdates.stockQuantity = productData.stockQuantity;
-      if (productData.flavors !== undefined) supabaseUpdates.flavors = productData.flavors ? JSON.stringify(productData.flavors) : null;
+      if (productData.flavors !== undefined) supabaseUpdates.flavors = productData.flavors ? (productData.flavors as Json) : null;
       if (productData.type !== undefined) supabaseUpdates.type = productData.type;
       if (productData.onSale !== undefined) supabaseUpdates.onSale = productData.onSale;
       if (productData.originalPrice !== undefined) {
@@ -487,6 +490,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
       // Update in Supabase
       const { error } = await supabase
         .from('products')
+        // @ts-expect-error - Supabase type inference issue with Json types in flavors field
         .update(supabaseUpdates)
         .eq('id', id);
 
