@@ -9,6 +9,11 @@ const getAllowedOrigins = () => {
     'https://www.totosbureau.com',
   ];
   
+  // Add Vercel preview URLs
+  if (process.env.VERCEL_URL) {
+    origins.push(`https://${process.env.VERCEL_URL}`);
+  }
+  
   // Add development origin if in development
   if (process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development') {
     origins.push('http://localhost:3000', 'http://localhost:8080', 'http://localhost:5173');
@@ -22,15 +27,27 @@ exports.handleCORS = (req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = getAllowedOrigins();
   
+  // Log for debugging
+  if (process.env.VERCEL_ENV) {
+    console.log('CORS check:', { origin, allowedOrigins, vercelUrl: process.env.VERCEL_URL });
+  }
+  
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else if (!origin) {
     // Allow same-origin requests (no origin header)
-    res.setHeader('Access-Control-Allow-Origin', 'null');
+    res.setHeader('Access-Control-Allow-Origin', '*');
   } else {
-    // Origin not in whitelist - reject
-    return res.status(403).json({ error: 'Origin not allowed' });
+    // In production, be more permissive for Vercel deployments
+    if (process.env.VERCEL) {
+      res.setHeader('Access-Control-Allow-Origin', origin || '*');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+      // Origin not in whitelist - reject
+      console.warn('CORS blocked origin:', origin);
+      return res.status(403).json({ error: 'Origin not allowed', origin, allowedOrigins });
+    }
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
