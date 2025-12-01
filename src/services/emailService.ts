@@ -1,5 +1,4 @@
 import { Order } from '@/contexts/OrderContext';
-import emailjs from '@emailjs/browser';
 
 // SECURITY FIX: HTML sanitization to prevent XSS in email templates
 // Escapes HTML special characters to prevent injection attacks in email clients
@@ -38,213 +37,47 @@ export interface OrderEmailData {
   customerPhone?: string;
 }
 
-// EmailJS configuration
-const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-const EMAILJS_TEMPLATE_ID_CUSTOMER = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CUSTOMER || '';
-// Support both OWNER and ADMIN variable names for backward compatibility
-const EMAILJS_TEMPLATE_ID_ADMIN = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_ADMIN || import.meta.env.VITE_EMAILJS_TEMPLATE_ID_OWNER || '';
-const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
-
-console.log('📧 EmailJS Config:', {
-  serviceId: EMAILJS_SERVICE_ID ? '✅ SET' : '❌ MISSING',
-  templateCustomer: EMAILJS_TEMPLATE_ID_CUSTOMER ? `✅ SET (${EMAILJS_TEMPLATE_ID_CUSTOMER})` : '❌ MISSING',
-  templateAdmin: EMAILJS_TEMPLATE_ID_ADMIN ? `✅ SET (${EMAILJS_TEMPLATE_ID_ADMIN})` : '⚠️ Using Customer Template',
-  publicKey: EMAILJS_PUBLIC_KEY ? `✅ SET (${EMAILJS_PUBLIC_KEY.length} chars)` : '❌ MISSING'
-});
-
-// Initialize EmailJS if public key is available
-if (EMAILJS_PUBLIC_KEY) {
-  try {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    console.log('✅ EmailJS initialized');
-  } catch (error) {
-    console.error('❌ Failed to initialize EmailJS:', error);
-  }
-}
-
-// Send email using EmailJS
+// Send email using server-side API (Nodemailer)
+// This works from any domain - no restrictions like EmailJS
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
-    // Check if EmailJS is configured
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID_CUSTOMER || !EMAILJS_PUBLIC_KEY) {
-      console.warn('📧 EmailJS not configured, email would be sent to:', emailData.to);
-      console.log('Email content:', {
-        subject: emailData.subject,
-        html: emailData.html.substring(0, 100) + '...'
-      });
+    // Validate required fields
+    if (!emailData.to || !emailData.subject || !emailData.html) {
       return false;
     }
 
-    // Determine which template to use (customer or admin)
-    // Use admin template for totosbureau@gmail.com, customer template otherwise
-    const isAdminEmail = emailData.to === 'totosbureau@gmail.com' || emailData.to.includes('totosbureau@gmail.com');
-    
-    // FORCE admin template for totosbureau emails - throw error if not configured
-    let templateId: string;
-    if (isAdminEmail) {
-      if (!EMAILJS_TEMPLATE_ID_ADMIN) {
-        console.error('❌ ADMIN TEMPLATE NOT CONFIGURED! Admin emails will fail.');
-        console.error('❌ Set VITE_EMAILJS_TEMPLATE_ID_ADMIN in your .env file');
-        // Fall back to customer template but log warning
-        templateId = EMAILJS_TEMPLATE_ID_CUSTOMER;
-        console.warn('⚠️ Using customer template for admin email - THIS IS WRONG!');
-      } else {
-        templateId = EMAILJS_TEMPLATE_ID_ADMIN;
-      }
-    } else {
-      templateId = EMAILJS_TEMPLATE_ID_CUSTOMER;
-    }
-    
-    console.log('📧 Template Selection:', {
-      recipient: emailData.to,
-      isAdmin: isAdminEmail,
-      usingTemplate: isAdminEmail ? 'Admin' : 'Customer',
-      templateId: templateId,
-      adminTemplateConfigured: !!EMAILJS_TEMPLATE_ID_ADMIN
+    // Send email via server-side API
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: emailData.to,
+        subject: emailData.subject,
+        html: emailData.html,
+        text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
+      }),
     });
 
-    // Prepare EmailJS template parameters
-    // If emailData has order data, extract individual fields for template variables
-    const templateParams: Record<string, string> = {
-      // Recipient (EmailJS standard variable)
-      to_email: emailData.to,
-      email: emailData.to,
-      user_email: emailData.to,
-      recipient_email: emailData.to,
-      
-      // Subject (EmailJS standard variable)
-      subject: emailData.subject,
-      
-      // HTML content - PRIMARY variable name EmailJS expects
-      message: emailData.html,
-      // Also send with other common names for compatibility
-      message_html: emailData.html,
-      html: emailData.html,
-      content: emailData.html,
-      body_html: emailData.html,
-      body: emailData.html,
-      
-      // Plain text fallback
-      message_text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
-      text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
-      body_text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
-      
-      // Reply to
-      reply_to: 'totosbureau@gmail.com',
-    };
-
-    // If this email has order data attached (from OrderEmailData), extract individual fields
-    // This allows templates to use {{order_number}}, {{customer_name}}, etc.
-    if ((emailData as any).orderData) {
-      const orderData = (emailData as any).orderData;
-      const { order, customerName, customerEmail, customerFirstName, customerLastName, customerPhone } = orderData;
-      
-      if (order) {
-        // SECURITY FIX: Sanitize all user input before inserting into email templates
-        // This prevents XSS attacks in email clients that render HTML
-        templateParams.order_number = sanitizeForEmail(order.orderNumber || 'N/A');
-        templateParams.order_date = order.orderDate ? sanitizeForEmail(new Date(order.orderDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })) : 'N/A';
-        templateParams.order_status = order.status ? sanitizeForEmail(order.status.charAt(0).toUpperCase() + order.status.slice(1)) : 'Pending';
-        
-        templateParams.customer_name = sanitizeForEmail(customerName || 'N/A');
-        templateParams.customer_email = sanitizeForEmail(customerEmail || 'N/A');
-        templateParams.customer_phone = sanitizeForEmail(customerPhone || order.shippingAddress?.phone || 'N/A');
-        
-        // Payment method information
-        const paymentType = order.paymentMethod?.type || 'Not specified';
-        const paymentLast4 = order.paymentMethod?.last4;
-        const isCashOnDelivery = paymentType === 'Cash on Delivery' || paymentType === 'cash_on_delivery';
-        
-        templateParams.payment_method = sanitizeForEmail(paymentType);
-        templateParams.payment_status = sanitizeForEmail(isCashOnDelivery ? '⚠️ Payment Pending - Cash on Delivery' : '✓ Payment Processed Successfully');
-        templateParams.payment_status_icon = sanitizeForEmail(isCashOnDelivery ? '⚠️' : '✓');
-        templateParams.payment_status_text = sanitizeForEmail(isCashOnDelivery ? 'Payment Pending - Cash on Delivery' : 'Payment Processed Successfully');
-        templateParams.payment_status_color = sanitizeForEmail(isCashOnDelivery ? '#dc2626' : '#059669');
-        templateParams.payment_background = sanitizeForEmail(isCashOnDelivery ? '#fef2f2' : '#f0fdf4');
-        templateParams.card_last4 = sanitizeForEmail(paymentLast4 && paymentLast4 !== 'CASH' ? `****${paymentLast4}` : '');
-        
-        // Order summary (sanitized)
-        templateParams.subtotal = sanitizeForEmail(`$${(order.subtotal || 0).toFixed(2)}`);
-        templateParams.shipping = sanitizeForEmail((order.shipping || 0) === 0 ? 'FREE' : `$${(order.shipping || 0).toFixed(2)}`);
-        templateParams.tax = sanitizeForEmail(`$${(order.tax || 0).toFixed(2)}`);
-        templateParams.total = sanitizeForEmail(`$${(order.total || 0).toFixed(2)}`);
-        
-        // Order items (sanitized)
-        templateParams.items_list = order.items?.map(item => {
-          const itemName = sanitizeForEmail(item.name || 'Unnamed Item');
-          const quantity = item.quantity || 1;
-          const price = sanitizeForEmail(((item.price || 0) * quantity).toFixed(2));
-          return `${itemName} (Qty: ${quantity}) - $${price}`;
-        }).join('\n') || 'No items';
-        
-        // Shipping address (sanitized)
-        if (order.shippingAddress) {
-          const addressParts = [
-            sanitizeForEmail(order.shippingAddress.name || 'N/A'),
-            sanitizeForEmail(order.shippingAddress.street || 'N/A'),
-            `${sanitizeForEmail(order.shippingAddress.city || 'N/A')}, ${sanitizeForEmail(order.shippingAddress.state || 'N/A')} ${sanitizeForEmail(order.shippingAddress.zipCode || 'N/A')}`,
-            sanitizeForEmail(order.shippingAddress.country || 'N/A')
-          ];
-          templateParams.shipping_address = addressParts.join('\n');
-        } else {
-          templateParams.shipping_address = 'N/A';
-        }
-      }
+    if (!response.ok) {
+      return false;
     }
 
-    console.log('📧 Sending email via EmailJS:', {
-      to: emailData.to,
-      subject: emailData.subject,
-      serviceId: EMAILJS_SERVICE_ID,
-      templateId: templateId,
-      isAdmin: emailData.to === 'totosbureau@gmail.com',
-      htmlLength: emailData.html.length,
-      htmlPreview: emailData.html.substring(0, 200) + '...',
-      paramKeys: Object.keys(templateParams)
-    });
-    
-    // Log full HTML for debugging (first 500 chars)
-    console.log('📧 HTML Content Preview:', emailData.html.substring(0, 500));
-
-    // Send email via EmailJS
-    const response = await emailjs.send(
-      EMAILJS_SERVICE_ID,
-      templateId,
-      templateParams
-    );
-
-    console.log('✅ Email sent successfully:', response);
-    return true;
+    const result = await response.json();
+    return result.success === true;
   } catch (error) {
-    console.error('❌ Email sending failed:', error);
     return false;
   }
 };
 
 export const generateOrderConfirmationEmail = (orderData: OrderEmailData): EmailData => {
-  console.log('🔍 [generateOrderConfirmationEmail] Input data:', {
-    hasOrder: !!orderData.order,
-    orderNumber: orderData.order?.orderNumber,
-    customerName: orderData.customerName,
-    customerEmail: orderData.customerEmail,
-    orderItems: orderData.order?.items?.length || 0,
-    fullOrder: orderData.order
-  });
-
   // Validate required data
   if (!orderData.order) {
-    console.error('❌ [generateOrderConfirmationEmail] Missing order data!');
     throw new Error('Order data is required');
   }
   
   if (!orderData.customerEmail) {
-    console.error('❌ [generateOrderConfirmationEmail] Missing customer email!');
     throw new Error('Customer email is required');
   }
 
@@ -267,7 +100,6 @@ export const generateOrderConfirmationEmail = (orderData: OrderEmailData): Email
 
   // Validate items exist
   if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
-    console.error('❌ [generateOrderConfirmationEmail] No items in order!', order);
     throw new Error('Order must contain items');
   }
 
@@ -613,14 +445,6 @@ This is an automated notification from Toto's Bureau.
 
 // Wrapper functions for sending order emails
 export const sendOrderConfirmationEmail = async (orderData: OrderEmailData): Promise<boolean> => {
-  console.log('📧 [sendOrderConfirmationEmail] Called with:', {
-    orderNumber: orderData.order?.orderNumber,
-    customerEmail: orderData.customerEmail,
-    customerName: orderData.customerName,
-    hasOrder: !!orderData.order,
-    itemCount: orderData.order?.items?.length || 0
-  });
-  
   try {
     const emailData = generateOrderConfirmationEmail(orderData);
     // Update the 'to' field to use the customer's email
@@ -630,35 +454,14 @@ export const sendOrderConfirmationEmail = async (orderData: OrderEmailData): Pro
     // Attach orderData so sendEmail can extract individual template variables
     (emailData as any).orderData = orderData;
     
-    console.log('📧 [sendOrderConfirmationEmail] Generated email data:', {
-      to: emailData.to,
-      subject: emailData.subject,
-      htmlLength: emailData.html?.length || 0
-    });
-    
     const result = await sendEmail(emailData);
-    console.log('📧 [sendOrderConfirmationEmail] Result:', result);
     return result;
   } catch (error) {
-    console.error('❌ [sendOrderConfirmationEmail] Failed:', error);
-    console.error('❌ [sendOrderConfirmationEmail] Error details:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
-    });
     return false;
   }
 };
 
 export const sendOrderNotificationEmail = async (orderData: OrderEmailData): Promise<boolean> => {
-  console.log('📧 [sendOrderNotificationEmail] Called with:', {
-    orderNumber: orderData.order?.orderNumber,
-    customerEmail: orderData.customerEmail,
-    customerName: orderData.customerName,
-    hasOrder: !!orderData.order,
-    itemCount: orderData.order?.items?.length || 0,
-    adminTemplateConfigured: !!EMAILJS_TEMPLATE_ID_ADMIN
-  });
-  
   try {
     const emailData = generateOrderNotificationEmail(orderData);
     // Notification email ALWAYS goes to admin
@@ -667,29 +470,9 @@ export const sendOrderNotificationEmail = async (orderData: OrderEmailData): Pro
     // Attach orderData so sendEmail can extract individual template variables
     (emailData as any).orderData = orderData;
     
-    console.log('📧 [sendOrderNotificationEmail] Generated email data:', {
-      to: emailData.to,
-      subject: emailData.subject,
-      htmlLength: emailData.html?.length || 0,
-      isAdminEmail: true,
-      willUseAdminTemplate: !!EMAILJS_TEMPLATE_ID_ADMIN
-    });
-    
-    // Verify we're using admin template
-    if (!EMAILJS_TEMPLATE_ID_ADMIN) {
-      console.error('❌ CRITICAL: VITE_EMAILJS_TEMPLATE_ID_ADMIN is not set!');
-      console.error('❌ Admin notification emails will use the wrong template!');
-    }
-    
     const result = await sendEmail(emailData);
-    console.log('📧 [sendOrderNotificationEmail] Result:', result);
     return result;
   } catch (error) {
-    console.error('❌ [sendOrderNotificationEmail] Failed:', error);
-    console.error('❌ [sendOrderNotificationEmail] Error details:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
-    });
     return false;
   }
 };
