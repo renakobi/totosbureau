@@ -1,9 +1,7 @@
-// Vercel serverless function for sending payment confirmation emails
-// SECURITY FIXES APPLIED: CORS, Authentication, Input Validation, Rate Limiting, XSS Prevention
+
 const nodemailer = require('nodemailer');
 const security = require('./utils/security');
 
-// SECURITY FIX: HTML sanitization to prevent XSS in email templates
 function escapeHtml(text) {
   if (typeof text !== 'string') return '';
   const map = {
@@ -17,16 +15,12 @@ function escapeHtml(text) {
 }
 
 module.exports = async function handler(req, res) {
-  // SECURITY FIX: Apply security middleware
   security.handleCORS(req, res, () => {
     security.validateContentType(req, res, () => {
       security.limitRequestSize(1024 * 1024)(req, res, () => {
         security.rateLimit(20, 15 * 60 * 1000)(req, res, () => {
-          // SECURITY FIX: Require authentication for email operations
-          // Uncomment when API_SECRET_KEY is set in Vercel
-          // security.authenticateAPI(req, res, () => {
+ 
             handleRequest(req, res);
-          // });
         });
       });
     });
@@ -45,7 +39,6 @@ async function handleRequest(req, res) {
       return res.status(500).json({ error: 'Email service not configured' });
     }
 
-    // SECURITY FIX: Comprehensive input validation and sanitization
     let customerEmail, amount, orderId, items;
     try {
       customerEmail = security.validateInput.email(req.body.customerEmail);
@@ -56,7 +49,6 @@ async function handleRequest(req, res) {
       return res.status(400).json({ error: validationError.message });
     }
 
-    // Create email transporter
     const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
@@ -65,12 +57,9 @@ async function handleRequest(req, res) {
       },
     });
 
-    // SECURITY FIX: Sanitize all user input before inserting into HTML email template
-    // This prevents XSS attacks in email clients that render HTML
     const sanitizedOrderId = escapeHtml(orderId);
     const sanitizedAmount = amount.toFixed(2);
     
-    // Sanitize items list
     const itemsList = items.map(item => {
       const sanitizedName = escapeHtml(item.name);
       const sanitizedPrice = (item.price * item.quantity).toFixed(2);
@@ -101,7 +90,6 @@ async function handleRequest(req, res) {
       </div>
     `;
 
-    // Send email
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: customerEmail,
