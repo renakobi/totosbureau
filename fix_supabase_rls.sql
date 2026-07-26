@@ -1,15 +1,11 @@
--- Fix Supabase RLS policies to allow public access
--- Run this in your Supabase SQL Editor if queries are being blocked
 
--- Drop existing policies
 DROP POLICY IF EXISTS "Allow all operations" ON users;
 DROP POLICY IF EXISTS "Allow public read" ON users;
 DROP POLICY IF EXISTS "Allow public insert" ON users;
 DROP POLICY IF EXISTS "Allow public update" ON users;
 DROP POLICY IF EXISTS "Allow public delete" ON users;
 
--- Create permissive policies for public access (anonymous users)
--- This allows the app to work from any domain including Vercel
+
 CREATE POLICY "Allow public read" ON users
   FOR SELECT
   TO public
