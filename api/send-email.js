@@ -1,9 +1,7 @@
-// Vercel serverless function for sending emails via Nodemailer
-// Works from any domain - no restrictions like EmailJS
+
 import nodemailer from 'nodemailer';
 import * as security from './utils/security.js';
 
-// SECURITY FIX: HTML sanitization to prevent XSS in email templates
 function escapeHtml(text) {
   if (typeof text !== 'string') return '';
   const map = {
@@ -17,7 +15,6 @@ function escapeHtml(text) {
 }
 
 export default async function handler(req, res) {
-  // Handle OPTIONS request for CORS preflight
   if (req.method === 'OPTIONS') {
     security.handleCORS(req, res, () => {
       return res.status(200).end();
@@ -25,7 +22,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  // SECURITY FIX: Apply security middleware
   security.handleCORS(req, res, () => {
     security.validateContentType(req, res, () => {
       security.limitRequestSize(1024 * 1024)(req, res, () => {
@@ -43,7 +39,6 @@ async function handleRequest(req, res) {
   }
 
   try {
-    // Log request for debugging
     console.log('📧 Email API called:', {
       method: req.method,
       hasBody: !!req.body,
@@ -54,9 +49,8 @@ async function handleRequest(req, res) {
       }
     });
 
-    // Check if email service is configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error('❌ Email service not configured:', {
+      console.error(' Email service not configured:', {
         hasEmailUser: !!process.env.EMAIL_USER,
         hasEmailPass: !!process.env.EMAIL_PASS,
         emailUser: process.env.EMAIL_USER ? process.env.EMAIL_USER.substring(0, 3) + '***' : 'NOT SET'
@@ -103,7 +97,7 @@ async function handleRequest(req, res) {
       replyTo: 'totosbureau@gmail.com',
     });
 
-    console.log('✅ Email sent successfully:', {
+    console.log('Email sent successfully:', {
       to,
       subject,
       messageId: info.messageId,
@@ -116,7 +110,7 @@ async function handleRequest(req, res) {
       messageId: info.messageId
     });
   } catch (error) {
-    console.error('❌ Email send error:', {
+    console.error(' Email send error:', {
       message: error.message,
       code: error.code,
       command: error.command,
