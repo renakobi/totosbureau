@@ -143,7 +143,7 @@ Add these in your Vercel project settings:
 3. Copy the 16-character password
 4. Add to `.env` file
 
-## 💳 Stripe Payment Integration
+##  Stripe Payment Integration
 
 ### Test Mode (Development)
 The application is configured with test mode by default:
